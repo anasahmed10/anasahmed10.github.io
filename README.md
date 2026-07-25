@@ -1,9 +1,14 @@
-# Anas Ahmed — Enterprise Systems Campus
+# Anas Ahmed — Public Engineering and Product Site
 
-An original, recruiter-friendly interactive portfolio built as a lightweight 2D/2.5D campus. It uses React, CSS, and DOM interactions—no 3D engine, server, database, authentication, or private runtime configuration.
+Anas Ahmed’s public home for enterprise engineering work, recruiter information, and products. The site combines a lightweight interactive 2D/2.5D systems campus with a conventional recruiter view and a reusable product directory.
 
 ## What is included
 
+- Public hub at `/`
+- Enterprise Systems Campus at `/campus`
+- Recruiter View at `/recruiter`
+- Product directory at `/products`
+- Recruiter-first TabTally product story at `/products/tabtally`
 - Keyboard-controlled service rover (`WASD` or arrow keys)
 - Touch controls for mobile and tablet
 - Seven accessible campus landmarks and case-study dialogs
@@ -12,7 +17,7 @@ An original, recruiter-friendly interactive portfolio built as a lightweight 2D/
 - A no-JavaScript résumé fallback
 - Responsive layouts and reduced-motion support
 
-The portfolio intentionally does not invent missing personal assets. Replace the contact-status note once verified email, GitHub, LinkedIn, résumé, or headshot assets are supplied.
+The product pages use sanitized application visuals and avoid unverified store, release, adoption, and privacy claims. TabTally Support and Privacy remain independently published public pages.
 
 ## Local development
 
@@ -33,7 +38,7 @@ pnpm build
 
 ## GitHub Pages
 
-The included Pages workflow produces a fully static export and automatically derives the repository subpath from `GITHUB_REPOSITORY`.
+The included Pages workflow produces a fully static export. The `anasahmed10.github.io` user-site repository publishes at the domain root; other repositories automatically derive their project subpath from `GITHUB_REPOSITORY`.
 
 1. Push the repository to GitHub.
 2. In **Settings → Pages**, choose **GitHub Actions** as the source.
