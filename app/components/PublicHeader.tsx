@@ -1,18 +1,19 @@
 import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
-import Link from "next/link";
 
 type PublicSection = "home" | "campus" | "recruiter" | "products";
 
 export function PublicHeader({ active }: { active: PublicSection }) {
   return (
     <header className="public-header">
-      <Link className="public-brand" href="/" aria-label="Anas Ahmed home">
+      {/* A plain anchor keeps this shared server component compatible with vinext and static export. */}
+      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+      <a className="public-brand" href="/" aria-label="Anas Ahmed home">
         <span className="public-brand-mark" aria-hidden="true">AA</span>
         <span>
           <strong>Anas Ahmed</strong>
           <small>Engineer · Product Builder</small>
         </span>
-      </Link>
+      </a>
       <nav aria-label="Primary navigation">
         <a className={active === "campus" ? "active" : ""} href="/campus/">Campus</a>
         <a className={active === "recruiter" ? "active" : ""} href="/recruiter/">Recruiter</a>

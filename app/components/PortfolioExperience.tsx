@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable @next/next/no-html-link-for-pages */
+
 import {
   type CSSProperties,
   useCallback,
@@ -35,7 +37,6 @@ import {
   Waveform,
   X,
 } from "@phosphor-icons/react";
-import Link from "next/link";
 
 type Point = { x: number; y: number };
 type WorldBounds = { x: number; y: number; width: number; height: number };
@@ -707,13 +708,13 @@ export default function PortfolioExperience({
       </noscript>
 
       {mode !== "campus" && <header className="site-header">
-        <Link className="brand-lockup" href="/" aria-label="Return to home">
+        <a className="brand-lockup" href="/" aria-label="Return to home">
           <span className="brand-mark" aria-hidden="true">AA</span>
           <span>
             <strong>Anas Ahmed</strong>
             <small>Enterprise Android Engineer</small>
           </span>
-        </Link>
+        </a>
         <nav aria-label="Primary navigation">
           <a href="/campus/">Campus</a>
           <a className={mode === "recruiter" ? "active" : ""} href="/recruiter/">Recruiter view</a>
