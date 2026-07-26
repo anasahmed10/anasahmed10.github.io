@@ -174,22 +174,191 @@ const zoneById = Object.fromEntries(
   CAMPUS_ZONES.map((zone) => [zone.id, zone]),
 ) as Record<CampusZone["id"], CampusZone>;
 
-function Tree({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
+function Tree({
+  position,
+  scale = 1,
+  reducedMotion,
+  phase = 0,
+}: {
+  position: [number, number, number];
+  scale?: number;
+  reducedMotion: boolean;
+  phase?: number;
+}) {
+  const crownRef = useRef<THREE.Group>(null);
+  const animationTimeRef = useRef(phase);
+  useFrame((_, delta) => {
+    if (!crownRef.current || reducedMotion) return;
+    animationTimeRef.current += delta;
+    crownRef.current.rotation.z =
+      Math.sin(animationTimeRef.current * 0.72 + phase) * 0.035;
+    crownRef.current.rotation.x =
+      Math.cos(animationTimeRef.current * 0.54 + phase) * 0.018;
+  });
   return (
     <group position={position} scale={scale}>
       <mesh castShadow position={[0, 0.75, 0]}>
         <cylinderGeometry args={[0.18, 0.24, 1.5, 10]} />
         <meshStandardMaterial color="#936948" roughness={0.95} />
       </mesh>
-      <mesh castShadow position={[0, 1.85, 0]}>
-        <sphereGeometry args={[0.9, 14, 12]} />
-        <meshStandardMaterial color="#55b884" roughness={0.92} />
-      </mesh>
-      <mesh castShadow position={[0.55, 1.55, 0.12]}>
-        <sphereGeometry args={[0.58, 12, 10]} />
-        <meshStandardMaterial color="#71ca96" roughness={0.92} />
-      </mesh>
+      <group ref={crownRef} position={[0, 1.45, 0]}>
+        <mesh castShadow position={[0, 0.4, 0]}>
+          <sphereGeometry args={[0.9, 14, 12]} />
+          <meshStandardMaterial color="#55b884" roughness={0.92} />
+        </mesh>
+        <mesh castShadow position={[0.55, 0.1, 0.12]}>
+          <sphereGeometry args={[0.58, 12, 10]} />
+          <meshStandardMaterial color="#71ca96" roughness={0.92} />
+        </mesh>
+        <mesh castShadow position={[-0.48, 0.05, -0.08]}>
+          <sphereGeometry args={[0.52, 12, 10]} />
+          <meshStandardMaterial color="#64c38c" roughness={0.94} />
+        </mesh>
+      </group>
     </group>
+  );
+}
+
+function ClayCloud({
+  cloudRef,
+  position,
+  scale,
+}: {
+  cloudRef: (node: THREE.Group | null) => void;
+  position: [number, number, number];
+  scale: number;
+}) {
+  return (
+    <group ref={cloudRef} position={position} scale={scale}>
+      {[
+        [-1.1, 0, 0, 0.85],
+        [-0.35, 0.35, 0, 1.1],
+        [0.55, 0.12, 0, 0.95],
+        [1.2, -0.02, 0, 0.68],
+      ].map(([x, y, z, size], index) => (
+        <mesh key={index} position={[x, y, z]} castShadow>
+          <sphereGeometry args={[size, 12, 10]} />
+          <meshStandardMaterial color="#fff7e8" roughness={0.98} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function LivingEnvironment({ reducedMotion }: { reducedMotion: boolean }) {
+  const cloudRefs = useRef<Array<THREE.Group | null>>([]);
+  const butterflyRef = useRef<THREE.Group>(null);
+  const fountainRef = useRef<THREE.Group>(null);
+  const animationTimeRef = useRef(0);
+
+  useFrame((_, delta) => {
+    if (reducedMotion) return;
+    animationTimeRef.current += delta;
+    cloudRefs.current.forEach((cloud, index) => {
+      if (!cloud) return;
+      cloud.position.x += delta * (0.18 + index * 0.035);
+      if (cloud.position.x > 22) cloud.position.x = -22;
+      cloud.position.y +=
+        Math.sin(animationTimeRef.current * 0.35 + index) * 0.0009;
+    });
+    if (butterflyRef.current) {
+      const time = animationTimeRef.current;
+      butterflyRef.current.position.set(
+        Math.sin(time * 0.55) * 5.4,
+        1.9 + Math.sin(time * 2.1) * 0.28,
+        1 + Math.cos(time * 0.7) * 4.1,
+      );
+      butterflyRef.current.rotation.y = -time * 0.55;
+      butterflyRef.current.children.forEach((wing, index) => {
+        wing.rotation.y = Math.sin(time * 8) * 0.72 * (index === 0 ? 1 : -1);
+      });
+    }
+    if (fountainRef.current) {
+      fountainRef.current.rotation.y += delta * 0.28;
+      fountainRef.current.position.y =
+        1.28 + Math.sin(animationTimeRef.current * 2) * 0.08;
+    }
+  });
+
+  return (
+    <>
+      <ClayCloud
+        cloudRef={(node) => { cloudRefs.current[0] = node; }}
+        position={[-13, 11, -16]}
+        scale={1.15}
+      />
+      <ClayCloud
+        cloudRef={(node) => { cloudRefs.current[1] = node; }}
+        position={[4, 13, -19]}
+        scale={0.78}
+      />
+      <ClayCloud
+        cloudRef={(node) => { cloudRefs.current[2] = node; }}
+        position={[15, 10.5, -14]}
+        scale={1.02}
+      />
+
+      <group position={[0, 0, 0]}>
+        <mesh castShadow receiveShadow position={[0, 0.42, 0]}>
+          <cylinderGeometry args={[1.28, 1.48, 0.82, 28]} />
+          <meshStandardMaterial color="#fff0d2" roughness={0.9} />
+        </mesh>
+        <mesh position={[0, 0.86, 0]}>
+          <cylinderGeometry args={[0.92, 1.08, 0.22, 28]} />
+          <meshStandardMaterial color="#71c7dd" roughness={0.35} />
+        </mesh>
+        <group ref={fountainRef} position={[0, 1.28, 0]}>
+          {[0, Math.PI / 2, Math.PI, Math.PI * 1.5].map((angle) => (
+            <mesh
+              key={angle}
+              position={[Math.cos(angle) * 0.44, 0, Math.sin(angle) * 0.44]}
+            >
+              <sphereGeometry args={[0.16, 10, 8]} />
+              <meshStandardMaterial
+                color="#d9f8ff"
+                transparent
+                opacity={0.78}
+                roughness={0.2}
+              />
+            </mesh>
+          ))}
+        </group>
+      </group>
+
+      <group ref={butterflyRef} position={[2, 2, 2]} scale={0.7}>
+        <mesh position={[-0.2, 0, 0]} rotation={[0, 0.4, 0.25]}>
+          <sphereGeometry args={[0.27, 10, 8]} />
+          <meshStandardMaterial color="#ffbf3f" roughness={0.86} />
+        </mesh>
+        <mesh position={[0.2, 0, 0]} rotation={[0, -0.4, -0.25]}>
+          <sphereGeometry args={[0.27, 10, 8]} />
+          <meshStandardMaterial color="#ff6f61" roughness={0.86} />
+        </mesh>
+        <mesh scale={[0.28, 0.5, 0.28]}>
+          <sphereGeometry args={[0.3, 10, 8]} />
+          <meshStandardMaterial color="#25334a" roughness={0.9} />
+        </mesh>
+      </group>
+
+      {[
+        [-4.4, -2.6, "#ff6f61"],
+        [4.8, 2.8, "#ffbf3f"],
+        [-2.2, 5.1, "#9b6ce0"],
+        [3.3, -5.2, "#ffffff"],
+      ].map(([x, z, color], patchIndex) => (
+        <group key={`${x}-${z}`} position={[Number(x), 0.12, Number(z)]}>
+          {[-0.35, 0, 0.35].map((offset, flowerIndex) => (
+            <mesh
+              key={offset}
+              position={[offset, flowerIndex % 2 ? 0.12 : 0, Math.sin(patchIndex + flowerIndex) * 0.25]}
+            >
+              <sphereGeometry args={[0.13, 8, 6]} />
+              <meshStandardMaterial color={String(color)} roughness={0.95} />
+            </mesh>
+          ))}
+        </group>
+      ))}
+    </>
   );
 }
 
@@ -460,8 +629,16 @@ function Explorer({
   onNearby: (id: CampusZone["id"] | null) => void;
 }) {
   const group = useRef<THREE.Group>(null);
+  const characterRef = useRef<THREE.Group>(null);
+  const headRef = useRef<THREE.Group>(null);
+  const eyesRef = useRef<THREE.Group>(null);
+  const leftArmRef = useRef<THREE.Group>(null);
+  const rightArmRef = useRef<THREE.Group>(null);
+  const leftLegRef = useRef<THREE.Group>(null);
+  const rightLegRef = useRef<THREE.Group>(null);
   const keys = useRef(new Set<string>());
   const previousNearby = useRef<CampusZone["id"] | null>(null);
+  const animationTimeRef = useRef(0);
   const { camera } = useThree();
 
   useEffect(() => {
@@ -483,6 +660,7 @@ function Explorer({
     if (!group.current) return;
     const position = positionRef.current;
     const movement = new THREE.Vector3();
+    animationTimeRef.current += delta;
 
     if (!paused) {
       if (keys.current.has("w") || keys.current.has("arrowup")) movement.z -= 1;
@@ -521,9 +699,42 @@ function Explorer({
       }
     }
 
+    const isMoving = movement.lengthSq() > 0.00001;
+    const time = animationTimeRef.current;
+    const walkCycle = Math.sin(time * 10);
+    const idleCycle = Math.sin(time * 1.7);
     group.current.position.copy(position);
-    const bob = reducedMotion ? 0 : Math.sin(performance.now() * 0.008) * 0.025;
-    group.current.position.y = bob;
+    group.current.position.y =
+      reducedMotion ? 0 : isMoving ? Math.abs(Math.sin(time * 10)) * 0.08 : idleCycle * 0.018;
+
+    if (characterRef.current) {
+      const targetScaleY = reducedMotion ? 1 : isMoving ? 1 + Math.abs(walkCycle) * 0.025 : 1 + idleCycle * 0.012;
+      characterRef.current.scale.y = THREE.MathUtils.lerp(
+        characterRef.current.scale.y,
+        targetScaleY,
+        0.12,
+      );
+      characterRef.current.rotation.z = THREE.MathUtils.lerp(
+        characterRef.current.rotation.z,
+        reducedMotion || isMoving ? 0 : Math.sin(time * 0.8) * 0.018,
+        0.08,
+      );
+    }
+    if (leftArmRef.current && rightArmRef.current && leftLegRef.current && rightLegRef.current) {
+      const limbSwing = reducedMotion || !isMoving ? 0 : walkCycle * 0.62;
+      leftArmRef.current.rotation.x = THREE.MathUtils.lerp(leftArmRef.current.rotation.x, limbSwing, 0.22);
+      rightArmRef.current.rotation.x = THREE.MathUtils.lerp(rightArmRef.current.rotation.x, -limbSwing, 0.22);
+      leftLegRef.current.rotation.x = THREE.MathUtils.lerp(leftLegRef.current.rotation.x, -limbSwing * 0.72, 0.22);
+      rightLegRef.current.rotation.x = THREE.MathUtils.lerp(rightLegRef.current.rotation.x, limbSwing * 0.72, 0.22);
+    }
+    if (headRef.current) {
+      headRef.current.rotation.y = reducedMotion || isMoving ? 0 : Math.sin(time * 0.72) * 0.16;
+      headRef.current.rotation.z = reducedMotion || isMoving ? 0 : Math.sin(time * 0.5) * 0.035;
+    }
+    if (eyesRef.current) {
+      const blink = !reducedMotion && Math.sin(time * 0.83) > 0.992 ? 0.12 : 1;
+      eyesRef.current.scale.y = THREE.MathUtils.lerp(eyesRef.current.scale.y, blink, 0.55);
+    }
 
     const nearest = CAMPUS_ZONES.find((zone) => {
       const approach = new THREE.Vector3(...zone.approach);
@@ -541,28 +752,116 @@ function Explorer({
 
   return (
     <group ref={group}>
-      <mesh castShadow position={[0, 1.35, 0]}>
-        <capsuleGeometry args={[0.38, 0.8, 8, 12]} />
-        <meshStandardMaterial color="#fff3de" roughness={0.88} />
-      </mesh>
-      <mesh castShadow position={[0, 2.12, 0]}>
-        <sphereGeometry args={[0.46, 16, 12]} />
-        <meshStandardMaterial color="#d9946d" roughness={0.9} />
-      </mesh>
-      <mesh castShadow position={[0, 2.42, -0.03]}>
-        <sphereGeometry args={[0.47, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.54]} />
-        <meshStandardMaterial color="#24344a" roughness={0.88} />
-      </mesh>
-      <mesh castShadow position={[-0.22, 0.42, 0]}>
-        <capsuleGeometry args={[0.13, 0.55, 6, 10]} />
-        <meshStandardMaterial color="#2f66d0" roughness={0.86} />
-      </mesh>
-      <mesh castShadow position={[0.22, 0.42, 0]}>
-        <capsuleGeometry args={[0.13, 0.55, 6, 10]} />
-        <meshStandardMaterial color="#2f66d0" roughness={0.86} />
-      </mesh>
+      <group ref={characterRef}>
+        <mesh castShadow position={[0, 1.42, 0]}>
+          <capsuleGeometry args={[0.42, 0.78, 8, 14]} />
+          <meshStandardMaterial color="#fff3de" roughness={0.9} />
+        </mesh>
+        <RoundedBox
+          args={[0.42, 0.62, 0.1]}
+          radius={0.14}
+          smoothness={4}
+          position={[0, 1.48, 0.42]}
+          castShadow
+        >
+          <meshStandardMaterial color="#ff6f61" roughness={0.88} />
+        </RoundedBox>
+        <group position={[0, 1.76, -0.4]} scale={[0.78, 0.92, 0.3]}>
+          <RoundedBox args={[0.72, 0.78, 0.3]} radius={0.16} smoothness={4}>
+            <meshStandardMaterial color="#2f66d0" roughness={0.86} />
+          </RoundedBox>
+        </group>
+        <mesh position={[0, 1.55, 0.56]}>
+          <circleGeometry args={[0.1, 12]} />
+          <meshStandardMaterial color="#ffbf3f" roughness={0.8} />
+        </mesh>
+
+        <group ref={headRef} position={[0, 2.22, 0]}>
+          <mesh castShadow>
+            <sphereGeometry args={[0.5, 18, 14]} />
+            <meshStandardMaterial color="#d9946d" roughness={0.92} />
+          </mesh>
+          <mesh castShadow position={[0, 0.28, -0.04]}>
+            <sphereGeometry args={[0.51, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.55]} />
+            <meshStandardMaterial color="#24344a" roughness={0.9} />
+          </mesh>
+          <mesh castShadow position={[0, 0.39, 0.04]} scale={[1.02, 0.32, 1.01]}>
+            <sphereGeometry args={[0.49, 16, 10]} />
+            <meshStandardMaterial color="#24344a" roughness={0.9} />
+          </mesh>
+          <group ref={eyesRef}>
+            {[-0.18, 0.18].map((eyeX) => (
+              <group key={eyeX} position={[eyeX, 0.06, 0.45]}>
+                <mesh>
+                  <sphereGeometry args={[0.105, 12, 8]} />
+                  <meshStandardMaterial color="#fffaf0" roughness={0.65} />
+                </mesh>
+                <mesh position={[0, 0, 0.075]}>
+                  <sphereGeometry args={[0.045, 10, 8]} />
+                  <meshStandardMaterial color="#25334a" roughness={0.6} />
+                </mesh>
+                <mesh rotation={[0, 0, 0]} position={[0, 0, 0.095]}>
+                  <torusGeometry args={[0.13, 0.025, 6, 16]} />
+                  <meshStandardMaterial color="#40536b" roughness={0.48} />
+                </mesh>
+              </group>
+            ))}
+            <mesh position={[0, 0.06, 0.54]}>
+              <boxGeometry args={[0.13, 0.025, 0.025]} />
+              <meshStandardMaterial color="#40536b" roughness={0.48} />
+            </mesh>
+          </group>
+          <mesh position={[0, -0.08, 0.5]}>
+            <sphereGeometry args={[0.06, 10, 8]} />
+            <meshStandardMaterial color="#c77f5b" roughness={0.9} />
+          </mesh>
+          <mesh position={[0, -0.2, 0.5]} rotation={[0, 0, Math.PI]}>
+            <torusGeometry args={[0.13, 0.022, 6, 14, Math.PI]} />
+            <meshStandardMaterial color="#7b493d" roughness={0.82} />
+          </mesh>
+        </group>
+
+        <group ref={leftArmRef} position={[-0.5, 1.7, 0]}>
+          <mesh castShadow position={[0, -0.43, 0]}>
+            <capsuleGeometry args={[0.13, 0.55, 6, 10]} />
+            <meshStandardMaterial color="#fff3de" roughness={0.9} />
+          </mesh>
+          <mesh castShadow position={[0, -0.8, 0]}>
+            <sphereGeometry args={[0.15, 10, 8]} />
+            <meshStandardMaterial color="#d9946d" roughness={0.92} />
+          </mesh>
+        </group>
+        <group ref={rightArmRef} position={[0.5, 1.7, 0]}>
+          <mesh castShadow position={[0, -0.43, 0]}>
+            <capsuleGeometry args={[0.13, 0.55, 6, 10]} />
+            <meshStandardMaterial color="#fff3de" roughness={0.9} />
+          </mesh>
+          <mesh castShadow position={[0, -0.8, 0]}>
+            <sphereGeometry args={[0.15, 10, 8]} />
+            <meshStandardMaterial color="#d9946d" roughness={0.92} />
+          </mesh>
+        </group>
+        <group ref={leftLegRef} position={[-0.23, 0.88, 0]}>
+          <mesh castShadow position={[0, -0.45, 0]}>
+            <capsuleGeometry args={[0.15, 0.58, 6, 10]} />
+            <meshStandardMaterial color="#2f66d0" roughness={0.88} />
+          </mesh>
+          <RoundedBox args={[0.34, 0.22, 0.52]} radius={0.1} position={[0, -0.83, 0.12]} castShadow>
+            <meshStandardMaterial color="#25334a" roughness={0.82} />
+          </RoundedBox>
+        </group>
+        <group ref={rightLegRef} position={[0.23, 0.88, 0]}>
+          <mesh castShadow position={[0, -0.45, 0]}>
+            <capsuleGeometry args={[0.15, 0.58, 6, 10]} />
+            <meshStandardMaterial color="#2f66d0" roughness={0.88} />
+          </mesh>
+          <RoundedBox args={[0.34, 0.22, 0.52]} radius={0.1} position={[0, -0.83, 0.12]} castShadow>
+            <meshStandardMaterial color="#25334a" roughness={0.82} />
+          </RoundedBox>
+        </group>
+      </group>
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
-        <circleGeometry args={[0.85, 24]} />
+        <circleGeometry args={[0.92, 24]} />
         <meshBasicMaterial color="#503d32" transparent opacity={0.16} />
       </mesh>
     </group>
@@ -629,8 +928,15 @@ function CampusScene({
         <Building key={zone.id} zone={zone} onSelect={onNavigate} />
       ))}
       {trees.map(([x, z], index) => (
-        <Tree key={`${x}-${z}`} position={[x, 0, z]} scale={0.8 + (index % 3) * 0.12} />
+        <Tree
+          key={`${x}-${z}`}
+          position={[x, 0, z]}
+          scale={0.8 + (index % 3) * 0.12}
+          reducedMotion={reducedMotion}
+          phase={index * 0.57}
+        />
       ))}
+      <LivingEnvironment reducedMotion={reducedMotion} />
       {!reducedMotion && (
         <Sparkles count={48} scale={[32, 7, 32]} size={1.5} speed={0.22} color="#ffffff" opacity={0.35} />
       )}
@@ -684,6 +990,7 @@ function OverlayShell({
 }
 
 export default function ClayCampus() {
+  const [enteredCampus, setEnteredCampus] = useState(false);
   const [activeZone, setActiveZone] = useState<CampusZone | null>(null);
   const [recruiterOpen, setRecruiterOpen] = useState(false);
   const [accessibleView, setAccessibleView] = useState(false);
@@ -693,7 +1000,7 @@ export default function ClayCampus() {
   const positionRef = useRef(START.clone());
   const moveTarget = useRef<MoveTarget>(null);
   const showAccessible = accessibleView || !webglAvailable;
-  const paused = Boolean(activeZone || recruiterOpen || showAccessible);
+  const paused = Boolean(!enteredCampus || activeZone || recruiterOpen || showAccessible);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -712,7 +1019,7 @@ export default function ClayCampus() {
 
   useEffect(() => {
     const interact = (event: KeyboardEvent) => {
-      if (event.code !== "Space" || event.repeat || paused || !nearby) return;
+      if (!enteredCampus || event.code !== "Space" || event.repeat || paused || !nearby) return;
       const target = event.target as HTMLElement | null;
       if (
         target?.closest(
@@ -726,7 +1033,7 @@ export default function ClayCampus() {
     };
     window.addEventListener("keydown", interact);
     return () => window.removeEventListener("keydown", interact);
-  }, [nearby, paused]);
+  }, [enteredCampus, nearby, paused]);
 
   const moveTo = useCallback((zone: CampusZone) => {
     moveTarget.current = {
@@ -740,6 +1047,73 @@ export default function ClayCampus() {
     moveTarget.current = null;
     setNearby(null);
   }, []);
+
+  if (!enteredCampus) {
+    return (
+      <main className="campus-welcome">
+        <div className="welcome-sun" aria-hidden="true" />
+        <div className="welcome-cloud welcome-cloud-one" aria-hidden="true" />
+        <div className="welcome-cloud welcome-cloud-two" aria-hidden="true" />
+        <header className="welcome-header">
+          <Link className="clay-brand" href="/" aria-label="Anas Ahmed home">
+            <span>AA</span>
+            <div>
+              <strong>Anas Ahmed</strong>
+              <small>Enterprise Android Engineer &amp; Product Builder</small>
+            </div>
+          </Link>
+          <Link className="welcome-recruiter-link" href="/recruiter/">
+            <Briefcase size={18} weight="fill" />
+            Go straight to Recruiter View
+          </Link>
+        </header>
+
+        <section className="welcome-layout" aria-labelledby="welcome-title">
+          <div className="welcome-copy">
+            <p>ANAS AHMED’S INTERACTIVE PORTFOLIO</p>
+            <h1 id="welcome-title">Choose the fastest path to what you need.</h1>
+            <span>
+              Explore a living clay campus as a small engineer, or skip directly
+              to a focused, recruiter-friendly profile.
+            </span>
+            <div className="welcome-actions">
+              <button className="welcome-enter" onClick={() => setEnteredCampus(true)}>
+                Enter the 3D Campus <ArrowRight size={19} weight="bold" />
+              </button>
+              <Link className="welcome-recruiter" href="/recruiter/">
+                <Briefcase size={18} weight="fill" />
+                Open Recruiter View
+              </Link>
+            </div>
+            <button
+              className="welcome-accessible"
+              onClick={() => {
+                setAccessibleView(true);
+                setEnteredCampus(true);
+              }}
+            >
+              <Monitor size={17} />
+              Use the accessible 2D portfolio
+            </button>
+          </div>
+
+          <div className="welcome-preview" aria-label="Preview of the clay campus">
+            <div className="welcome-preview-image" role="img" aria-label="Colorful clay campus with five buildings" />
+            <div className="welcome-player-card">
+              <span className="welcome-player-avatar" aria-hidden="true">
+                <i />
+                <b />
+              </span>
+              <div>
+                <small>YOUR CAMPUS GUIDE</small>
+                <strong>Walk, explore, and interact</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="clay-campus">
