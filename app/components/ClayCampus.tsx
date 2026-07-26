@@ -519,6 +519,8 @@ export default function ClayCampus() {
   const [webglAvailable, setWebglAvailable] = useState(true);
   const positionRef = useRef(START.clone());
   const moveTarget = useRef<MoveTarget>(null);
+  const showAccessible = accessibleView || !webglAvailable;
+  const paused = Boolean(activeZone || recruiterOpen || showAccessible);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -535,6 +537,24 @@ export default function ClayCampus() {
     return () => media.removeEventListener("change", updateMotion);
   }, []);
 
+  useEffect(() => {
+    const interact = (event: KeyboardEvent) => {
+      if (event.code !== "Space" || event.repeat || paused || !nearby) return;
+      const target = event.target as HTMLElement | null;
+      if (
+        target?.closest(
+          "button, a, input, textarea, select, summary, [contenteditable='true']",
+        )
+      ) {
+        return;
+      }
+      event.preventDefault();
+      setActiveZone(zoneById[nearby]);
+    };
+    window.addEventListener("keydown", interact);
+    return () => window.removeEventListener("keydown", interact);
+  }, [nearby, paused]);
+
   const moveTo = useCallback((zone: CampusZone) => {
     moveTarget.current = {
       point: new THREE.Vector3(...zone.approach),
@@ -547,9 +567,6 @@ export default function ClayCampus() {
     moveTarget.current = null;
     setNearby(null);
   }, []);
-
-  const showAccessible = accessibleView || !webglAvailable;
-  const paused = Boolean(activeZone || recruiterOpen || showAccessible);
 
   return (
     <main className="clay-campus">
@@ -600,13 +617,18 @@ export default function ClayCampus() {
 
         <div className="control-card" aria-label="Movement instructions">
           <span className="desktop-controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> to move</span>
+          <span className="desktop-controls"><kbd>Space</kbd> interact</span>
           <span className="mobile-controls"><MouseSimple size={17} /> Tap a building to move</span>
           <button onClick={reset}><ArrowCounterClockwise size={16} /> Reset</button>
           <button onClick={() => setAccessibleView(true)}><Monitor size={16} /> 2D view</button>
         </div>
 
         {nearby && !paused && (
-          <button className="nearby-prompt" onClick={() => setActiveZone(zoneById[nearby])}>
+          <button
+            className="nearby-prompt"
+            aria-keyshortcuts="Space"
+            onClick={() => setActiveZone(zoneById[nearby])}
+          >
             Enter {zoneById[nearby].sceneLabel} <ArrowRight size={17} weight="bold" />
           </button>
         )}
