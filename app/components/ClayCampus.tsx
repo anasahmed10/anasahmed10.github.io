@@ -12,7 +12,6 @@ import {
   ArrowCounterClockwise,
   ArrowRight,
   Briefcase,
-  DownloadSimple,
   EnvelopeSimple,
   GithubLogo,
   LinkedinLogo,
@@ -53,61 +52,9 @@ export type CampusZone = {
 
 type PositionRef = MutableRefObject<THREE.Vector3>;
 type MoveTarget = { point: THREE.Vector3; zoneId?: CampusZone["id"] } | null;
-type OriginStop = {
-  id: "tinkering" | "deer" | "systems" | "tabtally";
-  number: string;
-  era: string;
-  label: string;
-  title: string;
-  detail: string;
-  signal: string;
-};
 
 const START = new THREE.Vector3(0, 0, 8);
 const WORLD_LIMIT = 14;
-
-const ORIGIN_STOPS: OriginStop[] = [
-  {
-    id: "tinkering",
-    number: "01",
-    era: "THE SPARK",
-    label: "PC tinkering",
-    title: "Curiosity started at the machine.",
-    detail:
-      "Discovering and modifying software on Windows PCs made technology feel tangible: something to open up, understand, and improve.",
-    signal: "Software curiosity · hands-on hardware",
-  },
-  {
-    id: "deer",
-    number: "02",
-    era: "FIRST VENTURE",
-    label: "Deer Computer Repairs",
-    title: "Learning by helping people fix what mattered.",
-    detail:
-      "Anas co-founded Deer Computer Repairs, repairing, building, upgrading, and refurbishing computers for real customers with real constraints.",
-    signal: "Repair · build · upgrade · refurbish",
-  },
-  {
-    id: "systems",
-    number: "03",
-    era: "CONNECTED MOBILE SYSTEMS",
-    label: "Mobile + hardware",
-    title: "Mobile became the bridge.",
-    detail:
-      "University sparked a love for mobile development. At GM and Staples, that grew into Android work connecting people, business systems, vehicles, payment terminals, printers, tablets, and scanners.",
-    signal: "GM connected vehicle · Staples device systems",
-  },
-  {
-    id: "tabtally",
-    number: "04",
-    era: "BUILDING NOW",
-    label: "TabTally",
-    title: "A personal product with the same grounding.",
-    detail:
-      "TabTally is a Kotlin Multiplatform app for Android and iOS that uses OCR and AI to help groups turn restaurant receipts into clear, reviewable splits.",
-    signal: "Kotlin Multiplatform · OCR · AI",
-  },
-];
 
 export const CAMPUS_ZONES: CampusZone[] = [
   {
@@ -115,21 +62,22 @@ export const CAMPUS_ZONES: CampusZone[] = [
     navLabel: "Explore",
     sceneLabel: "About",
     kicker: "ABOUT ANAS",
-    title: "Software for the real world.",
+    title: "From tinkering to connected systems.",
     summary:
-      "An enterprise Android engineer whose path from PC tinkering to connected mobile systems has always stayed close to the physical world.",
-    impact: "Greater Boston · Remote-first",
+      "I’m Anas Ahmed, an enterprise Android engineer who builds software that connects people, business systems, and real-world hardware.",
+    impact: "A hands-on path into mobile engineering",
     color: "#ff6f61",
     position: [-8, 0, -5],
     approach: [-5.5, 0, -2.5],
     height: 4.2,
     width: 4.5,
     details: [
-      "Enterprise Android experience across payment terminals, printers, scanners, store networks, and observability.",
-      "Bachelor of Science in Computer Science from the University of Massachusetts Lowell.",
-      "Interested in enterprise device systems and application-layer robotics.",
+      "01 — It started with discovering and modifying software on Windows PCs, then grew into co-founding Deer Computer Repairs—repairing, building, upgrading, and refurbishing computers.",
+      "02 — At university, mobile development became the bridge between a love of software and a lasting, hands-on interest in hardware.",
+      "03 — At General Motors and Staples, that combination shaped work across a connected-vehicle companion app, self-service print and copy, payment terminals, printers, tablets, and barcode-scanning workflows.",
+      "04 — Outside work, I’m building the Kotlin Multiplatform receipt-splitting app TabTally and dabbling in Godot game development, especially platforming physics.",
     ],
-    tech: ["Kotlin", "Android", "Systems thinking", "Product engineering"],
+    tech: ["PC tinkering", "Deer Computer Repairs", "Mobile + hardware", "Products + play"],
   },
   {
     id: "experience",
@@ -737,7 +685,6 @@ function OverlayShell({
 
 export default function ClayCampus() {
   const [activeZone, setActiveZone] = useState<CampusZone | null>(null);
-  const [activeOriginStop, setActiveOriginStop] = useState<OriginStop["id"]>("tinkering");
   const [recruiterOpen, setRecruiterOpen] = useState(false);
   const [accessibleView, setAccessibleView] = useState(false);
   const [nearby, setNearby] = useState<CampusZone["id"] | null>(null);
@@ -880,82 +827,26 @@ export default function ClayCampus() {
         <OverlayShell titleId="zone-title" onClose={() => setActiveZone(null)}>
           <div className="overlay-accent" style={{ background: activeZone.color }} />
           <p className="overlay-kicker">{activeZone.kicker}</p>
-          {activeZone.id === "about" ? (
-            <div className="origin-console">
-              <div className="origin-heading">
-                <span>ORIGIN CONSOLE / 04 STOPS</span>
-                <h2 id="zone-title">Built from curiosity,<br />grounded in use.</h2>
-                <p>
-                  Anas builds software that connects people, business systems, and real-world hardware.
-                  The through-line started long before Android.
-                </p>
-              </div>
-
-              <div className="origin-track" role="group" aria-label="Origin story stops">
-                {ORIGIN_STOPS.map((stop) => (
-                  <button
-                    key={stop.id}
-                    className={activeOriginStop === stop.id ? "active" : ""}
-                    onClick={() => setActiveOriginStop(stop.id)}
-                    aria-pressed={activeOriginStop === stop.id}
-                    aria-controls="origin-detail"
-                  >
-                    <span>{stop.number}</span>
-                    <i />
-                    <strong>{stop.label}</strong>
-                  </button>
-                ))}
-              </div>
-
-              {ORIGIN_STOPS.map((stop) => activeOriginStop === stop.id && (
-                <article id="origin-detail" className="origin-detail" key={stop.id} aria-live="polite">
-                  <div className="origin-detail-index">{stop.number}</div>
-                  <div>
-                    <small>{stop.era}</small>
-                    <h3>{stop.title}</h3>
-                    <p>{stop.detail}</p>
-                    <span>{stop.signal}</span>
-                  </div>
-                </article>
-              ))}
-
-              <div className="origin-cta">
-                <div>
-                  <small>OPEN TO THE NEXT USEFUL PROBLEM</small>
-                  <h3>Let’s build something that works in the real world.</h3>
-                </div>
-                <div className="origin-actions">
-                  <a href="https://www.linkedin.com/in/anas-ahmed-28b391166/" target="_blank" rel="noreferrer"><LinkedinLogo /> LinkedIn</a>
-                  <a href="https://github.com/anasahmed10" target="_blank" rel="noreferrer"><GithubLogo /> GitHub</a>
-                  <a href="/resumes/Anas_Ahmed_Enterprise_Android_Hardware.pdf" download><DownloadSimple /> Résumé</a>
-                  <a href="mailto:anas.ahmed10@outlook.com"><EnvelopeSimple /> Contact</a>
-                </div>
-              </div>
+          <h2 id="zone-title">{activeZone.title}</h2>
+          <strong className="overlay-impact">{activeZone.impact}</strong>
+          <p className="overlay-summary">{activeZone.summary}</p>
+          <ul>
+            {activeZone.details.map((detail) => <li key={detail}>{detail}</li>)}
+          </ul>
+          <div className="overlay-tech">
+            {activeZone.tech.map((tech) => <span key={tech}>{tech}</span>)}
+          </div>
+          {activeZone.id === "contact" && (
+            <div className="contact-actions">
+              <a href="mailto:anas.ahmed10@outlook.com"><EnvelopeSimple /> Email Anas</a>
+              <a href="https://www.linkedin.com/in/anas-ahmed-28b391166" target="_blank" rel="noreferrer"><LinkedinLogo /> LinkedIn</a>
+              <a href="https://github.com/anasahmed10" target="_blank" rel="noreferrer"><GithubLogo /> GitHub</a>
             </div>
-          ) : (
-            <>
-              <h2 id="zone-title">{activeZone.title}</h2>
-              <strong className="overlay-impact">{activeZone.impact}</strong>
-              <p className="overlay-summary">{activeZone.summary}</p>
-              <ul>
-                {activeZone.details.map((detail) => <li key={detail}>{detail}</li>)}
-              </ul>
-              <div className="overlay-tech">
-                {activeZone.tech.map((tech) => <span key={tech}>{tech}</span>)}
-              </div>
-              {activeZone.id === "contact" && (
-                <div className="contact-actions">
-                  <a href="mailto:anas.ahmed10@outlook.com"><EnvelopeSimple /> Email Anas</a>
-                  <a href="https://www.linkedin.com/in/anas-ahmed-28b391166/" target="_blank" rel="noreferrer"><LinkedinLogo /> LinkedIn</a>
-                  <a href="https://github.com/anasahmed10" target="_blank" rel="noreferrer"><GithubLogo /> GitHub</a>
-                </div>
-              )}
-              {activeZone.link && (
-                <a className="overlay-primary" href={activeZone.link.href}>
-                  {activeZone.link.label} <ArrowRight weight="bold" />
-                </a>
-              )}
-            </>
+          )}
+          {activeZone.link && (
+            <a className="overlay-primary" href={activeZone.link.href}>
+              {activeZone.link.label} <ArrowRight weight="bold" />
+            </a>
           )}
         </OverlayShell>
       )}
