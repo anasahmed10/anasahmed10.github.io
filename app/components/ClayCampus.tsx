@@ -754,108 +754,97 @@ function Explorer({
     <group ref={group}>
       <group ref={characterRef}>
         <mesh castShadow position={[0, 1.42, 0]}>
-          <capsuleGeometry args={[0.42, 0.78, 8, 14]} />
+          <capsuleGeometry args={[0.4, 0.76, 8, 14]} />
+          <meshStandardMaterial color="#2f66d0" roughness={0.88} />
+        </mesh>
+        <mesh position={[0, 1.5, 0.405]}>
+          <boxGeometry args={[0.035, 0.62, 0.035]} />
+          <meshStandardMaterial color="#d9f5ff" roughness={0.64} />
+        </mesh>
+        <mesh position={[0.19, 1.6, 0.425]}>
+          <circleGeometry args={[0.075, 12]} />
+          <meshStandardMaterial color="#ffbf3f" roughness={0.8} />
+        </mesh>
+        <mesh castShadow position={[0, 1.79, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.28, 0.065, 8, 20]} />
           <meshStandardMaterial color="#fff3de" roughness={0.9} />
         </mesh>
         <RoundedBox
-          args={[0.42, 0.62, 0.1]}
-          radius={0.14}
+          args={[0.64, 0.7, 0.24]}
+          radius={0.15}
           smoothness={4}
-          position={[0, 1.48, 0.42]}
+          position={[0, 1.5, -0.39]}
           castShadow
         >
           <meshStandardMaterial color="#ff6f61" roughness={0.88} />
         </RoundedBox>
-        <group position={[0, 1.76, -0.4]} scale={[0.78, 0.92, 0.3]}>
-          <RoundedBox args={[0.72, 0.78, 0.3]} radius={0.16} smoothness={4}>
-            <meshStandardMaterial color="#2f66d0" roughness={0.86} />
-          </RoundedBox>
-        </group>
-        <mesh position={[0, 1.55, 0.56]}>
-          <circleGeometry args={[0.1, 12]} />
-          <meshStandardMaterial color="#ffbf3f" roughness={0.8} />
-        </mesh>
 
-        <group ref={headRef} position={[0, 2.22, 0]}>
+        <group ref={headRef} position={[0, 2.15, 0]}>
           <mesh castShadow>
-            <sphereGeometry args={[0.5, 18, 14]} />
+            <sphereGeometry args={[0.4, 18, 14]} />
             <meshStandardMaterial color="#d9946d" roughness={0.92} />
           </mesh>
-          <mesh castShadow position={[0, 0.28, -0.04]}>
-            <sphereGeometry args={[0.51, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.55]} />
+          <mesh castShadow position={[0, 0.24, -0.025]}>
+            <sphereGeometry args={[0.405, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.52]} />
             <meshStandardMaterial color="#24344a" roughness={0.9} />
           </mesh>
-          <mesh castShadow position={[0, 0.39, 0.04]} scale={[1.02, 0.32, 1.01]}>
-            <sphereGeometry args={[0.49, 16, 10]} />
+          <mesh castShadow position={[-0.2, 0.22, 0.2]} scale={[0.55, 0.32, 0.48]} rotation={[0.1, 0, -0.28]}>
+            <sphereGeometry args={[0.35, 12, 9]} />
             <meshStandardMaterial color="#24344a" roughness={0.9} />
           </mesh>
           <group ref={eyesRef}>
-            {[-0.18, 0.18].map((eyeX) => (
-              <group key={eyeX} position={[eyeX, 0.06, 0.45]}>
-                <mesh>
-                  <sphereGeometry args={[0.105, 12, 8]} />
-                  <meshStandardMaterial color="#fffaf0" roughness={0.65} />
-                </mesh>
-                <mesh position={[0, 0, 0.075]}>
-                  <sphereGeometry args={[0.045, 10, 8]} />
-                  <meshStandardMaterial color="#25334a" roughness={0.6} />
-                </mesh>
-                <mesh rotation={[0, 0, 0]} position={[0, 0, 0.095]}>
-                  <torusGeometry args={[0.13, 0.025, 6, 16]} />
-                  <meshStandardMaterial color="#40536b" roughness={0.48} />
-                </mesh>
-              </group>
+            {[-0.13, 0.13].map((eyeX) => (
+              <mesh key={eyeX} position={[eyeX, 0.035, 0.374]}>
+                <sphereGeometry args={[0.037, 10, 8]} />
+                <meshStandardMaterial color="#25334a" roughness={0.62} />
+              </mesh>
             ))}
-            <mesh position={[0, 0.06, 0.54]}>
-              <boxGeometry args={[0.13, 0.025, 0.025]} />
-              <meshStandardMaterial color="#40536b" roughness={0.48} />
-            </mesh>
           </group>
-          <mesh position={[0, -0.08, 0.5]}>
-            <sphereGeometry args={[0.06, 10, 8]} />
+          <mesh position={[0, -0.055, 0.39]}>
+            <sphereGeometry args={[0.045, 10, 8]} />
             <meshStandardMaterial color="#c77f5b" roughness={0.9} />
           </mesh>
-          <mesh position={[0, -0.2, 0.5]} rotation={[0, 0, Math.PI]}>
-            <torusGeometry args={[0.13, 0.022, 6, 14, Math.PI]} />
+          <mesh position={[0, -0.14, 0.39]} rotation={[0, 0, Math.PI]}>
+            <torusGeometry args={[0.085, 0.018, 6, 12, Math.PI]} />
             <meshStandardMaterial color="#7b493d" roughness={0.82} />
           </mesh>
         </group>
 
-        <group ref={leftArmRef} position={[-0.5, 1.7, 0]}>
-          <mesh castShadow position={[0, -0.43, 0]}>
-            <capsuleGeometry args={[0.13, 0.55, 6, 10]} />
+        <group ref={leftArmRef} position={[-0.47, 1.68, 0]}>
+          <mesh castShadow position={[0, -0.38, 0]}>
+            <capsuleGeometry args={[0.12, 0.48, 6, 10]} />
             <meshStandardMaterial color="#fff3de" roughness={0.9} />
           </mesh>
-          <mesh castShadow position={[0, -0.8, 0]}>
-            <sphereGeometry args={[0.15, 10, 8]} />
+          <mesh castShadow position={[0, -0.7, 0]}>
+            <sphereGeometry args={[0.13, 10, 8]} />
             <meshStandardMaterial color="#d9946d" roughness={0.92} />
           </mesh>
         </group>
-        <group ref={rightArmRef} position={[0.5, 1.7, 0]}>
-          <mesh castShadow position={[0, -0.43, 0]}>
-            <capsuleGeometry args={[0.13, 0.55, 6, 10]} />
+        <group ref={rightArmRef} position={[0.47, 1.68, 0]}>
+          <mesh castShadow position={[0, -0.38, 0]}>
+            <capsuleGeometry args={[0.12, 0.48, 6, 10]} />
             <meshStandardMaterial color="#fff3de" roughness={0.9} />
           </mesh>
-          <mesh castShadow position={[0, -0.8, 0]}>
-            <sphereGeometry args={[0.15, 10, 8]} />
+          <mesh castShadow position={[0, -0.7, 0]}>
+            <sphereGeometry args={[0.13, 10, 8]} />
             <meshStandardMaterial color="#d9946d" roughness={0.92} />
           </mesh>
         </group>
-        <group ref={leftLegRef} position={[-0.23, 0.88, 0]}>
-          <mesh castShadow position={[0, -0.45, 0]}>
-            <capsuleGeometry args={[0.15, 0.58, 6, 10]} />
-            <meshStandardMaterial color="#2f66d0" roughness={0.88} />
+        <group ref={leftLegRef} position={[-0.2, 0.9, 0]}>
+          <mesh castShadow position={[0, -0.42, 0]}>
+            <capsuleGeometry args={[0.14, 0.54, 6, 10]} />
+            <meshStandardMaterial color="#40536b" roughness={0.88} />
           </mesh>
-          <RoundedBox args={[0.34, 0.22, 0.52]} radius={0.1} position={[0, -0.83, 0.12]} castShadow>
+          <RoundedBox args={[0.32, 0.2, 0.46]} radius={0.1} position={[0, -0.77, 0.1]} castShadow>
             <meshStandardMaterial color="#25334a" roughness={0.82} />
           </RoundedBox>
         </group>
-        <group ref={rightLegRef} position={[0.23, 0.88, 0]}>
-          <mesh castShadow position={[0, -0.45, 0]}>
-            <capsuleGeometry args={[0.15, 0.58, 6, 10]} />
-            <meshStandardMaterial color="#2f66d0" roughness={0.88} />
+        <group ref={rightLegRef} position={[0.2, 0.9, 0]}>
+          <mesh castShadow position={[0, -0.42, 0]}>
+            <capsuleGeometry args={[0.14, 0.54, 6, 10]} />
+            <meshStandardMaterial color="#40536b" roughness={0.88} />
           </mesh>
-          <RoundedBox args={[0.34, 0.22, 0.52]} radius={0.1} position={[0, -0.83, 0.12]} castShadow>
+          <RoundedBox args={[0.32, 0.2, 0.46]} radius={0.1} position={[0, -0.77, 0.1]} castShadow>
             <meshStandardMaterial color="#25334a" roughness={0.82} />
           </RoundedBox>
         </group>
