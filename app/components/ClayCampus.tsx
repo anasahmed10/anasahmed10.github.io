@@ -201,6 +201,227 @@ function Building({
 }) {
   const [x, , z] = zone.position;
   const roofColor = new THREE.Color(zone.color).offsetHSL(0, 0.03, 0.12);
+  const glass = (
+    <meshStandardMaterial
+      color="#d9f5ff"
+      emissive="#8fd9ff"
+      emissiveIntensity={0.15}
+      metalness={0.06}
+      roughness={0.32}
+    />
+  );
+  const door = (
+    <group position={[0, 0, 2.18]}>
+      <RoundedBox
+        args={[1.35, 2.2, 0.38]}
+        radius={0.48}
+        smoothness={5}
+        position={[0, 1.1, 0]}
+        castShadow
+      >
+        <meshStandardMaterial color="#fff4df" roughness={0.76} />
+      </RoundedBox>
+      <RoundedBox
+        args={[0.83, 1.72, 0.15]}
+        radius={0.28}
+        smoothness={5}
+        position={[0, 1.02, 0.23]}
+      >
+        <meshStandardMaterial color="#40536b" roughness={0.5} />
+      </RoundedBox>
+    </group>
+  );
+
+  const buildingShape = (() => {
+    if (zone.id === "about") {
+      return (
+        <>
+          <mesh castShadow receiveShadow position={[0, 1.9, 0]}>
+            <cylinderGeometry args={[2.35, 2.48, 3.8, 32]} />
+            <meshStandardMaterial color={zone.color} roughness={0.84} />
+          </mesh>
+          <mesh position={[0, 2.55, 0]} castShadow>
+            <cylinderGeometry args={[2.42, 2.42, 1.12, 32]} />
+            {glass}
+          </mesh>
+          <mesh position={[0, 3.22, 0]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+            <torusGeometry args={[1.75, 0.55, 12, 36]} />
+            <meshStandardMaterial color={roofColor} roughness={0.77} />
+          </mesh>
+          <mesh position={[0, 3.18, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+            <circleGeometry args={[1.23, 32]} />
+            <meshStandardMaterial color="#b9e7f2" roughness={0.38} />
+          </mesh>
+          {door}
+        </>
+      );
+    }
+
+    if (zone.id === "experience") {
+      return (
+        <>
+          <RoundedBox
+            args={[5.25, 5.25, 4.3]}
+            radius={0.8}
+            smoothness={5}
+            position={[0, 2.62, 0]}
+            castShadow
+            receiveShadow
+          >
+            <meshStandardMaterial color={zone.color} roughness={0.84} />
+          </RoundedBox>
+          <RoundedBox
+            args={[3.75, 0.34, 2.85]}
+            radius={0.55}
+            smoothness={5}
+            position={[0, 5.22, 0]}
+          >
+            <meshStandardMaterial color="#244b9e" roughness={0.74} />
+          </RoundedBox>
+          <RoundedBox
+            args={[3.15, 0.2, 2.25]}
+            radius={0.42}
+            smoothness={5}
+            position={[0, 5.42, 0]}
+          >
+            <meshStandardMaterial color="#9fd8ff" roughness={0.38} />
+          </RoundedBox>
+          {[-1.72, -0.58, 0.58, 1.72].map((windowX) => (
+            <RoundedBox
+              key={windowX}
+              args={[0.62, 1.75, 0.18]}
+              radius={0.2}
+              smoothness={4}
+              position={[windowX, 3.45, 2.22]}
+            >
+              {glass}
+            </RoundedBox>
+          ))}
+          {door}
+        </>
+      );
+    }
+
+    if (zone.id === "products") {
+      return (
+        <>
+          <RoundedBox
+            args={[5.3, 3.35, 4.5]}
+            radius={1.05}
+            smoothness={6}
+            position={[0, 1.68, 0]}
+            castShadow
+            receiveShadow
+          >
+            <meshStandardMaterial color={zone.color} roughness={0.83} />
+          </RoundedBox>
+          <RoundedBox
+            args={[3.05, 0.24, 2.4]}
+            radius={0.62}
+            smoothness={5}
+            position={[0, 3.42, -0.18]}
+            rotation={[0, -0.12, 0]}
+          >
+            {glass}
+          </RoundedBox>
+          <RoundedBox
+            args={[3.25, 1.55, 0.2]}
+            radius={0.3}
+            smoothness={4}
+            position={[0, 2.12, 2.31]}
+          >
+            {glass}
+          </RoundedBox>
+          {[-0.8, 0, 0.8].map((mullionX) => (
+            <mesh key={mullionX} position={[mullionX, 2.12, 2.45]}>
+              <boxGeometry args={[0.09, 1.45, 0.09]} />
+              <meshStandardMaterial color="#40536b" roughness={0.7} />
+            </mesh>
+          ))}
+          {door}
+        </>
+      );
+    }
+
+    if (zone.id === "systems") {
+      return (
+        <>
+          <RoundedBox
+            args={[5.35, 4.15, 4.5]}
+            radius={0.58}
+            smoothness={5}
+            position={[0, 2.08, 0]}
+            castShadow
+            receiveShadow
+          >
+            <meshStandardMaterial color={zone.color} roughness={0.84} />
+          </RoundedBox>
+          <RoundedBox
+            args={[3.05, 2.25, 0.22]}
+            radius={0.3}
+            smoothness={4}
+            position={[0, 2.35, 2.32]}
+          >
+            {glass}
+          </RoundedBox>
+          {[-0.95, 0, 0.95].map((mullionX) => (
+            <mesh key={mullionX} position={[mullionX, 2.35, 2.46]}>
+              <boxGeometry args={[0.1, 2.1, 0.09]} />
+              <meshStandardMaterial color="#fff4df" roughness={0.78} />
+            </mesh>
+          ))}
+          {[-1.45, -0.48, 0.48, 1.45].map((ventX) => (
+            <RoundedBox
+              key={ventX}
+              args={[0.64, 0.3, 2.55]}
+              radius={0.12}
+              position={[ventX, 4.35, -0.25]}
+              rotation={[0, 0, 0.12]}
+            >
+              <meshStandardMaterial color="#fff0cf" roughness={0.8} />
+            </RoundedBox>
+          ))}
+          {door}
+          <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.35}>
+            <mesh castShadow position={[0, 5.45, 0]}>
+              <torusGeometry args={[0.85, 0.18, 12, 24]} />
+              <meshStandardMaterial color="#fff4df" roughness={0.7} />
+            </mesh>
+          </Float>
+        </>
+      );
+    }
+
+    return (
+      <>
+        <mesh castShadow receiveShadow position={[0, 1.9, 0]}>
+          <cylinderGeometry args={[2.45, 2.55, 3.8, 32]} />
+          <meshStandardMaterial color={zone.color} roughness={0.84} />
+        </mesh>
+        <mesh castShadow position={[0, 3.8, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[1.62, 0.58, 14, 36]} />
+          <meshStandardMaterial color={roofColor} roughness={0.78} />
+        </mesh>
+        <mesh position={[0, 3.67, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <circleGeometry args={[1.12, 32]} />
+          <meshStandardMaterial color="#49395f" roughness={0.92} />
+        </mesh>
+        {[-1.25, 1.25].map((windowX) => (
+          <RoundedBox
+            key={windowX}
+            args={[0.7, 1.15, 0.18]}
+            radius={0.28}
+            smoothness={5}
+            position={[windowX, 2.45, 2.3]}
+          >
+            {glass}
+          </RoundedBox>
+        ))}
+        {door}
+      </>
+    );
+  })();
+
   return (
     <group
       position={[x, 0, z]}
@@ -209,56 +430,7 @@ function Building({
         onSelect(zone);
       }}
     >
-      <RoundedBox
-        args={[zone.width, zone.height, 4.1]}
-        radius={0.45}
-        smoothness={4}
-        position={[0, zone.height / 2, 0]}
-        castShadow
-        receiveShadow
-      >
-        <meshStandardMaterial color={zone.color} roughness={0.82} />
-      </RoundedBox>
-      <RoundedBox
-        args={[zone.width + 0.35, 0.55, 4.45]}
-        radius={0.22}
-        smoothness={4}
-        position={[0, zone.height + 0.12, 0]}
-        castShadow
-      >
-        <meshStandardMaterial color={roofColor} roughness={0.76} />
-      </RoundedBox>
-      <RoundedBox
-        args={[1.15, 2.05, 0.28]}
-        radius={0.18}
-        position={[0, 1.02, 2.08]}
-        castShadow
-      >
-        <meshStandardMaterial color="#fff4df" roughness={0.72} />
-      </RoundedBox>
-      {[-1.35, 1.35].map((windowX) => (
-        <RoundedBox
-          key={windowX}
-          args={[0.8, 0.9, 0.22]}
-          radius={0.16}
-          position={[windowX, zone.height * 0.62, 2.1]}
-        >
-          <meshStandardMaterial
-            color="#d9f5ff"
-            emissive="#8fd9ff"
-            emissiveIntensity={0.18}
-            roughness={0.4}
-          />
-        </RoundedBox>
-      ))}
-      {zone.id === "systems" && (
-        <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.35}>
-          <mesh castShadow position={[0, zone.height + 1.35, 0]}>
-            <torusGeometry args={[0.85, 0.18, 12, 24]} />
-            <meshStandardMaterial color="#fff4df" roughness={0.7} />
-          </mesh>
-        </Float>
-      )}
+      {buildingShape}
       <Billboard position={[0, zone.height + 1.15, 2.35]} follow>
         <Html center distanceFactor={14} style={{ pointerEvents: "none" }}>
           <div className="scene-label">
