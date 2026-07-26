@@ -761,8 +761,8 @@ function Explorer({
           <circleGeometry args={[0.075, 12]} />
           <meshStandardMaterial color="#ffbf3f" roughness={0.8} />
         </mesh>
-        <mesh castShadow position={[0, 1.79, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[0.28, 0.065, 8, 20]} />
+        <mesh castShadow position={[0, 2.08, 0]}>
+          <cylinderGeometry args={[0.25, 0.29, 0.18, 16]} />
           <meshStandardMaterial color="#fff3de" roughness={0.9} />
         </mesh>
         <RoundedBox
@@ -775,7 +775,7 @@ function Explorer({
           <meshStandardMaterial color="#ff6f61" roughness={0.88} />
         </RoundedBox>
 
-        <group ref={headRef} position={[0, 2.15, 0]}>
+        <group ref={headRef} position={[0, 2.46, 0]}>
           <mesh castShadow>
             <sphereGeometry args={[0.4, 18, 14]} />
             <meshStandardMaterial color="#d9946d" roughness={0.92} />
@@ -796,14 +796,18 @@ function Explorer({
               </mesh>
             ))}
           </group>
-          <mesh position={[0, -0.055, 0.39]}>
+          <mesh position={[0, -0.02, 0.39]}>
             <sphereGeometry args={[0.045, 10, 8]} />
             <meshStandardMaterial color="#c77f5b" roughness={0.9} />
           </mesh>
-          <mesh position={[0, -0.14, 0.39]} rotation={[0, 0, Math.PI]}>
-            <torusGeometry args={[0.085, 0.018, 6, 12, Math.PI]} />
+          <RoundedBox
+            args={[0.14, 0.032, 0.028]}
+            radius={0.014}
+            smoothness={3}
+            position={[0, -0.15, 0.395]}
+          >
             <meshStandardMaterial color="#7b493d" roughness={0.82} />
-          </mesh>
+          </RoundedBox>
         </group>
 
         <group ref={leftArmRef} position={[-0.47, 1.68, 0]}>
