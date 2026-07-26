@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./clay-campus.css";
 
 :root {
   --ink: #071118;

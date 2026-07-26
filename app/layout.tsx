@@ -14,24 +14,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://anasahmed10.github.io/"),
+  metadataBase: new URL("https://anas-systems-campus.anas-ahmed10988004.chatgpt.site/"),
   title: {
-    default: "Anas Ahmed — Engineer and Product Builder",
+    default: "Anas Ahmed — Enterprise Android Engineer & Product Builder",
     template: "%s · Anas Ahmed",
   },
   description:
-    "Explore Anas Ahmed’s Enterprise Systems Campus, recruiter profile, and public products including TabTally.",
+    "Explore Anas Ahmed’s interactive 3D campus: enterprise Android, device systems, automation, observability, and products including TabTally.",
   openGraph: {
-    title: "Anas Ahmed — Engineer and Product Builder",
-    description: "Enterprise systems, recruiter experience, and public mobile products.",
-    url: "https://anasahmed10.github.io/",
+    title: "Anas Ahmed — Enterprise Android Engineer & Product Builder",
+    description: "A vibrant 3D campus for enterprise systems, automation, and mobile products.",
+    url: "https://anas-systems-campus.anas-ahmed10988004.chatgpt.site/",
     type: "website",
-    images: [{ url: "/og.png", width: 1536, height: 1024, alt: "Anas Ahmed — Engineer and Product Builder" }],
+    images: [{ url: "/og.png", width: 1672, height: 941, alt: "Anas Ahmed — Enterprise Android Engineer & Product Builder" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Anas Ahmed — Engineer and Product Builder",
-    description: "Enterprise systems, recruiter experience, and public mobile products.",
+    title: "Anas Ahmed — Enterprise Android Engineer & Product Builder",
+    description: "A vibrant 3D campus for enterprise systems, automation, and mobile products.",
     images: ["/og.png"],
   },
 };

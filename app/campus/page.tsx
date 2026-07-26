@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import PortfolioExperience from "../components/PortfolioExperience";
+import ClayCampus from "../components/ClayCampus";
 
 export const metadata: Metadata = {
   title: "Enterprise Systems Campus",
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function CampusPage() {
-  return <PortfolioExperience initialMode="campus" />;
+  return <ClayCampus />;
 }
