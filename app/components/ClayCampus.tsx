@@ -1031,6 +1031,13 @@ export default function ClayCampus() {
     };
   }, []);
 
+  const warpTo = useCallback((zone: CampusZone) => {
+    moveTarget.current = null;
+    positionRef.current.set(...zone.approach);
+    setNearby(zone.id);
+    setActiveZone(zone);
+  }, []);
+
   const reset = useCallback(() => {
     positionRef.current.copy(START);
     moveTarget.current = null;
@@ -1117,7 +1124,13 @@ export default function ClayCampus() {
         </Link>
         <nav aria-label="Campus navigation">
           {CAMPUS_ZONES.filter((zone) => zone.id !== "systems").map((zone) => (
-            <button key={zone.id} onClick={() => moveTo(zone)}>{zone.navLabel}</button>
+            <button
+              key={zone.id}
+              onClick={() => warpTo(zone)}
+              aria-label={`Open ${zone.sceneLabel}`}
+            >
+              {zone.navLabel}
+            </button>
           ))}
         </nav>
         <button className="quick-view-button" onClick={() => setRecruiterOpen(true)}>
