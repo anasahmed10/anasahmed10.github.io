@@ -749,15 +749,15 @@ function Explorer({
   return (
     <group ref={group}>
       <group ref={characterRef}>
-        <mesh castShadow position={[0, 1.42, 0]}>
+        <mesh castShadow position={[0, 1.37, -0.08]}>
           <capsuleGeometry args={[0.4, 0.76, 8, 14]} />
           <meshStandardMaterial color="#2f66d0" roughness={0.88} />
         </mesh>
-        <mesh position={[0, 1.5, 0.405]}>
+        <mesh position={[0, 1.45, 0.325]}>
           <boxGeometry args={[0.035, 0.62, 0.035]} />
           <meshStandardMaterial color="#d9f5ff" roughness={0.64} />
         </mesh>
-        <mesh position={[0.19, 1.6, 0.425]}>
+        <mesh position={[0.19, 1.55, 0.345]}>
           <circleGeometry args={[0.075, 12]} />
           <meshStandardMaterial color="#ffbf3f" roughness={0.8} />
         </mesh>
@@ -796,14 +796,17 @@ function Explorer({
               </mesh>
             ))}
           </group>
-          <mesh position={[0, -0.055, 0.39]}>
+          {/* Keep the facial features together and clearly in front of the torso. */}
+          <group position={[0, 0, 0.415]}>
+            <mesh position={[0, -0.035, 0]}>
             <sphereGeometry args={[0.045, 10, 8]} />
             <meshStandardMaterial color="#c77f5b" roughness={0.9} />
-          </mesh>
-          <mesh position={[0, -0.14, 0.39]} rotation={[0, 0, Math.PI]}>
-            <torusGeometry args={[0.085, 0.018, 6, 12, Math.PI]} />
-            <meshStandardMaterial color="#7b493d" roughness={0.82} />
-          </mesh>
+            </mesh>
+            <mesh position={[0, -0.115, 0]} rotation={[0, 0, Math.PI]}>
+              <torusGeometry args={[0.07, 0.015, 6, 12, Math.PI]} />
+              <meshStandardMaterial color="#7b493d" roughness={0.82} />
+            </mesh>
+          </group>
         </group>
 
         <group ref={leftArmRef} position={[-0.47, 1.68, 0]}>
