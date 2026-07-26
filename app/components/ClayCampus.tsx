@@ -51,7 +51,7 @@ export type CampusZone = {
 };
 
 type PositionRef = MutableRefObject<THREE.Vector3>;
-type MoveTarget = { point: THREE.Vector3; zoneId?: CampusZone["id"] } | null;
+type MoveTarget = { point: THREE.Vector3 } | null;
 
 const START = new THREE.Vector3(0, 0, 8);
 const WORLD_LIMIT = 14;
@@ -68,7 +68,7 @@ export const CAMPUS_ZONES: CampusZone[] = [
     impact: "A hands-on path into mobile engineering",
     color: "#ff6f61",
     position: [-8, 0, -5],
-    approach: [-5.5, 0, -2.5],
+    approach: [-8, 0, -2],
     height: 4.2,
     width: 4.5,
     details: [
@@ -90,7 +90,7 @@ export const CAMPUS_ZONES: CampusZone[] = [
     impact: "800+ locations · zero production failures",
     color: "#2f66d0",
     position: [7.5, 0, -5.5],
-    approach: [5.2, 0, -2.4],
+    approach: [7.5, 0, -2.2],
     height: 5.4,
     width: 5.3,
     details: [
@@ -137,7 +137,7 @@ export const CAMPUS_ZONES: CampusZone[] = [
     impact: "65 POS tests · +55% automation · 1st place",
     color: "#42b883",
     position: [-8.5, 0, 6],
-    approach: [-5.6, 0, 4],
+    approach: [-8.5, 0, 9],
     height: 4.8,
     width: 5.2,
     details: [
@@ -158,7 +158,7 @@ export const CAMPUS_ZONES: CampusZone[] = [
     impact: "Greater Boston · Remote-first",
     color: "#9b6ce0",
     position: [8.5, 0, 6],
-    approach: [5.6, 0, 4],
+    approach: [8.5, 0, 9],
     height: 4,
     width: 4.8,
     details: [
@@ -618,14 +618,12 @@ function Explorer({
   targetRef,
   paused,
   reducedMotion,
-  onArrive,
   onNearby,
 }: {
   positionRef: PositionRef;
   targetRef: MutableRefObject<MoveTarget>;
   paused: boolean;
   reducedMotion: boolean;
-  onArrive: (id: CampusZone["id"]) => void;
   onNearby: (id: CampusZone["id"] | null) => void;
 }) {
   const group = useRef<THREE.Group>(null);
@@ -674,9 +672,7 @@ function Explorer({
       } else if (targetRef.current) {
         movement.copy(targetRef.current.point).sub(position);
         if (movement.length() < 0.35) {
-          const arrived = targetRef.current.zoneId;
           targetRef.current = null;
-          if (arrived) onArrive(arrived);
           movement.set(0, 0, 0);
         } else {
           movement.normalize().multiplyScalar(delta * 4.6);
@@ -863,7 +859,6 @@ function CampusScene({
   paused,
   reducedMotion,
   onNavigate,
-  onOpen,
   onNearby,
 }: {
   moveTarget: MutableRefObject<MoveTarget>;
@@ -871,7 +866,6 @@ function CampusScene({
   paused: boolean;
   reducedMotion: boolean;
   onNavigate: (zone: CampusZone) => void;
-  onOpen: (zone: CampusZone) => void;
   onNearby: (id: CampusZone["id"] | null) => void;
 }) {
   const trees = useMemo(
@@ -934,7 +928,6 @@ function CampusScene({
         targetRef={moveTarget}
         paused={paused}
         reducedMotion={reducedMotion}
-        onArrive={(id) => onOpen(zoneById[id])}
         onNearby={onNearby}
       />
     </>
@@ -1027,7 +1020,6 @@ export default function ClayCampus() {
   const moveTo = useCallback((zone: CampusZone) => {
     moveTarget.current = {
       point: new THREE.Vector3(...zone.approach),
-      zoneId: zone.id,
     };
   }, []);
 
@@ -1152,7 +1144,6 @@ export default function ClayCampus() {
               paused={paused}
               reducedMotion={reducedMotion}
               onNavigate={moveTo}
-              onOpen={setActiveZone}
               onNearby={setNearby}
             />
           </Canvas>
@@ -1161,13 +1152,13 @@ export default function ClayCampus() {
         <div className="campus-intro-card">
           <p>ANAS AHMED’S 3D CAMPUS</p>
           <h1>Engineering that moves through the real world.</h1>
-          <span>Explore the buildings or jump straight to the recruiter view.</span>
+          <span>Walk up to a building, then interact to view its information.</span>
         </div>
 
         <div className="control-card" aria-label="Movement instructions">
           <span className="desktop-controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> to move</span>
           <span className="desktop-controls"><kbd>Space</kbd> interact</span>
-          <span className="mobile-controls"><MouseSimple size={17} /> Tap a building to move</span>
+          <span className="mobile-controls"><MouseSimple size={17} /> Tap a building to walk over</span>
           <button onClick={reset}><ArrowCounterClockwise size={16} /> Reset</button>
           <button onClick={() => setAccessibleView(true)}><Monitor size={16} /> 2D view</button>
         </div>
@@ -1178,7 +1169,7 @@ export default function ClayCampus() {
             aria-keyshortcuts="Space"
             onClick={() => setActiveZone(zoneById[nearby])}
           >
-            Enter {zoneById[nearby].sceneLabel} <ArrowRight size={17} weight="bold" />
+            View {zoneById[nearby].sceneLabel} information <ArrowRight size={17} weight="bold" />
           </button>
         )}
 
