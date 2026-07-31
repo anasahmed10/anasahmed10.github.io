@@ -76,4 +76,20 @@ The player now uses the reference silhouette and palette: a larger warm-clay hea
 
 Required fidelity surfaces for this focused pass all passed: typography/UI context unchanged, spacing and camera framing preserved, clay palette aligned, no new raster asset required, and player copy/content unaffected. Interaction checks still pass for map teleport, automatic dialog opening, nearby building prompt, reduced motion, and 2D fallback.
 
+## South Asian explorer refinement
+
+- Source visual truth: `/tmp/codex-remote-attachments/019fb655-1f60-78c3-bf40-e5d4f50bc2aa/3D9C7106-2A78-4E03-BC8A-5FEB5D37C5C5/1-Pasted-Image-1.jpg`
+- Source pixels: 547 × 1075.
+- Browser-rendered implementation: `/tmp/portfolio-player-implementation.png`
+- Implementation pixels and CSS viewport: 1280 × 720 at DPR 1.
+- Combined focused comparison: `/tmp/player-visual-comparison.jpg`
+- Movement-state capture: `/tmp/portfolio-player-moved.png`
+- State: campus open at the initial explorer position, then point-and-move tested on open terrain.
+
+The revised explorer keeps the reference's compact clay proportions, swept black hair, prominent eyes and brows, navy outer layer, dark shirt and trousers, and white shoes. A warmer medium-brown skin palette and dark hair provide the requested South Asian appearance without relying on caricature or changing the character's role. The tablet shown in the source was deliberately omitted after the user's clarification; the explorer's arms instead use the existing natural idle and walking poses.
+
+Required fidelity surfaces passed: UI typography and copy are unchanged; the player's size, camera framing, and collision footprint are preserved; the navy, charcoal, white, warm-brown, and black palette follows the source; the procedural clay geometry remains sharp enough at in-scene scale; and no unrelated content changed. The full-view and focused comparison found no actionable P0/P1/P2 differences. The scene's isometric camera necessarily shows less facial detail than the portrait reference, which is an acceptable P3 scale constraint.
+
+Point-and-move was exercised after the visual change, the character moved to the selected terrain point, and no browser console errors were recorded. TypeScript, ESLint, the static Pages production build, and `git diff --check` passed; ESLint continues to report only the seven existing `next/no-img-element` warnings.
+
 final result: passed

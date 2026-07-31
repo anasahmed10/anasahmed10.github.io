@@ -1035,75 +1035,88 @@ function Explorer({
   return (
     <group ref={group}>
       <group ref={characterRef}>
-        <ClayMesh seed="explorer-torso" deformation={0.012} castShadow position={[0, 1.37, -0.08]} rotation={[0.006, 0, -0.008]} scale={[1.04, 1.03, 1.02]}>
-          <capsuleGeometry args={[0.42, 0.78, 8, 14]} />
-          <ClayMaterial color="#2f66d0" roughness={0.9} normalStrength={0.15} />
+        <ClayMesh seed="explorer-torso" deformation={0.012} castShadow position={[0, 1.39, -0.08]} rotation={[0.006, 0, -0.008]} scale={[1.08, 1.03, 1.04]}>
+          <capsuleGeometry args={[0.43, 0.76, 8, 14]} />
+          <ClayMaterial color="#183f70" roughness={0.9} normalStrength={0.15} />
         </ClayMesh>
-        <mesh position={[0, 1.55, 0.345]}>
-          <circleGeometry args={[0.075, 12]} />
-          <meshStandardMaterial color="#ffbf3f" roughness={0.8} />
-        </mesh>
+        <ClayRoundedBox seed="explorer-shirt" deformation={0.008} args={[0.34, 0.76, 0.12]} radius={0.05} smoothness={3} position={[0, 1.52, 0.35]}>
+          <ClayMaterial color="#20262c" roughness={0.91} normalStrength={0.1} />
+        </ClayRoundedBox>
         <ClayMesh seed="explorer-neck" deformation={0.01} castShadow position={[0, 2.08, 0]} rotation={[0, 0.02, 0.01]}>
           <cylinderGeometry args={[0.25, 0.29, 0.18, 16]} />
-          <ClayMaterial color="#fff3de" roughness={0.92} normalStrength={0.12} />
+          <ClayMaterial color="#a96846" roughness={0.92} normalStrength={0.12} />
         </ClayMesh>
         <group ref={headRef} position={[0, 2.46, 0]}>
           <ClayMesh seed="explorer-head" deformation={0.011} castShadow scale={[1.1, 1.075, 1.08]}>
             <sphereGeometry args={[0.4, 18, 14]} />
-            <ClayMaterial color="#cf916b" roughness={0.93} normalStrength={0.12} />
+            <ClayMaterial color="#a96846" roughness={0.93} normalStrength={0.12} />
           </ClayMesh>
-          <ClayMesh seed="explorer-hair-cap" deformation={0.012} castShadow position={[0, 0.24, -0.025]} rotation={[0.012, 0, -0.018]} scale={[1.08, 1.03, 1.08]}>
+          <ClayMesh seed="explorer-hair-cap" deformation={0.012} castShadow position={[0, 0.25, -0.03]} rotation={[0.01, 0, -0.06]} scale={[1.1, 1.03, 1.08]}>
             <sphereGeometry args={[0.405, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.52]} />
-            <ClayMaterial color="#211f20" roughness={0.92} normalStrength={0.13} />
+            <ClayMaterial color="#171719" roughness={0.88} normalStrength={0.13} />
           </ClayMesh>
-          <ClayMesh seed="explorer-hair-lock" deformation={0.014} castShadow position={[-0.2, 0.22, 0.2]} scale={[0.55, 0.32, 0.48]} rotation={[0.1, 0, -0.28]}>
+          <ClayMesh seed="explorer-hair-sweep" deformation={0.014} castShadow position={[-0.08, 0.26, 0.19]} scale={[0.92, 0.35, 0.48]} rotation={[0.08, 0, -0.16]}>
             <sphereGeometry args={[0.35, 12, 9]} />
-            <ClayMaterial color="#211f20" roughness={0.92} normalStrength={0.13} />
+            <ClayMaterial color="#171719" roughness={0.88} normalStrength={0.13} />
           </ClayMesh>
-          <ClayMesh seed="explorer-hair-lock-right" deformation={0.014} castShadow position={[0.2, 0.22, 0.2]} scale={[0.55, 0.32, 0.48]} rotation={[0.1, 0, 0.28]}>
+          <ClayMesh seed="explorer-hair-side-left" deformation={0.012} castShadow position={[-0.34, 0.09, -0.015]} scale={[0.32, 0.56, 0.58]} rotation={[0.02, 0, -0.08]}>
             <sphereGeometry args={[0.35, 12, 9]} />
-            <ClayMaterial color="#211f20" roughness={0.92} normalStrength={0.13} />
+            <ClayMaterial color="#171719" roughness={0.88} normalStrength={0.13} />
+          </ClayMesh>
+          <ClayMesh seed="explorer-hair-side-right" deformation={0.012} castShadow position={[0.34, 0.09, -0.015]} scale={[0.32, 0.56, 0.58]} rotation={[0.02, 0, 0.08]}>
+            <sphereGeometry args={[0.35, 12, 9]} />
+            <ClayMaterial color="#171719" roughness={0.88} normalStrength={0.13} />
           </ClayMesh>
           <group ref={eyesRef}>
             {[-0.13, 0.13].map((eyeX) => (
               <mesh key={eyeX} position={[eyeX, 0.035, 0.374]}>
-                <sphereGeometry args={[0.042, 10, 8]} />
-                <meshStandardMaterial color="#211f20" roughness={0.62} />
+                <sphereGeometry args={[0.048, 10, 8]} />
+                <meshStandardMaterial color="#171719" roughness={0.62} />
               </mesh>
             ))}
           </group>
+          {[-0.13, 0.13].map((browX) => (
+            <ClayRoundedBox
+              key={`brow-${browX}`}
+              seed={`explorer-brow-${browX}`}
+              deformation={0.006}
+              args={[0.14, 0.035, 0.035]}
+              radius={0.015}
+              smoothness={2}
+              position={[browX, 0.14, 0.375]}
+              rotation={[0, 0, browX < 0 ? -0.12 : 0.12]}
+            >
+              <ClayMaterial color="#171719" roughness={0.88} normalStrength={0.06} />
+            </ClayRoundedBox>
+          ))}
           <ClayMesh seed="explorer-nose" deformation={0.008} position={[0, -0.02, 0.39]}>
-            <sphereGeometry args={[0.045, 10, 8]} />
-            <ClayMaterial color="#c7835e" roughness={0.92} normalStrength={0.08} />
+            <sphereGeometry args={[0.052, 10, 8]} />
+            <ClayMaterial color="#965b3d" roughness={0.92} normalStrength={0.08} />
           </ClayMesh>
           <mesh position={[0, -0.15, 0.395]} rotation={[0, 0, Math.PI]}>
             <torusGeometry args={[0.075, 0.018, 6, 10, Math.PI]} />
-            <meshStandardMaterial color="#7b493d" roughness={0.82} />
-          </mesh>
-          <mesh position={[0, -0.38, 0]} rotation={[Math.PI / 2, 0, 0]}>
-            <torusGeometry args={[0.22, 0.055, 8, 16]} />
-            <meshStandardMaterial color="#fff3de" roughness={0.92} />
+            <meshStandardMaterial color="#633b31" roughness={0.82} />
           </mesh>
         </group>
 
-        <group ref={leftArmRef} position={[-0.47, 1.68, 0]}>
-          <ClayMesh seed="explorer-left-arm" deformation={0.01} castShadow position={[0, -0.38, 0]} rotation={[0, 0, 0.025]}>
+        <group ref={leftArmRef} position={[-0.47, 1.72, 0]} rotation={[0, 0, -0.035]}>
+          <ClayMesh seed="explorer-left-arm" deformation={0.01} castShadow position={[0, -0.35, 0]} rotation={[0, 0, 0.025]}>
             <capsuleGeometry args={[0.12, 0.48, 6, 10]} />
-            <ClayMaterial color="#fff3de" roughness={0.92} normalStrength={0.11} />
+            <ClayMaterial color="#183f70" roughness={0.92} normalStrength={0.11} />
           </ClayMesh>
-          <ClayMesh seed="explorer-left-hand" deformation={0.009} castShadow position={[0.01, -0.7, 0]}>
+          <ClayMesh seed="explorer-left-hand" deformation={0.009} castShadow position={[0.02, -0.66, 0]}>
             <sphereGeometry args={[0.13, 10, 8]} />
-            <ClayMaterial color="#cf916b" roughness={0.93} normalStrength={0.1} />
+            <ClayMaterial color="#a96846" roughness={0.93} normalStrength={0.1} />
           </ClayMesh>
         </group>
-        <group ref={rightArmRef} position={[0.47, 1.68, 0]}>
-          <ClayMesh seed="explorer-right-arm" deformation={0.01} castShadow position={[0, -0.38, 0]} rotation={[0, 0, -0.022]}>
+        <group ref={rightArmRef} position={[0.47, 1.72, 0]} rotation={[0, 0, 0.035]}>
+          <ClayMesh seed="explorer-right-arm" deformation={0.01} castShadow position={[0, -0.35, 0]} rotation={[0, 0, -0.022]}>
             <capsuleGeometry args={[0.12, 0.48, 6, 10]} />
-            <ClayMaterial color="#fff3de" roughness={0.92} normalStrength={0.11} />
+            <ClayMaterial color="#183f70" roughness={0.92} normalStrength={0.11} />
           </ClayMesh>
-          <ClayMesh seed="explorer-right-hand" deformation={0.009} castShadow position={[-0.01, -0.7, 0]}>
+          <ClayMesh seed="explorer-right-hand" deformation={0.009} castShadow position={[-0.02, -0.66, 0]}>
             <sphereGeometry args={[0.13, 10, 8]} />
-            <ClayMaterial color="#cf916b" roughness={0.93} normalStrength={0.1} />
+            <ClayMaterial color="#a96846" roughness={0.93} normalStrength={0.1} />
           </ClayMesh>
         </group>
         <group ref={leftLegRef} position={[-0.2, 0.9, 0]}>
@@ -1112,7 +1125,7 @@ function Explorer({
             <ClayMaterial color="#2c292b" roughness={0.9} normalStrength={0.12} />
           </ClayMesh>
           <ClayRoundedBox seed="explorer-left-shoe" deformation={0.009} args={[0.34, 0.22, 0.48]} radius={0.11} smoothness={4} position={[0, -0.77, 0.1]} castShadow>
-            <ClayMaterial color="#211f20" roughness={0.9} normalStrength={0.1} />
+            <ClayMaterial color="#eee9df" roughness={0.9} normalStrength={0.1} />
           </ClayRoundedBox>
         </group>
         <group ref={rightLegRef} position={[0.2, 0.9, 0]}>
@@ -1121,7 +1134,7 @@ function Explorer({
             <ClayMaterial color="#2c292b" roughness={0.9} normalStrength={0.12} />
           </ClayMesh>
           <ClayRoundedBox seed="explorer-right-shoe" deformation={0.009} args={[0.34, 0.22, 0.48]} radius={0.11} smoothness={4} position={[0, -0.77, 0.1]} castShadow>
-            <ClayMaterial color="#211f20" roughness={0.9} normalStrength={0.1} />
+            <ClayMaterial color="#eee9df" roughness={0.9} normalStrength={0.1} />
           </ClayRoundedBox>
         </group>
       </group>
