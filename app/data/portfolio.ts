@@ -164,8 +164,8 @@ export const CAMPUS_DESTINATIONS: CampusDestination[] = [
       "I designed and built a Kotlin Multiplatform product that turns receipt capture, OCR, reviewed AI extraction, item assignment, and bill splitting into one clear flow.",
     impact: "Shared Android + iOS product · editable before calculation",
     color: "#ffbf3f",
-    position: [9.5, 0, 6],
-    approach: [9.5, 0, 9.6],
+    position: [9.5, 0, 7.4],
+    approach: [9.5, 0, 11],
     height: 4.2,
     width: 5.4,
     details: [
