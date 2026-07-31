@@ -31,7 +31,7 @@ export function PublicFooter() {
     <footer className="public-footer">
       <div>
         <span className="public-brand-mark" aria-hidden="true">AA</span>
-        <p>Software for real devices, real workflows, and real people.</p>
+        <p>Software built around physical devices and the people operating them.</p>
       </div>
       <nav aria-label="Footer navigation">
         <a href="/campus/">Systems Campus</a>

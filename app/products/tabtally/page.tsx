@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     description:
       "A recruiter-first product story covering Kotlin Multiplatform, on-device OCR, human-reviewed AI, and dependable bill-splitting logic.",
     type: "website",
-    url: "https://anasahmed10.github.io/products/tabtally/",
+    url: "https://anas-systems-campus.anas-ahmed10988004.chatgpt.site/products/tabtally/",
     images: [
       {
         url: "/products/tabtally/og.png",

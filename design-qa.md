@@ -1,101 +1,52 @@
-# Enterprise Systems Campus Design QA
+# Portfolio Design QA
 
-## Comparison setup
+## Canonical campus architecture
 
-- Source visual truth: `/Users/anas/.codex/generated_images/019f91f0-1b4f-7f70-ae1b-1b1080822529/call_mF9yJCDUTYaIgKFg3V1IIwYQ.png`
-- Baseline implementation screenshot: `/Users/anas/Documents/Codex/2026-07-23/sites-plugin-sites-openai-bundled-create-3/work/design-qa-implementation-before.png`
-- Baseline combined evidence: `/Users/anas/Documents/Codex/2026-07-23/sites-plugin-sites-openai-bundled-create-3/work/design-qa-baseline-comparison.jpg`
-- Target pixels: 1586 × 992
-- Baseline pixels: 1280 × 720
-- CSS viewport: 1280 × 720 at devicePixelRatio 2
-- Density normalization: both images were center-cropped and downsampled to 640 × 360 before side-by-side comparison.
-- State: desktop Campus Mode, map closed, systems drawer open, no blocking modal.
+| Destination | Portfolio content |
+| --- | --- |
+| Deer Computer Repairs Workshop | Origin story and About |
+| Self-Serve Copy Building | Android print, payment, deployment, and monitoring work |
+| Connected Vehicle App Garage | Connected-vehicle companion app platform work |
+| Scanner Automation Depot | Mobile scanner automation and testing |
+| TabTally Receipt Café | TabTally product case study |
+| Maker & Game Lab | 3D printing and Godot experiments |
 
-## Baseline findings
+The 3D campus is the only spatial portfolio view. The recruiter route is a compact, text-first summary derived from the same destination data.
 
-- [P1] The world is visually secondary.
-  - Evidence: the baseline spends substantial height on the site header and campus heading, then confines the map to a framed dashboard region. The target makes the circular campus fill the viewport.
-  - Fix: make Campus Mode an edge-to-edge world with only transparent overlay controls.
-- [P1] Landmark art lacks distinct operational substance.
-  - Evidence: the baseline repeats small CSS-drawn device primitives, while the target uses seven recognizable industrial stations with real equipment and differentiated silhouettes.
-  - Fix: replace the CSS world art with a purpose-built raster campus environment and real raster rover.
-- [P1] Navigation has little spatial feedback.
-  - Evidence: the baseline rover changes position but has no heading, acceleration, collision response, or camera behavior.
-  - Fix: add velocity, heading, bounded service paths, collision feedback, and a gently following camera.
-- [P2] The systems index takes permanent layout space from the map.
-  - Evidence: the baseline uses a solid grid column; the target keeps the world continuous beneath a translucent direct-access drawer.
-  - Fix: move the list into a collapsible glass overlay.
-- [P2] Case-study presentation disconnects visitors from the campus.
-  - Evidence: the baseline opens a full-screen modal that hides the world.
-  - Fix: replace it in Campus Mode with a contextual inspection console while preserving location.
-- [P2] The map and discovery states are schematic.
-  - Evidence: the baseline mini-map is a generic button grid rather than an illustrated overview.
-  - Fix: reuse the illustrated campus world for the map with semantic landmark hotspots and rover position.
+## Content checks
 
-## Required fidelity surfaces
+- Removed Split.It and replaced it with the verified TabTally product.
+- Kept Yardscape as additional work rather than a featured campus destination.
+- Framed robotics as a future direction.
+- Used the user-confirmed age, bank-mandated terminal update, and zero vendor-technician rollout cost.
+- Removed unsupported adoption, staffing, revenue, and store-count claims.
+- Rewrote copy to use concrete actions, systems, and outcomes instead of generic positioning language.
 
-- Fonts and typography: retain the existing Geist/Geist Mono system, but match the target’s tighter technical hierarchy and readable 14–16px drawer content.
-- Spacing and layout: replace stacked page sections with edge-to-edge world composition and 12–14px overlay insets.
-- Colors and tokens: preserve graphite, navy, off-white, mint, amber, blue, and signal green; use translucency rather than opaque panel fills.
-- Image quality and assets: use generated raster world, rover, and printer preview assets; do not substitute landmark illustrations with CSS art.
-- Copy and content: preserve verified case-study claims and all seven direct-access labels.
+## Interaction and accessibility checks
 
-## Comparison history
+- Keyboard navigation reaches the campus, map destinations, dialogs, recruiter lenses, and resume links.
+- Closing a destination dialog restores focus to the destination that opened it.
+- Every 3D landmark has a visible desktop label and an accessible button name.
+- The mobile and tablet map provides the destination labels when scene labels are hidden to prevent clipping.
+- Reduced-motion preferences collapse animation duration.
+- A WebGL runtime failure switches to the complete 2D destination list.
 
-### Iteration 0 — baseline
+## Responsive and route checks
 
-- Findings: three P1 and three P2 issues listed above.
-- Fixes made: none at baseline capture.
-- Result: blocked.
+Checked at 390 x 844, 768 x 1024, 1280 x 720, and 1440 x 900:
 
-### Iteration 1 — full-screen world implementation
+- `/`
+- `/campus`
+- `/recruiter`
+- `/products`
+- `/products/tabtally`
 
-- Evidence:
-  - `/Users/anas/Documents/Codex/2026-07-23/sites-plugin-sites-openai-bundled-create-3/work/design-qa-implementation-1.png`
-  - `/Users/anas/Documents/Codex/2026-07-23/sites-plugin-sites-openai-bundled-create-3/work/design-qa-comparison-1.jpg`
-- Fixes:
-  - Replaced the dashboard map with a purpose-built 1920 × 1200 illustrated circular campus.
-  - Replaced the CSS rover with a transparent raster service rover.
-  - Moved the campus toolbar and systems index into translucent overlays.
-  - Added contextual side-console case studies, illustrated map hotspots, camera follow, velocity, heading, collision feedback, and proximity states.
-- Remaining P2 findings:
-  - Top station labels were too close to the toolbar.
-  - Direct-access labels wrapped tightly in the first compact drawer pass.
-  - The 768px layout used the mobile bottom sheet and obscured too much of the map.
+No broken images or application console errors were found. The only console notices were dependency deprecation warnings from Three.js.
 
-### Iteration 2 — responsive and hierarchy correction
+## Build checks
 
-- Evidence:
-  - `/Users/anas/Documents/Codex/2026-07-23/sites-plugin-sites-openai-bundled-create-3/work/design-qa-implementation-final.png`
-  - `/Users/anas/Documents/Codex/2026-07-23/sites-plugin-sites-openai-bundled-create-3/work/design-qa-comparison-final.jpg`
-- Fixes:
-  - Lowered the top station hotspots to clear the transparent toolbar.
-  - Constrained direct-access labels to single, readable lines and removed list overlap.
-  - Added a dedicated 601–780px tablet layout with a right-side translucent drawer so the map remains visible.
-  - Kept the compact bottom-sheet list and touch rover controls for phone layouts.
-- Result: no remaining actionable P0, P1, or P2 findings.
-
-## Browser verification
-
-- Desktop, 1280 × 720:
-  - Expanded Campus Mode is the default.
-  - Framed/expanded toggle works.
-  - Direct-access landmark opening, contextual console, and Escape close work.
-  - `M` illustrated-map shortcut, reset, sound, effects, and Recruiter Mode controls work.
-  - Visited progress updates and reset returns it to 0/7.
-  - Final browser console contains no application errors.
-- Tablet, 768 × 844:
-  - Full campus remains visible.
-  - Direct access uses a translucent right drawer.
-  - Touch controls are present and the landmark labels remain readable.
-- Mobile, 390 × 844:
-  - Campus remains full viewport.
-  - Direct access is immediately visible as a bottom sheet.
-  - Touch rover controls and touch-friendly landmark buttons are present.
-  - The systems list remains independently scrollable.
-- Conventional Recruiter Mode was opened directly from Campus Mode and its tailored résumé download actions remained available.
-- Static compatibility:
-  - `pnpm build` passed.
-  - `GITHUB_REPOSITORY=anasahmed10/anas-systems-campus pnpm run build:pages` passed with a statically prerendered `/` route.
-
-final result: passed
+- ESLint: passes with existing `next/no-img-element` warnings on product pages.
+- TypeScript: passes.
+- Production build: passes.
+- Test script: passes.
+- Static Pages export: passes.

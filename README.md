@@ -1,6 +1,6 @@
 # Anas Ahmed — Public Engineering and Product Site
 
-Anas Ahmed’s public home for enterprise engineering work, recruiter information, and products. The site combines a lightweight interactive 2D/2.5D systems campus with a conventional recruiter view and a reusable product directory.
+Anas Ahmed’s public home for enterprise engineering work, recruiter information, and products. The site combines an interactive 3D clay campus with a conventional recruiter view and a reusable product directory.
 
 ## What is included
 
@@ -9,10 +9,10 @@ Anas Ahmed’s public home for enterprise engineering work, recruiter informatio
 - Recruiter View at `/recruiter`
 - Product directory at `/products`
 - Recruiter-first TabTally product story at `/products/tabtally`
-- Keyboard-controlled service rover (`WASD` or arrow keys)
+- Keyboard-controlled campus guide (`WASD` or arrow keys)
 - Touch controls for mobile and tablet
-- Seven accessible campus landmarks and case-study dialogs
-- Campus map, progress, reset, muted-by-default audio, and reduced-effects controls
+- Six accessible, project-specific campus landmarks and case-study dialogs
+- Campus map, reset controls, reduced-motion support, and WebGL fallback
 - Conventional Recruiter Mode with impact, experience, projects, skills, contact status, and print-to-PDF résumé
 - A no-JavaScript résumé fallback
 - Responsive layouts and reduced-motion support
@@ -54,4 +54,4 @@ The static output is written to `out/`.
 
 ## Content verification
 
-All outcomes shown in the portfolio come directly from the supplied brief. Employer names, confidential implementation detail, external contact links, a headshot, application screenshots, and app-store claims are omitted because verified source material was not provided.
+Experience claims and project outcomes are drawn from the supplied resumes, user-confirmed details, and the local TabTally repository. The public copy avoids unverified adoption, store-count, and revenue claims.

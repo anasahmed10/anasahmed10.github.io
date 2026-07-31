@@ -4,7 +4,7 @@ import PortfolioExperience from "../components/PortfolioExperience";
 export const metadata: Metadata = {
   title: "Recruiter View",
   description:
-    "View Anas Ahmed’s role-adaptive profile, enterprise Android experience, verified impact, technical skills, and tailored résumés.",
+    "Review Anas Ahmed’s enterprise Android experience, verified project outcomes, technical skills, and role-specific résumés.",
 };
 
 export default function RecruiterPage() {

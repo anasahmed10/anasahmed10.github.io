@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import ClayCampus from "../components/ClayCampus";
 
 export const metadata: Metadata = {
-  title: "Enterprise Systems Campus",
+  title: "Interactive Project Campus",
   description:
-    "Explore an interactive portfolio of enterprise Android, payments, printers, scanners, observability, mobile AI, and robotics applications.",
+    "Walk through six clay landmarks covering enterprise Android, connected-vehicle mobile work, scanner automation, TabTally, and Anas Ahmed’s origin and hobbies.",
 };
 
 export default function CampusPage() {

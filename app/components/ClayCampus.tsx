@@ -12,9 +12,6 @@ import {
   ArrowCounterClockwise,
   ArrowRight,
   Briefcase,
-  EnvelopeSimple,
-  GithubLogo,
-  LinkedinLogo,
   MapTrifold,
   Monitor,
   MouseSimple,
@@ -22,6 +19,7 @@ import {
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import {
+  Component,
   type MutableRefObject,
   type ReactNode,
   useCallback,
@@ -31,144 +29,16 @@ import {
   useState,
 } from "react";
 import * as THREE from "three";
-
-export type CampusZone = {
-  id: "about" | "experience" | "products" | "systems" | "contact";
-  navLabel: string;
-  sceneLabel: string;
-  kicker: string;
-  title: string;
-  summary: string;
-  impact: string;
-  color: string;
-  position: [number, number, number];
-  approach: [number, number, number];
-  height: number;
-  width: number;
-  details: string[];
-  tech: string[];
-  link?: { label: string; href: string };
-};
+import {
+  CAMPUS_DESTINATIONS as CAMPUS_ZONES,
+  type CampusDestination as CampusZone,
+} from "../data/portfolio";
 
 type PositionRef = MutableRefObject<THREE.Vector3>;
 type MoveTarget = { point: THREE.Vector3 } | null;
 
-const START = new THREE.Vector3(0, 0, 8);
-const WORLD_LIMIT = 14;
-
-export const CAMPUS_ZONES: CampusZone[] = [
-  {
-    id: "about",
-    navLabel: "Explore",
-    sceneLabel: "About",
-    kicker: "ABOUT ANAS",
-    title: "From tinkering to connected systems.",
-    summary:
-      "I’m Anas Ahmed, an enterprise Android engineer who builds software that connects people, business systems, and real-world hardware.",
-    impact: "A hands-on path into mobile engineering",
-    color: "#ff6f61",
-    position: [-8, 0, -5],
-    approach: [-8, 0, -2],
-    height: 4.2,
-    width: 4.5,
-    details: [
-      "01 — It started with discovering and modifying software on Windows PCs, then grew into co-founding Deer Computer Repairs—repairing, building, upgrading, and refurbishing computers.",
-      "02 — At university, mobile development became the bridge between a love of software and a lasting, hands-on interest in hardware.",
-      "03 — At General Motors and Staples, that combination shaped work across a connected-vehicle companion app, self-service print and copy, payment terminals, printers, tablets, and barcode-scanning workflows.",
-      "04 — Outside work, I’m building the Kotlin Multiplatform receipt-splitting app TabTally and dabbling in Godot game development, especially platforming physics.",
-    ],
-    tech: ["PC tinkering", "Deer Computer Repairs", "Mobile + hardware", "Products + play"],
-  },
-  {
-    id: "experience",
-    navLabel: "Experience",
-    sceneLabel: "Engineering Experience",
-    kicker: "ENGINEERING EXPERIENCE",
-    title: "Dependable systems at production scale.",
-    summary:
-      "Professional experience spans Staples, General Motors, and Syntax Tutoring, with technical ownership across Android modernization, hardware integration, delivery tooling, and maintainable architecture.",
-    impact: "800+ locations · zero production failures",
-    color: "#2f66d0",
-    position: [7.5, 0, -5.5],
-    approach: [7.5, 0, -2.2],
-    height: 5.4,
-    width: 5.3,
-    details: [
-      "Owned a Java/Android 7 to Kotlin/Android 13 modernization for hardware-integrated retail workflows.",
-      "Helped deliver a four-stage local PIN pad upgrade across 800+ locations with zero production failures.",
-      "Built Android and iOS app-size dashboards from Jenkins data and release pipelines in Azure DevOps.",
-    ],
-    tech: ["Kotlin", "Jetpack Compose", "MVVM", "Azure DevOps", "Jenkins"],
-    link: {
-      label: "Download enterprise résumé",
-      href: "/resumes/Anas_Ahmed_Enterprise_Android_Hardware.pdf",
-    },
-  },
-  {
-    id: "products",
-    navLabel: "Products",
-    sceneLabel: "Products",
-    kicker: "PRODUCTS",
-    title: "Product thinking, shipped with engineering discipline.",
-    summary:
-      "TabTally turns a messy receipt into a trustworthy split through capture, OCR, AI-assisted parsing, human review, participant assignment, and fair calculation.",
-    impact: "Kotlin Multiplatform · Android + iOS",
-    color: "#ffbf3f",
-    position: [0, 0, -9.5],
-    approach: [0, 0, -5.7],
-    height: 3.8,
-    width: 5.2,
-    details: [
-      "Designed the end-to-end product flow and cross-platform application architecture.",
-      "AI proposes receipt structure while editable review keeps people in control.",
-      "Shared product logic supports a native-style Android and iOS experience.",
-    ],
-    tech: ["Kotlin Multiplatform", "Compose Multiplatform", "OCR", "Mobile AI"],
-    link: { label: "Explore TabTally", href: "/products/tabtally/" },
-  },
-  {
-    id: "systems",
-    navLabel: "Systems",
-    sceneLabel: "Systems & Automation",
-    kicker: "SYSTEMS & AUTOMATION",
-    title: "Applications that connect to the physical world.",
-    summary:
-      "Device integration, scanner-led test automation, printer observability, and application-layer robotics meet in systems designed for operators—not demos.",
-    impact: "65 POS tests · +55% automation · 1st place",
-    color: "#42b883",
-    position: [-8.5, 0, 6],
-    approach: [-8.5, 0, 9],
-    height: 4.8,
-    width: 5.2,
-    details: [
-      "Built a Kotlin Android application and tablet-hosted local server that automated 65 POS tests.",
-      "Created real-time printer status-light monitoring in Splunk to surface issue duration and frequency.",
-      "Future direction: Android/Linux control surfaces, networking, sensors, automation, and HMI.",
-    ],
-    tech: ["Hardware APIs", "NanoHttpd", "Splunk", "Networking", "HMI"],
-  },
-  {
-    id: "contact",
-    navLabel: "Contact",
-    sceneLabel: "Contact",
-    kicker: "CONTACT",
-    title: "Let’s build dependable systems.",
-    summary:
-      "Open to enterprise Android, hardware-integrated mobile systems, and application-layer robotics opportunities.",
-    impact: "Greater Boston · Remote-first",
-    color: "#9b6ce0",
-    position: [8.5, 0, 6],
-    approach: [8.5, 0, 9],
-    height: 4,
-    width: 4.8,
-    details: [
-      "Email: anas.ahmed10@outlook.com",
-      "Phone: 774-300-7831",
-      "LinkedIn and GitHub profiles are available below.",
-    ],
-    tech: ["Enterprise Android", "Device integration", "Robotics applications"],
-  },
-];
+const START = new THREE.Vector3(0, 0, 4.6);
+const WORLD_LIMIT = 15.5;
 
 const zoneById = Object.fromEntries(
   CAMPUS_ZONES.map((zone) => [zone.id, zone]),
@@ -370,6 +240,7 @@ function Building({
   onSelect: (zone: CampusZone) => void;
 }) {
   const [x, , z] = zone.position;
+  const [hovered, setHovered] = useState(false);
   const roofColor = new THREE.Color(zone.color).offsetHSL(0, 0.03, 0.12);
   const glass = (
     <meshStandardMaterial
@@ -403,191 +274,229 @@ function Building({
   );
 
   const buildingShape = (() => {
-    if (zone.id === "about") {
+    if (zone.visual === "repair-workshop") {
       return (
         <>
-          <mesh castShadow receiveShadow position={[0, 1.9, 0]}>
-            <cylinderGeometry args={[2.35, 2.48, 3.8, 32]} />
-            <meshStandardMaterial color={zone.color} roughness={0.84} />
-          </mesh>
-          <mesh position={[0, 2.55, 0]} castShadow>
-            <cylinderGeometry args={[2.42, 2.42, 1.12, 32]} />
-            {glass}
-          </mesh>
-          <mesh position={[0, 3.22, 0]} rotation={[Math.PI / 2, 0, 0]} castShadow>
-            <torusGeometry args={[1.75, 0.55, 12, 36]} />
-            <meshStandardMaterial color={roofColor} roughness={0.77} />
-          </mesh>
-          <mesh position={[0, 3.18, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-            <circleGeometry args={[1.23, 32]} />
-            <meshStandardMaterial color="#b9e7f2" roughness={0.38} />
-          </mesh>
+          <RoundedBox args={[4.8, 3.35, 4.1]} radius={0.72} smoothness={5} position={[0, 1.68, 0]} castShadow receiveShadow>
+            <meshStandardMaterial color={zone.color} roughness={0.9} />
+          </RoundedBox>
+          <RoundedBox args={[5.05, 0.54, 4.32]} radius={0.24} smoothness={4} position={[0, 3.45, 0]} rotation={[0, 0, -0.035]} castShadow>
+            <meshStandardMaterial color="#fff0d2" roughness={0.92} />
+          </RoundedBox>
           {door}
+          <group position={[-1.35, 2.35, 2.2]} rotation={[0, 0, -0.05]}>
+            <RoundedBox args={[1.25, 0.92, 0.22]} radius={0.18} smoothness={4}>
+              <meshStandardMaterial color="#40536b" roughness={0.72} />
+            </RoundedBox>
+            <RoundedBox args={[0.92, 0.6, 0.08]} radius={0.12} smoothness={4} position={[0, 0, 0.15]}>
+              <meshStandardMaterial color="#9fd8ff" emissive="#4e8fc3" emissiveIntensity={0.15} roughness={0.35} />
+            </RoundedBox>
+            <mesh position={[0, -0.78, 0]}>
+              <cylinderGeometry args={[0.12, 0.16, 0.72, 10]} />
+              <meshStandardMaterial color="#40536b" roughness={0.8} />
+            </mesh>
+          </group>
+          <group position={[0, 4.22, 0]}>
+            <mesh position={[-0.36, 0.18, 0]} rotation={[0, 0, -0.52]} castShadow>
+              <torusGeometry args={[0.55, 0.1, 9, 22, Math.PI * 1.35]} />
+              <meshStandardMaterial color="#7b513b" roughness={0.95} />
+            </mesh>
+            <mesh position={[0.36, 0.18, 0]} rotation={[0, Math.PI, 0.52]} castShadow>
+              <torusGeometry args={[0.55, 0.1, 9, 22, Math.PI * 1.35]} />
+              <meshStandardMaterial color="#7b513b" roughness={0.95} />
+            </mesh>
+          </group>
         </>
       );
     }
 
-    if (zone.id === "experience") {
+    if (zone.visual === "copy-building") {
       return (
         <>
-          <RoundedBox
-            args={[5.25, 5.25, 4.3]}
-            radius={0.8}
-            smoothness={5}
-            position={[0, 2.62, 0]}
-            castShadow
-            receiveShadow
-          >
+          <RoundedBox args={[5.65, 4.7, 4.8]} radius={0.85} smoothness={6} position={[0, 2.35, 0]} castShadow receiveShadow>
             <meshStandardMaterial color={zone.color} roughness={0.84} />
           </RoundedBox>
-          <RoundedBox
-            args={[3.75, 0.34, 2.85]}
-            radius={0.55}
-            smoothness={5}
-            position={[0, 5.22, 0]}
-          >
+          <RoundedBox args={[4.1, 0.46, 3.2]} radius={0.3} smoothness={4} position={[0, 4.76, -0.25]} rotation={[0.03, 0, -0.025]}>
             <meshStandardMaterial color="#244b9e" roughness={0.74} />
           </RoundedBox>
-          <RoundedBox
-            args={[3.15, 0.2, 2.25]}
-            radius={0.42}
-            smoothness={5}
-            position={[0, 5.42, 0]}
-          >
-            <meshStandardMaterial color="#9fd8ff" roughness={0.38} />
+          <RoundedBox args={[3.8, 0.42, 0.28]} radius={0.18} smoothness={4} position={[0, 3.18, 2.5]}>
+            <meshStandardMaterial color="#25334a" roughness={0.76} />
           </RoundedBox>
-          {[-1.72, -0.58, 0.58, 1.72].map((windowX) => (
-            <RoundedBox
-              key={windowX}
-              args={[0.62, 1.75, 0.18]}
-              radius={0.2}
-              smoothness={4}
-              position={[windowX, 3.45, 2.22]}
-            >
+          <RoundedBox args={[3.35, 1.15, 0.16]} radius={0.2} smoothness={4} position={[0, 2.45, 2.62]} rotation={[0, 0, 0.025]}>
+            <meshStandardMaterial color="#fffdf5" roughness={0.98} />
+          </RoundedBox>
+          <group position={[-1.75, 1.1, 2.5]} rotation={[0, 0, -0.08]}>
+            <RoundedBox args={[1.05, 1.35, 0.3]} radius={0.2} smoothness={4}>
+              <meshStandardMaterial color="#40536b" roughness={0.72} />
+            </RoundedBox>
+            <RoundedBox args={[0.73, 0.66, 0.08]} radius={0.12} smoothness={4} position={[0, 0.18, 0.2]}>
               {glass}
             </RoundedBox>
-          ))}
-          {door}
+            <mesh position={[0, -0.38, 0.22]}>
+              <circleGeometry args={[0.08, 12]} />
+              <meshStandardMaterial color="#42b883" emissive="#42b883" emissiveIntensity={0.35} />
+            </mesh>
+          </group>
+          <group position={[2.25, 1.35, 2.62]} rotation={[0, 0, 0.08]}>
+            <RoundedBox args={[0.76, 1.55, 0.34]} radius={0.22} smoothness={4}>
+              <meshStandardMaterial color="#fff0d2" roughness={0.86} />
+            </RoundedBox>
+            <RoundedBox args={[0.52, 0.58, 0.08]} radius={0.1} smoothness={4} position={[0, 0.3, 0.22]}>
+              <meshStandardMaterial color="#25334a" roughness={0.52} />
+            </RoundedBox>
+          </group>
         </>
       );
     }
 
-    if (zone.id === "products") {
+    if (zone.visual === "vehicle-garage") {
       return (
         <>
-          <RoundedBox
-            args={[5.3, 3.35, 4.5]}
-            radius={1.05}
-            smoothness={6}
-            position={[0, 1.68, 0]}
-            castShadow
-            receiveShadow
-          >
+          <RoundedBox args={[6.1, 3.45, 3.9]} radius={0.85} smoothness={6} position={[0, 1.72, -0.5]} castShadow receiveShadow>
             <meshStandardMaterial color={zone.color} roughness={0.83} />
           </RoundedBox>
-          <RoundedBox
-            args={[3.05, 0.24, 2.4]}
-            radius={0.62}
-            smoothness={5}
-            position={[0, 3.42, -0.18]}
-            rotation={[0, -0.12, 0]}
-          >
-            {glass}
+          <RoundedBox args={[4.8, 2.35, 0.22]} radius={0.48} smoothness={5} position={[0, 1.55, 1.52]}>
+            <meshStandardMaterial color="#fff4df" roughness={0.82} />
           </RoundedBox>
-          <RoundedBox
-            args={[3.25, 1.55, 0.2]}
-            radius={0.3}
-            smoothness={4}
-            position={[0, 2.12, 2.31]}
-          >
-            {glass}
+          <RoundedBox args={[4.25, 1.82, 0.12]} radius={0.36} smoothness={5} position={[0, 1.48, 1.68]}>
+            <meshStandardMaterial color="#40536b" roughness={0.56} />
           </RoundedBox>
-          {[-0.8, 0, 0.8].map((mullionX) => (
-            <mesh key={mullionX} position={[mullionX, 2.12, 2.45]}>
-              <boxGeometry args={[0.09, 1.45, 0.09]} />
-              <meshStandardMaterial color="#40536b" roughness={0.7} />
+          <group position={[0, 0.72, 2.15]} rotation={[0, -0.03, 0]}>
+            <RoundedBox args={[3.65, 0.95, 1.82]} radius={0.45} smoothness={6} castShadow>
+              <meshStandardMaterial color="#ff6f61" roughness={0.82} />
+            </RoundedBox>
+            <RoundedBox args={[1.95, 0.84, 1.45]} radius={0.38} smoothness={6} position={[-0.15, 0.68, -0.12]} castShadow>
+              <meshStandardMaterial color="#ff8d80" roughness={0.82} />
+            </RoundedBox>
+            <RoundedBox args={[1.42, 0.48, 1.48]} radius={0.2} smoothness={4} position={[-0.12, 0.74, 0]}>
+              {glass}
+            </RoundedBox>
+            {[-1.18, 1.18].map((wheelX) => (
+              <mesh key={wheelX} position={[wheelX, -0.33, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+                <cylinderGeometry args={[0.43, 0.43, 0.34, 16]} />
+                <meshStandardMaterial color="#25334a" roughness={0.9} />
+              </mesh>
+            ))}
+            <mesh position={[0.55, 0.12, 0.94]}>
+              <sphereGeometry args={[0.13, 10, 8]} />
+              <meshStandardMaterial color="#fff4df" emissive="#ffbf3f" emissiveIntensity={0.25} />
             </mesh>
-          ))}
-          {door}
+          </group>
         </>
       );
     }
 
-    if (zone.id === "systems") {
+    if (zone.visual === "scanner-depot") {
       return (
         <>
-          <RoundedBox
-            args={[5.35, 4.15, 4.5]}
-            radius={0.58}
-            smoothness={5}
-            position={[0, 2.08, 0]}
-            castShadow
-            receiveShadow
-          >
+          <RoundedBox args={[5.35, 3.4, 4.25]} radius={0.55} smoothness={5} position={[0, 1.7, 0]} castShadow receiveShadow>
             <meshStandardMaterial color={zone.color} roughness={0.84} />
           </RoundedBox>
-          <RoundedBox
-            args={[3.05, 2.25, 0.22]}
-            radius={0.3}
-            smoothness={4}
-            position={[0, 2.35, 2.32]}
-          >
-            {glass}
+          <RoundedBox args={[3.9, 2.42, 0.22]} radius={0.32} smoothness={4} position={[0, 1.55, 2.22]}>
+            <meshStandardMaterial color="#fff4df" roughness={0.86} />
           </RoundedBox>
-          {[-0.95, 0, 0.95].map((mullionX) => (
-            <mesh key={mullionX} position={[mullionX, 2.35, 2.46]}>
-              <boxGeometry args={[0.1, 2.1, 0.09]} />
-              <meshStandardMaterial color="#fff4df" roughness={0.78} />
+          <group position={[0, 1.4, 2.42]}>
+            {[-1.55, 1.55].map((postX) => (
+              <RoundedBox key={postX} args={[0.42, 2.8, 0.42]} radius={0.15} smoothness={4} position={[postX, 0, 0]}>
+                <meshStandardMaterial color="#25334a" roughness={0.78} />
+              </RoundedBox>
+            ))}
+            <RoundedBox args={[3.5, 0.42, 0.42]} radius={0.15} smoothness={4} position={[0, 1.18, 0]}>
+              <meshStandardMaterial color="#25334a" roughness={0.78} />
+            </RoundedBox>
+            <mesh position={[0, 0.5, 0.04]}>
+              <boxGeometry args={[2.7, 0.05, 0.05]} />
+              <meshBasicMaterial color="#ff6f61" transparent opacity={0.76} />
             </mesh>
-          ))}
-          {[-1.45, -0.48, 0.48, 1.45].map((ventX) => (
-            <RoundedBox
-              key={ventX}
-              args={[0.64, 0.3, 2.55]}
-              radius={0.12}
-              position={[ventX, 4.35, -0.25]}
-              rotation={[0, 0, 0.12]}
-            >
-              <meshStandardMaterial color="#fff0cf" roughness={0.8} />
+          </group>
+          <group position={[1.85, 2.25, 2.38]} rotation={[0, 0, 0.08]}>
+            <RoundedBox args={[0.86, 1.18, 0.24]} radius={0.18} smoothness={4}>
+              <meshStandardMaterial color="#40536b" roughness={0.72} />
+            </RoundedBox>
+            <RoundedBox args={[0.62, 0.76, 0.08]} radius={0.12} smoothness={4} position={[0, 0.08, 0.17]}>
+              {glass}
+            </RoundedBox>
+          </group>
+          <RoundedBox args={[3.2, 0.36, 1.18]} radius={0.16} smoothness={4} position={[0, 0.28, 2.55]}>
+            <meshStandardMaterial color="#ffbf3f" roughness={0.88} />
+          </RoundedBox>
+        </>
+      );
+    }
+
+    if (zone.visual === "receipt-cafe") {
+      return (
+        <>
+          <RoundedBox args={[5.35, 3.5, 4.45]} radius={1.05} smoothness={6} position={[0, 1.75, 0]} castShadow receiveShadow>
+            <meshStandardMaterial color={zone.color} roughness={0.86} />
+          </RoundedBox>
+          <mesh position={[0, 4.02, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+            <cylinderGeometry args={[0.72, 0.72, 3.25, 24]} />
+            <meshStandardMaterial color="#fffdf5" roughness={0.94} />
+          </mesh>
+          <RoundedBox args={[2.85, 2.1, 0.18]} radius={0.16} smoothness={4} position={[0, 3.12, 2.28]} rotation={[0, 0, -0.025]}>
+            <meshStandardMaterial color="#fffdf5" roughness={0.98} />
+          </RoundedBox>
+          {[2.52, 2.2, 1.88].map((lineY, index) => (
+            <RoundedBox key={lineY} args={[index === 0 ? 1.85 : 1.35, 0.08, 0.04]} radius={0.03} position={[0, lineY, 2.4]}>
+              <meshStandardMaterial color={index === 0 ? "#25334a" : "#9b8d77"} roughness={0.85} />
             </RoundedBox>
           ))}
+          {[-1.35, 1.35].map((tableX) => (
+            <group key={tableX} position={[tableX, 0.62, 2.52]}>
+              <mesh>
+                <cylinderGeometry args={[0.62, 0.68, 0.18, 18]} />
+                <meshStandardMaterial color="#fff0d2" roughness={0.9} />
+              </mesh>
+              <mesh position={[0, -0.44, 0]}>
+                <cylinderGeometry args={[0.11, 0.14, 0.8, 10]} />
+                <meshStandardMaterial color="#40536b" roughness={0.82} />
+              </mesh>
+            </group>
+          ))}
           {door}
-          <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.35}>
-            <mesh castShadow position={[0, 5.45, 0]}>
-              <torusGeometry args={[0.85, 0.18, 12, 24]} />
-              <meshStandardMaterial color="#fff4df" roughness={0.7} />
-            </mesh>
-          </Float>
         </>
       );
     }
 
     return (
       <>
-        <mesh castShadow receiveShadow position={[0, 1.9, 0]}>
-          <cylinderGeometry args={[2.45, 2.55, 3.8, 32]} />
-          <meshStandardMaterial color={zone.color} roughness={0.84} />
+        <RoundedBox args={[5.1, 0.42, 4.15]} radius={0.18} smoothness={4} position={[0, 0.23, 0]} receiveShadow>
+          <meshStandardMaterial color="#fff0d2" roughness={0.92} />
+        </RoundedBox>
+        {[-2.05, 2.05].flatMap((postX) =>
+          [-1.55, 1.55].map((postZ) => (
+            <RoundedBox key={`${postX}-${postZ}`} args={[0.34, 3.7, 0.34]} radius={0.12} smoothness={4} position={[postX, 2.05, postZ]} castShadow>
+              <meshStandardMaterial color={zone.color} roughness={0.86} />
+            </RoundedBox>
+          )),
+        )}
+        <RoundedBox args={[4.55, 0.38, 0.42]} radius={0.12} smoothness={4} position={[0, 3.84, 1.55]} castShadow>
+          <meshStandardMaterial color={roofColor} roughness={0.84} />
+        </RoundedBox>
+        <RoundedBox args={[4.55, 0.38, 0.42]} radius={0.12} smoothness={4} position={[0, 3.84, -1.55]} castShadow>
+          <meshStandardMaterial color={roofColor} roughness={0.84} />
+        </RoundedBox>
+        <RoundedBox args={[0.74, 0.7, 0.68]} radius={0.16} smoothness={4} position={[0, 3.22, 0.45]} castShadow>
+          <meshStandardMaterial color="#40536b" roughness={0.7} />
+        </RoundedBox>
+        <mesh position={[0, 2.65, 0.45]}>
+          <coneGeometry args={[0.16, 0.7, 10]} />
+          <meshStandardMaterial color="#ff6f61" roughness={0.9} />
         </mesh>
-        <mesh castShadow position={[0, 3.8, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[1.62, 0.58, 14, 36]} />
-          <meshStandardMaterial color={roofColor} roughness={0.78} />
-        </mesh>
-        <mesh position={[0, 3.67, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <circleGeometry args={[1.12, 32]} />
-          <meshStandardMaterial color="#49395f" roughness={0.92} />
-        </mesh>
-        {[-1.25, 1.25].map((windowX) => (
-          <RoundedBox
-            key={windowX}
-            args={[0.7, 1.15, 0.18]}
-            radius={0.28}
-            smoothness={5}
-            position={[windowX, 2.45, 2.3]}
-          >
-            {glass}
-          </RoundedBox>
-        ))}
-        {door}
+        {[[-1.2, 0.48, 0.3], [-0.35, 0.72, -0.25], [0.55, 0.98, 0.22], [1.35, 1.24, -0.12]].map(
+          ([blockX, blockY, blockZ], index) => (
+            <RoundedBox key={index} args={[0.7, Number(blockY), 0.78]} radius={0.12} smoothness={4} position={[Number(blockX), Number(blockY) / 2 + 0.44, Number(blockZ)]} castShadow>
+              <meshStandardMaterial color={index % 2 ? "#42b883" : "#ffbf3f"} roughness={0.92} />
+            </RoundedBox>
+          ),
+        )}
+        <Float speed={1.15} rotationIntensity={0.08} floatIntensity={0.18}>
+          <mesh position={[1.75, 3.05, 0.35]} rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[0.46, 0.12, 10, 22]} />
+            <meshStandardMaterial color="#fffdf5" roughness={0.9} />
+          </mesh>
+        </Float>
       </>
     );
   })();
@@ -595,18 +504,41 @@ function Building({
   return (
     <group
       position={[x, 0, z]}
+      scale={hovered ? 1.035 : 1}
+      onPointerOver={(event) => {
+        event.stopPropagation();
+        setHovered(true);
+        document.body.style.cursor = "pointer";
+      }}
+      onPointerOut={() => {
+        setHovered(false);
+        document.body.style.cursor = "";
+      }}
       onClick={(event) => {
         event.stopPropagation();
         onSelect(zone);
       }}
     >
       {buildingShape}
-      <Billboard position={[0, zone.height + 1.15, 2.35]} follow>
-        <Html center distanceFactor={14} style={{ pointerEvents: "none" }}>
-          <div className="scene-label">
+      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.035, 0]}>
+        <ringGeometry args={[zone.width / 2 + 0.15, zone.width / 2 + (hovered ? 0.34 : 0.24), 36]} />
+        <meshBasicMaterial color={zone.color} transparent opacity={hovered ? 0.58 : 0.18} />
+      </mesh>
+      <Billboard position={[0, zone.height + 0.45, 0]} follow>
+        <Html center zIndexRange={[15, 5]} style={{ pointerEvents: "auto" }}>
+          <button
+            className="scene-label"
+            aria-label={zone.accessibleName}
+            onFocus={() => setHovered(true)}
+            onBlur={() => setHovered(false)}
+            onClick={(event) => {
+              event.stopPropagation();
+              onSelect(zone);
+            }}
+          >
             <span style={{ background: zone.color }} />
             {zone.sceneLabel}
-          </div>
+          </button>
         </Html>
       </Billboard>
     </group>
@@ -741,7 +673,7 @@ function Explorer({
       onNearby(nearest);
     }
 
-    const desiredCamera = new THREE.Vector3(position.x + 8.5, 10.5, position.z + 10.5);
+    const desiredCamera = new THREE.Vector3(position.x + 10.5, 12.8, position.z + 14);
     camera.position.lerp(desiredCamera, reducedMotion ? 0.18 : 0.075);
     camera.lookAt(position.x, 1.1, position.z - 1.2);
   });
@@ -948,13 +880,18 @@ function OverlayShell({
   children: ReactNode;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
   useEffect(() => {
+    returnFocusRef.current = document.activeElement as HTMLElement | null;
     panelRef.current?.focus();
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.setTimeout(() => returnFocusRef.current?.focus(), 0);
+    };
   }, [onClose]);
   return (
     <div className="clay-overlay-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
@@ -973,6 +910,25 @@ function OverlayShell({
       </section>
     </div>
   );
+}
+
+class CampusCanvasBoundary extends Component<
+  { children: ReactNode; onError: () => void },
+  { failed: boolean }
+> {
+  state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  componentDidCatch() {
+    this.props.onError();
+  }
+
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
 }
 
 export default function ClayCampus() {
@@ -1063,10 +1019,10 @@ export default function ClayCampus() {
         <section className="welcome-layout" aria-labelledby="welcome-title">
           <div className="welcome-copy">
             <p>ANAS AHMED’S INTERACTIVE PORTFOLIO</p>
-            <h1 id="welcome-title">Choose the fastest path to what you need.</h1>
+            <h1 id="welcome-title">Walk through the work, or get the facts.</h1>
             <span>
-              Explore a living clay campus as a small engineer, or skip directly
-              to a focused, recruiter-friendly profile.
+              The clay campus turns four projects, my repair-shop origin, and
+              my maker hobbies into places you can visit.
             </span>
             <div className="welcome-actions">
               <button className="welcome-enter" onClick={() => setEnteredCampus(true)}>
@@ -1090,7 +1046,7 @@ export default function ClayCampus() {
           </div>
 
           <div className="welcome-preview" aria-label="Preview of the clay campus">
-            <div className="welcome-preview-image" role="img" aria-label="Colorful clay campus with five buildings" />
+            <div className="welcome-preview-image" role="img" aria-label="Colorful clay campus with six project and personal landmarks" />
             <div className="welcome-player-card">
               <span className="welcome-player-avatar" aria-hidden="true">
                 <i />
@@ -1119,7 +1075,7 @@ export default function ClayCampus() {
           </div>
         </Link>
         <nav aria-label="Campus navigation">
-          {CAMPUS_ZONES.filter((zone) => zone.id !== "systems").map((zone) => (
+          {CAMPUS_ZONES.map((zone) => (
             <button
               key={zone.id}
               onClick={() => warpTo(zone)}
@@ -1136,33 +1092,35 @@ export default function ClayCampus() {
 
       <section className="campus-stage" aria-label="Interactive 3D portfolio campus">
         {!showAccessible && (
-          <Canvas
-            shadows
-            dpr={[1, reducedMotion ? 1.25 : 1.75]}
-            camera={{ position: [8.5, 10.5, 18.5], fov: 48, near: 0.1, far: 80 }}
-            gl={{ antialias: true, powerPreference: "high-performance" }}
-          >
-            <CampusScene
-              moveTarget={moveTarget}
-              positionRef={positionRef}
-              paused={paused}
-              reducedMotion={reducedMotion}
-              onNavigate={moveTo}
-              onNearby={setNearby}
-            />
-          </Canvas>
+          <CampusCanvasBoundary onError={() => setWebglAvailable(false)}>
+            <Canvas
+              shadows
+              dpr={[1, reducedMotion ? 1.25 : 1.65]}
+              camera={{ position: [10.5, 12.8, 18.6], fov: 50, near: 0.1, far: 80 }}
+              gl={{ antialias: true, powerPreference: "high-performance" }}
+            >
+              <CampusScene
+                moveTarget={moveTarget}
+                positionRef={positionRef}
+                paused={paused}
+                reducedMotion={reducedMotion}
+                onNavigate={moveTo}
+                onNearby={setNearby}
+              />
+            </Canvas>
+          </CampusCanvasBoundary>
         )}
 
         <div className="campus-intro-card">
           <p>ANAS AHMED’S 3D CAMPUS</p>
           <h1>Engineering that moves through the real world.</h1>
-          <span>Walk up to a building, then interact to view its information.</span>
+          <span>Walk to a landmark, or use a label to choose a destination.</span>
         </div>
 
         <div className="control-card" aria-label="Movement instructions">
           <span className="desktop-controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> to move</span>
           <span className="desktop-controls"><kbd>Space</kbd> interact</span>
-          <span className="mobile-controls"><MouseSimple size={17} /> Tap a building to walk over</span>
+          <span className="mobile-controls"><MouseSimple size={17} /> Tap a landmark to walk over</span>
           <button onClick={reset}><ArrowCounterClockwise size={16} /> Reset</button>
           <button onClick={() => setAccessibleView(true)}><Monitor size={16} /> 2D view</button>
         </div>
@@ -1207,13 +1165,6 @@ export default function ClayCampus() {
           <div className="overlay-tech">
             {activeZone.tech.map((tech) => <span key={tech}>{tech}</span>)}
           </div>
-          {activeZone.id === "contact" && (
-            <div className="contact-actions">
-              <a href="mailto:anas.ahmed10@outlook.com"><EnvelopeSimple /> Email Anas</a>
-              <a href="https://www.linkedin.com/in/anas-ahmed-28b391166" target="_blank" rel="noreferrer"><LinkedinLogo /> LinkedIn</a>
-              <a href="https://github.com/anasahmed10" target="_blank" rel="noreferrer"><GithubLogo /> GitHub</a>
-            </div>
-          )}
           {activeZone.link && (
             <a className="overlay-primary" href={activeZone.link.href}>
               {activeZone.link.label} <ArrowRight weight="bold" />
@@ -1226,9 +1177,11 @@ export default function ClayCampus() {
         <OverlayShell titleId="recruiter-title" onClose={() => setRecruiterOpen(false)}>
           <div className="overlay-accent recruiter-accent" />
           <p className="overlay-kicker">RECRUITER QUICK VIEW</p>
-          <h2 id="recruiter-title">Enterprise Android engineering for real devices.</h2>
+          <h2 id="recruiter-title">I build Android software around real devices.</h2>
           <p className="overlay-summary">
-            Anas Ahmed is a Greater Boston–based, remote-first engineer connecting Android applications to payment terminals, printers, scanners, production telemetry, and operational teams.
+            My work connects Android applications to payment terminals,
+            printers, scanners, production telemetry, and the people operating
+            those systems.
           </p>
           <div className="recruiter-metrics">
             <div><strong>800+</strong><span>locations upgraded</span></div>
@@ -1236,9 +1189,9 @@ export default function ClayCampus() {
             <div><strong>7→13</strong><span>Android modernization</span></div>
           </div>
           <ul>
-            <li>Software Engineer II, Mobile at Staples; previously Senior Mobile Device Software Developer at General Motors.</li>
-            <li>Kotlin, Android, Jetpack Compose, hardware SDK/API integration, local networking, Splunk, and delivery automation.</li>
-            <li>Application-layer robotics direction spanning Android/Linux interfaces, sensors, networking, and HMI.</li>
+            <li>I am a Software Engineer II, Mobile at Staples and previously worked as a Sr. Mobile Device Software Developer at General Motors.</li>
+            <li>My core tools include Kotlin, Android, Jetpack Compose, hardware SDK/API integration, local networking, Splunk, and delivery automation.</li>
+            <li>I am interested in application-layer robotics across Android and Linux interfaces, sensors, networking, and HMI.</li>
           </ul>
           <div className="quick-actions">
             <a className="overlay-primary" href="/recruiter/">Open full recruiter profile <ArrowRight /></a>

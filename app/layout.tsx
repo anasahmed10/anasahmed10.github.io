@@ -16,23 +16,28 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://anas-systems-campus.anas-ahmed10988004.chatgpt.site/"),
   title: {
-    default: "Anas Ahmed — Enterprise Android Engineer & Product Builder",
+    default: "Anas Ahmed — Android Engineering & Products",
     template: "%s · Anas Ahmed",
   },
   description:
-    "Explore Anas Ahmed’s interactive 3D campus: enterprise Android, device systems, automation, observability, and products including TabTally.",
+    "Explore Anas Ahmed’s clay campus for self-service retail, connected-vehicle mobile work, scanner automation, and TabTally.",
   openGraph: {
-    title: "Anas Ahmed — Enterprise Android Engineer & Product Builder",
-    description: "A vibrant 3D campus for enterprise systems, automation, and mobile products.",
+    title: "Anas Ahmed — Android Engineering for Real Devices",
+    description: "A clay project campus for enterprise Android, connected vehicles, automation, and TabTally.",
     url: "https://anas-systems-campus.anas-ahmed10988004.chatgpt.site/",
     type: "website",
-    images: [{ url: "/og.png", width: 1672, height: 941, alt: "Anas Ahmed — Enterprise Android Engineer & Product Builder" }],
+    images: [{
+      url: "https://anas-systems-campus.anas-ahmed10988004.chatgpt.site/og.png",
+      width: 1672,
+      height: 941,
+      alt: "Anas Ahmed’s clay campus for Android engineering and products",
+    }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Anas Ahmed — Enterprise Android Engineer & Product Builder",
-    description: "A vibrant 3D campus for enterprise systems, automation, and mobile products.",
-    images: ["/og.png"],
+    title: "Anas Ahmed — Android Engineering for Real Devices",
+    description: "A clay project campus for enterprise Android, connected vehicles, automation, and TabTally.",
+    images: ["https://anas-systems-campus.anas-ahmed10988004.chatgpt.site/og.png"],
   },
 };
 

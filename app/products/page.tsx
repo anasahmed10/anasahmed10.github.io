@@ -24,7 +24,7 @@ export default function ProductsPage() {
         <h1 id="products-title">Products built with the same standard as production systems.</h1>
         <p>
           Focused tools where clear interaction, dependable engineering, and
-          responsible data handling are part of the product—not afterthoughts.
+          responsible data handling shape the product from the start.
         </p>
         <div className="products-principles" aria-label="Product principles">
           <span><Sparkle size={18} weight="duotone" aria-hidden /> Focused utility</span>
@@ -71,8 +71,8 @@ export default function ProductsPage() {
         <h2>This directory is designed to grow.</h2>
         <p>
           Future products will receive the same combination of a concise public
-          story, authentic visuals, and engineering detail. No empty concepts or
-          invented roadmaps—only products with something real to show.
+          story, authentic visuals, and engineering detail. This page will grow
+          when another product is ready to show.
         </p>
       </section>
 

@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import ClayCampus from "./components/ClayCampus";
 
 export const metadata: Metadata = {
-  title: { absolute: "Anas Ahmed — Enterprise Android Engineer & Product Builder" },
+  title: { absolute: "Anas Ahmed — Android Engineering & Products" },
   description:
-    "Explore Anas Ahmed’s interactive 3D campus: enterprise Android, device systems, automation, observability, and products including TabTally.",
+    "Explore Anas Ahmed’s clay campus for self-service retail, connected-vehicle mobile work, scanner automation, and TabTally.",
 };
 
 export default function Home() {
