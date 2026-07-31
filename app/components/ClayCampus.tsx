@@ -1850,7 +1850,7 @@ export default function ClayCampus() {
           </ul>
           <div className="quick-actions">
             <a className="overlay-primary" href="/recruiter/">Open full recruiter profile <ArrowRight /></a>
-            <a className="overlay-secondary" href="/resumes/Anas_Ahmed_Enterprise_Android_Hardware.pdf">Download résumé</a>
+            <a className="overlay-secondary" href="/resumes/Anas_Ahmed_Resume.pdf">Download résumé</a>
           </div>
         </OverlayShell>
       )}

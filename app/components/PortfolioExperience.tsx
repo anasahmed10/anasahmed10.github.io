@@ -12,6 +12,8 @@ type RoleLens = {
   resume: string;
 };
 
+const RESUME_HREF = "/resumes/Anas_Ahmed_Resume.pdf";
+
 const ROLE_LENSES: RoleLens[] = [
   {
     id: "enterprise",
@@ -20,7 +22,7 @@ const ROLE_LENSES: RoleLens[] = [
     summary:
       "Android engineer building production software around printers, scanners, payment terminals, tablets, and store networks.",
     focus: "Kotlin modernization · hardware integration · production reliability",
-    resume: "/resumes/Anas_Ahmed_Enterprise_Android_Hardware.pdf",
+    resume: RESUME_HREF,
   },
   {
     id: "payments",
@@ -29,7 +31,7 @@ const ROLE_LENSES: RoleLens[] = [
     summary:
       "Production Android experience across contactless payments, PIN pads, POS automation, printers, and distributed retail devices.",
     focus: "Apple Pay · Google Pay · PIN pads · field-device rollouts",
-    resume: "/resumes/Anas_Ahmed_Payments_POS_Device_Integration.pdf",
+    resume: RESUME_HREF,
   },
   {
     id: "platform",
@@ -38,7 +40,7 @@ const ROLE_LENSES: RoleLens[] = [
     summary:
       "Android ownership spanning Java-to-Kotlin modernization, maintainable architecture, delivery tooling, observability, and device integration.",
     focus: "Android 7→13 · architecture · CI/CD · observability",
-    resume: "/resumes/Anas_Ahmed_Senior_Android_Platform.pdf",
+    resume: RESUME_HREF,
   },
   {
     id: "lead",
@@ -47,7 +49,7 @@ const ROLE_LENSES: RoleLens[] = [
     summary:
       "Mobile engineer comfortable owning architecture, implementation, debugging, rollout support, and long-term maintenance.",
     focus: "Independent delivery · cross-functional work · maintainable handoff",
-    resume: "/resumes/Anas_Ahmed_Lead_Mobile_Engineer.pdf",
+    resume: RESUME_HREF,
   },
   {
     id: "ai",
@@ -56,7 +58,7 @@ const ROLE_LENSES: RoleLens[] = [
     summary:
       "Android and Kotlin production experience paired with practical OCR, reviewed AI extraction, and cross-platform product work.",
     focus: "Kotlin Multiplatform · OCR · Groq · Firebase",
-    resume: "/resumes/Anas_Ahmed_Mobile_AI_Integration.pdf",
+    resume: RESUME_HREF,
   },
   {
     id: "robotics",
@@ -65,7 +67,7 @@ const ROLE_LENSES: RoleLens[] = [
     summary:
       "Application-layer Android engineer interested in operator controls, device communication, networking, sensors, and automation.",
     focus: "Android/Linux interfaces · networking · HMI · device systems",
-    resume: "/resumes/Anas_Ahmed_Robotics_HMI_Industrial.pdf",
+    resume: RESUME_HREF,
   },
   {
     id: "logistics",
@@ -74,7 +76,7 @@ const ROLE_LENSES: RoleLens[] = [
     summary:
       "Android engineer focused on tablet workflows, scanner automation, local networking, and software used around physical operations.",
     focus: "Tablets · scanners · edge applications · local networking",
-    resume: "/resumes/Anas_Ahmed_Logistics_Warehouse_IoT.pdf",
+    resume: RESUME_HREF,
   },
   {
     id: "medical",
@@ -83,7 +85,7 @@ const ROLE_LENSES: RoleLens[] = [
     summary:
       "Reliability-focused Android engineer experienced in device communication, operational monitoring, and troubleshooting near the hardware boundary.",
     focus: "Device communication · observability · production stability",
-    resume: "/resumes/Anas_Ahmed_Healthcare_Medical_Device.pdf",
+    resume: RESUME_HREF,
   },
 ];
 
@@ -93,7 +95,11 @@ const SKILLS = [
   "JavaScript",
   "Swift",
   "Python",
+  "C#",
+  "C++",
+  "C",
   "SQL",
+  "HTML/CSS",
   "Android",
   "Jetpack Compose",
   "Kotlin Multiplatform",
@@ -104,6 +110,7 @@ const SKILLS = [
   "Retrofit",
   "Gradle",
   "React Native",
+  "Node.js",
   "Hardware SDK/API integration",
   "Local networking",
   "NanoHttpd",
@@ -111,8 +118,10 @@ const SKILLS = [
   "Azure DevOps",
   "Firebase",
   "Splunk",
+  "Koin",
   "Ktor",
-  "SQLDelight",
+  "OCR.space",
+  "Qwen",
 ];
 
 const tabTallyFlow = ["Capture", "On-device OCR", "Review", "Assign", "Calculate", "Share"];
@@ -174,7 +183,7 @@ export default function PortfolioExperience({
               <small>{activeLens.focus}</small>
             </div>
             <a href={activeLens.resume} download>
-              Download {activeLens.label} résumé <span aria-hidden="true">↓</span>
+              Download current résumé <span aria-hidden="true">↓</span>
             </a>
           </div>
         </section>
@@ -306,6 +315,14 @@ export default function PortfolioExperience({
                   <p>Android marketplace application for browsing and posting yard-sale listings with authentication, storage, and API-backed workflows.</p>
                   <small>Kotlin · Java · MVVM · Coroutines · Volley · Firebase</small>
                 </article>
+                <article className="smartshopper-card">
+                  <span>AI SHOPPING ASSISTANT · PERSONAL PROJECT</span>
+                  <h3>SmartShopper</h3>
+                  <p>Custom GPT that researches products and generates personalized recommendations across budget, material, fit, style, seller reputation, ratings, review volume, and retailer availability.</p>
+                  <p>Its reusable workflow asks targeted questions, compares budget, mid-tier, and premium options, provides purchase-ready links, and explains value tradeoffs across clothing, electronics, home improvement, cookware, and hardware.</p>
+                  <small>Custom GPT · Prompt Engineering · Web Research</small>
+                  <a className="project-link" href="https://chatgpt.com/g/g-6a4be8c0f2ac8191a2e34a57b52f46ee-smartshopper" target="_blank" rel="noreferrer">Open SmartShopper ↗</a>
+                </article>
                 <article>
                   <span>ORIGIN · AGE 17</span>
                   <h3>Deer Computer Repairs</h3>
@@ -349,7 +366,7 @@ export default function PortfolioExperience({
             <a href="tel:+17743007831"><span>Phone</span><strong>774-300-7831</strong></a>
             <a href="https://www.linkedin.com/in/anas-ahmed-28b391166" target="_blank" rel="noreferrer"><span>LinkedIn</span><strong>View profile ↗</strong></a>
             <a href="https://github.com/anasahmed10" target="_blank" rel="noreferrer"><span>GitHub</span><strong>@anasahmed10 ↗</strong></a>
-            <a href={activeLens.resume} download><span>Tailored résumé</span><strong>Download {activeLens.label} ↓</strong></a>
+            <a href={activeLens.resume} download><span>Current résumé</span><strong>Download résumé ↓</strong></a>
           </div>
         </section>
       </section>
