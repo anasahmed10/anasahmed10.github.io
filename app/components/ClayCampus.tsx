@@ -125,7 +125,7 @@ function deformClayGeometry(
   const size = new THREE.Vector3();
   bounds.getSize(size);
   const displacementScale =
-    Math.max(size.x, size.y, size.z) * amount * 0.2;
+    Math.max(size.x, size.y, size.z) * amount * 0.24;
   const baseFadeHeight = Math.max(size.y * 0.12, 0.001);
   const seedPhase = seedValue(seed) * Math.PI * 8;
 
@@ -169,6 +169,99 @@ function takeSteppedDelta(
   return elapsed;
 }
 
+function createIrregularDiscGeometry(
+  radius: number,
+  segments: number,
+  seed: string,
+  edgeVariation: number,
+) {
+  const geometry = new THREE.BufferGeometry();
+  const positions: number[] = [0, 0, 0];
+  const uvs: number[] = [0.5, 0.5];
+  const indices: number[] = [];
+  const phase = seedValue(seed) * Math.PI * 8;
+
+  for (let index = 0; index <= segments; index += 1) {
+    const angle = (index / segments) * Math.PI * 2;
+    const variation =
+      Math.sin(angle * 3 + phase) * 0.46 +
+      Math.cos(angle * 5 - phase * 0.73) * 0.32 +
+      Math.sin(angle * 9 + phase * 1.21) * 0.22;
+    const edgeRadius = radius + variation * edgeVariation;
+    const x = Math.cos(angle) * edgeRadius;
+    const y = Math.sin(angle) * edgeRadius;
+    positions.push(x, y, 0);
+    uvs.push(0.5 + x / (radius * 2), 0.5 + y / (radius * 2));
+    if (index < segments) indices.push(0, index + 1, index + 2);
+  }
+
+  geometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(positions, 3),
+  );
+  geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+  geometry.computeBoundingSphere();
+  return geometry;
+}
+
+function createIrregularRingGeometry(
+  innerRadius: number,
+  outerRadius: number,
+  segments: number,
+  seed: string,
+  edgeVariation: number,
+) {
+  const geometry = new THREE.BufferGeometry();
+  const positions: number[] = [];
+  const uvs: number[] = [];
+  const indices: number[] = [];
+  const phase = seedValue(seed) * Math.PI * 8;
+
+  for (let index = 0; index <= segments; index += 1) {
+    const angle = (index / segments) * Math.PI * 2;
+    const outerVariation =
+      Math.sin(angle * 3 + phase) * 0.5 +
+      Math.cos(angle * 7 - phase * 0.61) * 0.3 +
+      Math.sin(angle * 11 + phase) * 0.2;
+    const innerVariation =
+      Math.cos(angle * 4 - phase * 0.77) * 0.52 +
+      Math.sin(angle * 6 + phase * 0.48) * 0.3 +
+      Math.cos(angle * 9 - phase) * 0.18;
+    const inner = innerRadius + innerVariation * edgeVariation;
+    const outer = outerRadius + outerVariation * edgeVariation;
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+
+    positions.push(cos * inner, sin * inner, 0);
+    positions.push(cos * outer, sin * outer, 0);
+    uvs.push(0, index / segments, 1, index / segments);
+
+    if (index < segments) {
+      const offset = index * 2;
+      indices.push(
+        offset,
+        offset + 1,
+        offset + 2,
+        offset + 1,
+        offset + 3,
+        offset + 2,
+      );
+    }
+  }
+
+  geometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(positions, 3),
+  );
+  geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+  geometry.computeBoundingSphere();
+  return geometry;
+}
+
 type ClayMaterialProps = {
   color: THREE.ColorRepresentation;
   roughness?: number;
@@ -186,37 +279,92 @@ function ClayMaterial({
   emissiveIntensity,
   metalness = 0,
 }: ClayMaterialProps) {
-  const [normalMap, roughnessMap] = useTexture([
-    "/textures/clay-normal.webp",
-    "/textures/clay-roughness.webp",
+  const [colorVariationMap, normalMap] = useTexture([
+    "/textures/clay-color-v2.webp",
+    "/textures/clay-normal-v2.webp",
   ]);
   const normalScale = useMemo(
-    () => new THREE.Vector2(normalStrength * 1.1, normalStrength * 1.1),
+    () => new THREE.Vector2(normalStrength * 1.6, normalStrength * 1.6),
     [normalStrength],
   );
 
   useEffect(() => {
-    for (const texture of [normalMap, roughnessMap]) {
+    for (const texture of [colorVariationMap, normalMap]) {
       texture.wrapS = THREE.RepeatWrapping;
       texture.wrapT = THREE.RepeatWrapping;
       texture.repeat.set(2.5, 2.5);
-      texture.colorSpace = THREE.NoColorSpace;
       texture.anisotropy = 2;
       texture.needsUpdate = true;
     }
-  }, [normalMap, roughnessMap]);
+  }, [colorVariationMap, normalMap]);
 
   return (
     <meshStandardMaterial
       color={color}
+      map={colorVariationMap}
       roughness={roughness}
       normalMap={normalMap}
       normalScale={normalScale}
-      roughnessMap={roughnessMap}
       emissive={emissive}
       emissiveIntensity={emissiveIntensity}
       metalness={metalness}
     />
+  );
+}
+
+const GROUND_SMUDGES = [
+  [-11.2, -6.2, 2.6, 1.25, -0.28],
+  [-8.1, 5.8, 2.15, 1.05, 0.5],
+  [-3.5, -10.4, 2.4, 1.1, -0.12],
+  [1.6, 11.4, 2.75, 1.15, 0.22],
+  [7.9, -8.8, 2.25, 1.2, 0.62],
+  [10.9, 4.4, 2.55, 1.05, -0.4],
+  [-12.8, 7.6, 1.7, 0.9, 0.16],
+  [12.6, -2.8, 1.9, 0.86, -0.55],
+] as const;
+
+function GroundSmudges() {
+  const smudgesRef = useRef<THREE.InstancedMesh>(null);
+
+  useLayoutEffect(() => {
+    const smudges = smudgesRef.current;
+    if (!smudges) return;
+    const transform = new THREE.Object3D();
+    const dark = new THREE.Color("#88a36d");
+    const light = new THREE.Color("#d0dfa5");
+
+    GROUND_SMUDGES.forEach(([x, y, scaleX, scaleY, rotation], index) => {
+      transform.position.set(x, y, 0);
+      transform.rotation.set(0, 0, rotation);
+      transform.scale.set(scaleX, scaleY, 1);
+      transform.updateMatrix();
+      smudges.setMatrixAt(index, transform.matrix);
+      smudges.setColorAt(index, index % 3 === 0 ? light : dark);
+    });
+
+    smudges.instanceMatrix.needsUpdate = true;
+    if (smudges.instanceColor) smudges.instanceColor.needsUpdate = true;
+  }, []);
+
+  return (
+    <instancedMesh
+      ref={smudgesRef}
+      args={[undefined, undefined, GROUND_SMUDGES.length]}
+      rotation={[-Math.PI / 2, 0, 0]}
+      position={[0, -0.065, 0]}
+      raycast={() => null}
+    >
+      <circleGeometry args={[1, 18]} />
+      <meshStandardMaterial
+        vertexColors
+        transparent
+        opacity={0.09}
+        depthWrite={false}
+        roughness={1}
+        polygonOffset
+        polygonOffsetFactor={-1}
+      />
+    </instancedMesh>
   );
 }
 
@@ -296,11 +444,12 @@ function TreeGrove({ reducedMotion }: { reducedMotion: boolean }) {
   const treeEuler = useMemo(() => new THREE.Euler(), []);
   const treeQuaternion = useMemo(() => new THREE.Quaternion(), []);
   const transformedOffset = useMemo(() => new THREE.Vector3(), []);
-  const crownGeometries = useMemo(
+  const treeGeometries = useMemo(
     () => [
-      deformClayGeometry(new THREE.SphereGeometry(0.9, 14, 12), "tree-main", 0.022, false),
-      deformClayGeometry(new THREE.SphereGeometry(0.58, 12, 10), "tree-right", 0.026, false),
-      deformClayGeometry(new THREE.SphereGeometry(0.52, 12, 10), "tree-left", 0.024, false),
+      deformClayGeometry(new THREE.CylinderGeometry(0.18, 0.24, 1.5, 10), "tree-trunk", 0.052, false),
+      deformClayGeometry(new THREE.SphereGeometry(0.9, 14, 12), "tree-main", 0.048, false),
+      deformClayGeometry(new THREE.SphereGeometry(0.58, 12, 10), "tree-right", 0.055, false),
+      deformClayGeometry(new THREE.SphereGeometry(0.52, 12, 10), "tree-left", 0.052, false),
     ],
     [],
   );
@@ -311,7 +460,11 @@ function TreeGrove({ reducedMotion }: { reducedMotion: boolean }) {
     TREE_POSITIONS.forEach(([x, z], index) => {
       const scale = 0.8 + (index % 3) * 0.12;
       dummy.position.set(x, 0.75 * scale, z);
-      dummy.rotation.set(0, 0, 0);
+      dummy.rotation.set(
+        (index % 3 - 1) * 0.018,
+        index * 0.41,
+        (index % 2 ? -1 : 1) * 0.032,
+      );
       dummy.scale.setScalar(scale);
       dummy.updateMatrix();
       trunkRef.current?.setMatrixAt(index, dummy.matrix);
@@ -351,24 +504,23 @@ function TreeGrove({ reducedMotion }: { reducedMotion: boolean }) {
   });
 
   useEffect(
-    () => () => crownGeometries.forEach((geometry) => geometry.dispose()),
-    [crownGeometries],
+    () => () => treeGeometries.forEach((geometry) => geometry.dispose()),
+    [treeGeometries],
   );
 
   return (
     <>
-      <instancedMesh ref={trunkRef} args={[undefined, undefined, TREE_POSITIONS.length]} castShadow>
-        <cylinderGeometry args={[0.18, 0.24, 1.5, 10]} />
-        <ClayMaterial color="#936948" roughness={0.95} normalStrength={0.14} />
+      <instancedMesh ref={trunkRef} args={[treeGeometries[0], undefined, TREE_POSITIONS.length]} castShadow>
+        <ClayMaterial color="#a66b43" roughness={0.96} normalStrength={0.22} />
       </instancedMesh>
-      <instancedMesh ref={crownMainRef} args={[crownGeometries[0], undefined, TREE_POSITIONS.length]} castShadow>
-        <ClayMaterial color="#55b884" roughness={0.92} normalStrength={0.2} />
+      <instancedMesh ref={crownMainRef} args={[treeGeometries[1], undefined, TREE_POSITIONS.length]} castShadow>
+        <ClayMaterial color="#50b978" roughness={0.94} normalStrength={0.27} />
       </instancedMesh>
-      <instancedMesh ref={crownRightRef} args={[crownGeometries[1], undefined, TREE_POSITIONS.length]} castShadow>
-        <ClayMaterial color="#71ca96" roughness={0.92} normalStrength={0.2} />
+      <instancedMesh ref={crownRightRef} args={[treeGeometries[2], undefined, TREE_POSITIONS.length]} castShadow>
+        <ClayMaterial color="#74ce91" roughness={0.94} normalStrength={0.27} />
       </instancedMesh>
-      <instancedMesh ref={crownLeftRef} args={[crownGeometries[2], undefined, TREE_POSITIONS.length]} castShadow>
-        <ClayMaterial color="#64c38c" roughness={0.94} normalStrength={0.2} />
+      <instancedMesh ref={crownLeftRef} args={[treeGeometries[3], undefined, TREE_POSITIONS.length]} castShadow>
+        <ClayMaterial color="#63c787" roughness={0.95} normalStrength={0.27} />
       </instancedMesh>
     </>
   );
@@ -498,14 +650,25 @@ function LivingEnvironment({ reducedMotion }: { reducedMotion: boolean }) {
       />
 
       <group position={[0, 0, 0]}>
-        <ClayMesh seed="fountain-base" deformation={0.015} castShadow receiveShadow position={[0, 0.42, 0]}>
+        <ClayMesh seed="fountain-base" deformation={0.034} castShadow receiveShadow position={[0, 0.42, 0]}>
           <cylinderGeometry args={[1.28, 1.48, 0.82, 28]} />
-          <ClayMaterial color="#fff0d2" roughness={0.9} normalStrength={0.14} />
+          <ClayMaterial color="#fff0d2" roughness={0.94} normalStrength={0.24} />
         </ClayMesh>
         <mesh position={[0, 0.86, 0]}>
           <cylinderGeometry args={[0.92, 1.08, 0.22, 28]} />
           <meshStandardMaterial color="#71c7dd" roughness={0.35} />
         </mesh>
+        <ClayMesh
+          seed="fountain-pressed-rim"
+          deformation={0.04}
+          preserveBase={false}
+          position={[0, 0.98, 0]}
+          rotation={[Math.PI / 2, 0, 0]}
+          castShadow
+        >
+          <torusGeometry args={[1.02, 0.14, 10, 28]} />
+          <ClayMaterial color="#fff5df" roughness={0.95} normalStrength={0.24} />
+        </ClayMesh>
         <group ref={fountainRef} position={[0, 1.28, 0]}>
           {[0, Math.PI / 2, Math.PI, Math.PI * 1.5].map((angle) => (
             <mesh
@@ -550,23 +713,27 @@ function Building({
   );
   const door = (
     <group position={[0, 0, 2.18]}>
-      <RoundedBox
+      <ClayRoundedBox
+        seed={`${zone.id}-door-frame`}
+        deformation={0.026}
         args={[1.35, 2.2, 0.38]}
         radius={0.48}
         smoothness={5}
         position={[0, 1.1, 0]}
         castShadow
       >
-        <meshStandardMaterial color="#fff4df" roughness={0.76} />
-      </RoundedBox>
-      <RoundedBox
+        <ClayMaterial color="#fff4df" roughness={0.92} normalStrength={0.2} />
+      </ClayRoundedBox>
+      <ClayRoundedBox
+        seed={`${zone.id}-door`}
+        deformation={0.022}
         args={[0.83, 1.72, 0.15]}
         radius={0.28}
         smoothness={5}
         position={[0, 1.02, 0.23]}
       >
-        <meshStandardMaterial color="#40536b" roughness={0.5} />
-      </RoundedBox>
+        <ClayMaterial color="#40536b" roughness={0.82} normalStrength={0.17} />
+      </ClayRoundedBox>
     </group>
   );
 
@@ -574,34 +741,34 @@ function Building({
     if (zone.visual === "repair-workshop") {
       return (
         <>
-          <ClayRoundedBox seed="repair-shell" deformation={0.021} args={[4.8, 3.35, 4.1]} radius={0.72} smoothness={5} position={[0, 1.68, 0]} rotation={[0.008, -0.006, -0.012]} castShadow receiveShadow>
-            <ClayMaterial color={zone.color} roughness={0.9} normalStrength={0.19} />
+          <ClayRoundedBox seed="repair-shell" deformation={0.026} args={[4.8, 3.35, 4.1]} radius={0.72} smoothness={5} position={[0, 1.68, 0]} rotation={[0.008, -0.006, -0.012]} castShadow receiveShadow>
+            <ClayMaterial color={zone.color} roughness={0.94} normalStrength={0.27} />
           </ClayRoundedBox>
-          <ClayRoundedBox seed="repair-roof" deformation={0.017} args={[5.05, 0.54, 4.32]} radius={0.24} smoothness={4} position={[0.02, 3.45, 0]} rotation={[0, 0.006, -0.035]} castShadow>
-            <ClayMaterial color="#fff0d2" roughness={0.92} normalStrength={0.16} />
+          <ClayRoundedBox seed="repair-roof" deformation={0.028} args={[5.05, 0.54, 4.32]} radius={0.24} smoothness={4} position={[0.02, 3.45, 0]} rotation={[0, 0.006, -0.035]} castShadow>
+            <ClayMaterial color="#fff0d2" roughness={0.95} normalStrength={0.24} />
           </ClayRoundedBox>
           {door}
           <group position={[-1.35, 2.35, 2.2]} rotation={[0, 0, -0.05]}>
-            <RoundedBox args={[1.25, 0.92, 0.22]} radius={0.18} smoothness={4}>
-              <meshStandardMaterial color="#40536b" roughness={0.72} />
-            </RoundedBox>
+            <ClayRoundedBox seed="repair-display-frame" deformation={0.022} args={[1.25, 0.92, 0.22]} radius={0.18} smoothness={4}>
+              <ClayMaterial color="#40536b" roughness={0.88} normalStrength={0.18} />
+            </ClayRoundedBox>
             <RoundedBox args={[0.92, 0.6, 0.08]} radius={0.12} smoothness={4} position={[0, 0, 0.15]}>
               <meshStandardMaterial color="#9fd8ff" emissive="#4e8fc3" emissiveIntensity={0.15} roughness={0.35} />
             </RoundedBox>
-            <mesh position={[0, -0.78, 0]}>
+            <ClayMesh seed="repair-display-post" deformation={0.035} position={[0, -0.78, 0]}>
               <cylinderGeometry args={[0.12, 0.16, 0.72, 10]} />
-              <meshStandardMaterial color="#40536b" roughness={0.8} />
-            </mesh>
+              <ClayMaterial color="#40536b" roughness={0.9} normalStrength={0.18} />
+            </ClayMesh>
           </group>
           <group position={[0, 4.22, 0]}>
-            <mesh position={[-0.36, 0.18, 0]} rotation={[0, 0, -0.52]} castShadow>
+            <ClayMesh seed="repair-antler-left" deformation={0.03} preserveBase={false} position={[-0.36, 0.18, 0]} rotation={[0, 0, -0.52]} castShadow>
               <torusGeometry args={[0.55, 0.1, 9, 22, Math.PI * 1.35]} />
-              <meshStandardMaterial color="#7b513b" roughness={0.95} />
-            </mesh>
-            <mesh position={[0.36, 0.18, 0]} rotation={[0, Math.PI, 0.52]} castShadow>
+              <ClayMaterial color="#7b513b" roughness={0.96} normalStrength={0.2} />
+            </ClayMesh>
+            <ClayMesh seed="repair-antler-right" deformation={0.03} preserveBase={false} position={[0.36, 0.18, 0]} rotation={[0, Math.PI, 0.52]} castShadow>
               <torusGeometry args={[0.55, 0.1, 9, 22, Math.PI * 1.35]} />
-              <meshStandardMaterial color="#7b513b" roughness={0.95} />
-            </mesh>
+              <ClayMaterial color="#7b513b" roughness={0.96} normalStrength={0.2} />
+            </ClayMesh>
           </group>
         </>
       );
@@ -610,22 +777,22 @@ function Building({
     if (zone.visual === "copy-building") {
       return (
         <>
-          <ClayRoundedBox seed="copy-shell" deformation={0.019} args={[5.65, 4.7, 4.8]} radius={0.85} smoothness={6} position={[0, 2.35, 0]} rotation={[-0.006, 0.008, 0.012]} castShadow receiveShadow>
-            <ClayMaterial color={zone.color} roughness={0.88} normalStrength={0.19} />
+          <ClayRoundedBox seed="copy-shell" deformation={0.026} args={[5.65, 4.7, 4.8]} radius={0.85} smoothness={6} position={[0, 2.35, 0]} rotation={[-0.006, 0.008, 0.012]} castShadow receiveShadow>
+            <ClayMaterial color={zone.color} roughness={0.94} normalStrength={0.28} />
           </ClayRoundedBox>
-          <ClayRoundedBox seed="copy-roof" deformation={0.016} args={[4.1, 0.46, 3.2]} radius={0.3} smoothness={4} position={[0, 4.76, -0.25]} rotation={[0.03, 0.008, -0.025]}>
-            <ClayMaterial color="#244b9e" roughness={0.78} normalStrength={0.15} />
+          <ClayRoundedBox seed="copy-roof" deformation={0.028} args={[4.1, 0.46, 3.2]} radius={0.3} smoothness={4} position={[0, 4.76, -0.25]} rotation={[0.03, 0.008, -0.025]}>
+            <ClayMaterial color="#244b9e" roughness={0.92} normalStrength={0.24} />
           </ClayRoundedBox>
-          <RoundedBox args={[3.8, 0.42, 0.28]} radius={0.18} smoothness={4} position={[0, 3.18, 2.5]}>
-            <meshStandardMaterial color="#25334a" roughness={0.76} />
-          </RoundedBox>
+          <ClayRoundedBox seed="copy-sign-frame" deformation={0.022} args={[3.8, 0.42, 0.28]} radius={0.18} smoothness={4} position={[0, 3.18, 2.5]}>
+            <ClayMaterial color="#25334a" roughness={0.9} normalStrength={0.18} />
+          </ClayRoundedBox>
           <RoundedBox args={[3.35, 1.15, 0.16]} radius={0.2} smoothness={4} position={[0, 2.45, 2.62]} rotation={[0, 0, 0.025]}>
             <meshStandardMaterial color="#fffdf5" roughness={0.98} />
           </RoundedBox>
           <group position={[-1.75, 1.1, 2.5]} rotation={[0, 0, -0.08]}>
-            <RoundedBox args={[1.05, 1.35, 0.3]} radius={0.2} smoothness={4}>
-              <meshStandardMaterial color="#40536b" roughness={0.72} />
-            </RoundedBox>
+            <ClayRoundedBox seed="copy-control-frame" deformation={0.022} args={[1.05, 1.35, 0.3]} radius={0.2} smoothness={4}>
+              <ClayMaterial color="#40536b" roughness={0.9} normalStrength={0.18} />
+            </ClayRoundedBox>
             <RoundedBox args={[0.73, 0.66, 0.08]} radius={0.12} smoothness={4} position={[0, 0.18, 0.2]}>
               {glass}
             </RoundedBox>
@@ -635,9 +802,9 @@ function Building({
             </mesh>
           </group>
           <group position={[2.25, 1.35, 2.62]} rotation={[0, 0, 0.08]}>
-            <RoundedBox args={[0.76, 1.55, 0.34]} radius={0.22} smoothness={4}>
-              <meshStandardMaterial color="#fff0d2" roughness={0.86} />
-            </RoundedBox>
+            <ClayRoundedBox seed="copy-kiosk" deformation={0.026} args={[0.76, 1.55, 0.34]} radius={0.22} smoothness={4}>
+              <ClayMaterial color="#fff0d2" roughness={0.94} normalStrength={0.2} />
+            </ClayRoundedBox>
             <RoundedBox args={[0.52, 0.58, 0.08]} radius={0.1} smoothness={4} position={[0, 0.3, 0.22]}>
               <meshStandardMaterial color="#25334a" roughness={0.52} />
             </RoundedBox>
@@ -649,21 +816,21 @@ function Building({
     if (zone.visual === "vehicle-garage") {
       return (
         <>
-          <ClayRoundedBox seed="vehicle-shell" deformation={0.02} args={[6.1, 3.45, 3.9]} radius={0.85} smoothness={6} position={[0, 1.72, -0.5]} rotation={[0.004, -0.009, -0.008]} castShadow receiveShadow>
-            <ClayMaterial color={zone.color} roughness={0.88} normalStrength={0.2} />
+          <ClayRoundedBox seed="vehicle-shell" deformation={0.026} args={[6.1, 3.45, 3.9]} radius={0.85} smoothness={6} position={[0, 1.72, -0.5]} rotation={[0.004, -0.009, -0.008]} castShadow receiveShadow>
+            <ClayMaterial color={zone.color} roughness={0.94} normalStrength={0.28} />
           </ClayRoundedBox>
-          <ClayRoundedBox seed="vehicle-frame" deformation={0.014} args={[4.8, 2.35, 0.22]} radius={0.48} smoothness={5} position={[0, 1.55, 1.52]}>
-            <ClayMaterial color="#fff4df" roughness={0.88} normalStrength={0.14} />
+          <ClayRoundedBox seed="vehicle-frame" deformation={0.026} args={[4.8, 2.35, 0.22]} radius={0.48} smoothness={5} position={[0, 1.55, 1.52]}>
+            <ClayMaterial color="#fff4df" roughness={0.94} normalStrength={0.22} />
           </ClayRoundedBox>
           <RoundedBox args={[4.25, 1.82, 0.12]} radius={0.36} smoothness={5} position={[0, 1.48, 1.68]}>
             <meshStandardMaterial color="#40536b" roughness={0.56} />
           </RoundedBox>
           <group position={[0, 0.72, 2.15]} rotation={[0, -0.03, 0]}>
-            <ClayRoundedBox seed="vehicle-car-body" deformation={0.014} args={[3.65, 0.95, 1.82]} radius={0.45} smoothness={6} rotation={[0, 0.008, -0.01]} castShadow>
-              <ClayMaterial color="#ff6f61" roughness={0.86} normalStrength={0.14} />
+            <ClayRoundedBox seed="vehicle-car-body" deformation={0.026} args={[3.65, 0.95, 1.82]} radius={0.45} smoothness={6} rotation={[0, 0.008, -0.01]} castShadow>
+              <ClayMaterial color="#ff6f61" roughness={0.93} normalStrength={0.22} />
             </ClayRoundedBox>
-            <ClayRoundedBox seed="vehicle-car-cabin" deformation={0.012} args={[1.95, 0.84, 1.45]} radius={0.38} smoothness={6} position={[-0.15, 0.68, -0.12]} rotation={[0.008, -0.012, 0.008]} castShadow>
-              <ClayMaterial color="#ff8d80" roughness={0.86} normalStrength={0.13} />
+            <ClayRoundedBox seed="vehicle-car-cabin" deformation={0.023} args={[1.95, 0.84, 1.45]} radius={0.38} smoothness={6} position={[-0.15, 0.68, -0.12]} rotation={[0.008, -0.012, 0.008]} castShadow>
+              <ClayMaterial color="#ff8d80" roughness={0.93} normalStrength={0.2} />
             </ClayRoundedBox>
             <RoundedBox args={[1.42, 0.48, 1.48]} radius={0.2} smoothness={4} position={[-0.12, 0.74, 0]}>
               {glass}
@@ -686,37 +853,37 @@ function Building({
     if (zone.visual === "scanner-depot") {
       return (
         <>
-          <ClayRoundedBox seed="scanner-shell" deformation={0.019} args={[5.35, 3.4, 4.25]} radius={0.55} smoothness={5} position={[0, 1.7, 0]} rotation={[-0.006, 0.01, 0.008]} castShadow receiveShadow>
-            <ClayMaterial color={zone.color} roughness={0.88} normalStrength={0.19} />
+          <ClayRoundedBox seed="scanner-shell" deformation={0.026} args={[5.35, 3.4, 4.25]} radius={0.55} smoothness={5} position={[0, 1.7, 0]} rotation={[-0.006, 0.01, 0.008]} castShadow receiveShadow>
+            <ClayMaterial color={zone.color} roughness={0.94} normalStrength={0.27} />
           </ClayRoundedBox>
-          <ClayRoundedBox seed="scanner-opening" deformation={0.014} args={[3.9, 2.42, 0.22]} radius={0.32} smoothness={4} position={[0, 1.55, 2.22]} rotation={[0, 0, -0.008]}>
-            <ClayMaterial color="#fff4df" roughness={0.9} normalStrength={0.14} />
+          <ClayRoundedBox seed="scanner-opening" deformation={0.026} args={[3.9, 2.42, 0.22]} radius={0.32} smoothness={4} position={[0, 1.55, 2.22]} rotation={[0, 0, -0.008]}>
+            <ClayMaterial color="#fff4df" roughness={0.94} normalStrength={0.22} />
           </ClayRoundedBox>
           <group position={[0, 1.4, 2.42]}>
             {[-1.55, 1.55].map((postX) => (
-              <RoundedBox key={postX} args={[0.42, 2.8, 0.42]} radius={0.15} smoothness={4} position={[postX, 0, 0]}>
-                <meshStandardMaterial color="#25334a" roughness={0.78} />
-              </RoundedBox>
+              <ClayRoundedBox seed={`scanner-post-${postX}`} deformation={0.024} key={postX} args={[0.42, 2.8, 0.42]} radius={0.15} smoothness={4} position={[postX, 0, 0]} rotation={[0, 0, postX * 0.008]}>
+                <ClayMaterial color="#25334a" roughness={0.92} normalStrength={0.19} />
+              </ClayRoundedBox>
             ))}
-            <RoundedBox args={[3.5, 0.42, 0.42]} radius={0.15} smoothness={4} position={[0, 1.18, 0]}>
-              <meshStandardMaterial color="#25334a" roughness={0.78} />
-            </RoundedBox>
+            <ClayRoundedBox seed="scanner-header" deformation={0.024} args={[3.5, 0.42, 0.42]} radius={0.15} smoothness={4} position={[0, 1.18, 0]} rotation={[0, 0, -0.018]}>
+              <ClayMaterial color="#25334a" roughness={0.92} normalStrength={0.19} />
+            </ClayRoundedBox>
             <mesh position={[0, 0.5, 0.04]}>
               <boxGeometry args={[2.7, 0.05, 0.05]} />
               <meshBasicMaterial color="#ff6f61" transparent opacity={0.76} />
             </mesh>
           </group>
           <group position={[1.85, 2.25, 2.38]} rotation={[0, 0, 0.08]}>
-            <RoundedBox args={[0.86, 1.18, 0.24]} radius={0.18} smoothness={4}>
-              <meshStandardMaterial color="#40536b" roughness={0.72} />
-            </RoundedBox>
+            <ClayRoundedBox seed="scanner-controller" deformation={0.023} args={[0.86, 1.18, 0.24]} radius={0.18} smoothness={4}>
+              <ClayMaterial color="#40536b" roughness={0.9} normalStrength={0.18} />
+            </ClayRoundedBox>
             <RoundedBox args={[0.62, 0.76, 0.08]} radius={0.12} smoothness={4} position={[0, 0.08, 0.17]}>
               {glass}
             </RoundedBox>
           </group>
-          <RoundedBox args={[3.2, 0.36, 1.18]} radius={0.16} smoothness={4} position={[0, 0.28, 2.55]}>
-            <meshStandardMaterial color="#ffbf3f" roughness={0.88} />
-          </RoundedBox>
+          <ClayRoundedBox seed="scanner-ramp" deformation={0.024} args={[3.2, 0.36, 1.18]} radius={0.16} smoothness={4} position={[0, 0.28, 2.55]} rotation={[0.015, 0, -0.012]}>
+            <ClayMaterial color="#ffbf3f" roughness={0.94} normalStrength={0.2} />
+          </ClayRoundedBox>
         </>
       );
     }
@@ -724,8 +891,8 @@ function Building({
     if (zone.visual === "receipt-cafe") {
       return (
         <>
-          <ClayRoundedBox seed="receipt-shell" deformation={0.022} args={[5.35, 3.5, 4.45]} radius={1.05} smoothness={6} position={[0, 1.75, 0]} rotation={[0.006, -0.008, 0.01]} castShadow receiveShadow>
-            <ClayMaterial color={zone.color} roughness={0.9} normalStrength={0.2} />
+          <ClayRoundedBox seed="receipt-shell" deformation={0.028} args={[5.35, 3.5, 4.45]} radius={1.05} smoothness={6} position={[0, 1.75, 0]} rotation={[0.006, -0.008, 0.01]} castShadow receiveShadow>
+            <ClayMaterial color={zone.color} roughness={0.94} normalStrength={0.28} />
           </ClayRoundedBox>
           <mesh position={[0, 4.02, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
             <cylinderGeometry args={[0.72, 0.72, 3.25, 24]} />
@@ -741,14 +908,14 @@ function Building({
           ))}
           {[-1.35, 1.35].map((tableX) => (
             <group key={tableX} position={[tableX, 0.62, 2.52]}>
-              <mesh>
+              <ClayMesh seed={`receipt-tabletop-${tableX}`} deformation={0.035} preserveBase={false}>
                 <cylinderGeometry args={[0.62, 0.68, 0.18, 18]} />
-                <meshStandardMaterial color="#fff0d2" roughness={0.9} />
-              </mesh>
-              <mesh position={[0, -0.44, 0]}>
+                <ClayMaterial color="#fff0d2" roughness={0.95} normalStrength={0.2} />
+              </ClayMesh>
+              <ClayMesh seed={`receipt-table-leg-${tableX}`} deformation={0.04} position={[0, -0.44, 0]}>
                 <cylinderGeometry args={[0.11, 0.14, 0.8, 10]} />
-                <meshStandardMaterial color="#40536b" roughness={0.82} />
-              </mesh>
+                <ClayMaterial color="#40536b" roughness={0.93} normalStrength={0.18} />
+              </ClayMesh>
             </group>
           ))}
           {door}
@@ -758,41 +925,41 @@ function Building({
 
     return (
       <>
-        <ClayRoundedBox seed="maker-base" deformation={0.018} args={[5.1, 0.42, 4.15]} radius={0.18} smoothness={4} position={[0, 0.23, 0]} rotation={[0, 0.006, -0.006]} receiveShadow>
-          <ClayMaterial color="#fff0d2" roughness={0.92} normalStrength={0.17} />
+        <ClayRoundedBox seed="maker-base" deformation={0.028} args={[5.1, 0.42, 4.15]} radius={0.18} smoothness={4} position={[0, 0.23, 0]} rotation={[0, 0.006, -0.006]} receiveShadow>
+          <ClayMaterial color="#fff0d2" roughness={0.95} normalStrength={0.23} />
         </ClayRoundedBox>
         {[-2.05, 2.05].flatMap((postX) =>
           [-1.55, 1.55].map((postZ) => (
-            <ClayRoundedBox seed={`maker-post-${postX}-${postZ}`} deformation={0.015} key={`${postX}-${postZ}`} args={[0.34, 3.7, 0.34]} radius={0.12} smoothness={4} position={[postX, 2.05, postZ]} rotation={[postZ * 0.003, 0, postX * 0.004]} castShadow>
-              <ClayMaterial color={zone.color} roughness={0.9} normalStrength={0.18} />
+            <ClayRoundedBox seed={`maker-post-${postX}-${postZ}`} deformation={0.024} key={`${postX}-${postZ}`} args={[0.34, 3.7, 0.34]} radius={0.12} smoothness={4} position={[postX, 2.05, postZ]} rotation={[postZ * 0.003, 0, postX * 0.004]} castShadow>
+              <ClayMaterial color={zone.color} roughness={0.94} normalStrength={0.24} />
             </ClayRoundedBox>
           )),
         )}
-        <ClayRoundedBox seed="maker-front-bar" deformation={0.015} args={[4.55, 0.38, 0.42]} radius={0.12} smoothness={4} position={[0, 3.84, 1.55]} rotation={[0.006, 0, -0.012]} castShadow>
-          <ClayMaterial color={roofColor} roughness={0.88} normalStrength={0.18} />
+        <ClayRoundedBox seed="maker-front-bar" deformation={0.024} args={[4.55, 0.38, 0.42]} radius={0.12} smoothness={4} position={[0, 3.84, 1.55]} rotation={[0.006, 0, -0.012]} castShadow>
+          <ClayMaterial color={roofColor} roughness={0.94} normalStrength={0.24} />
         </ClayRoundedBox>
-        <ClayRoundedBox seed="maker-back-bar" deformation={0.015} args={[4.55, 0.38, 0.42]} radius={0.12} smoothness={4} position={[0, 3.84, -1.55]} rotation={[-0.006, 0, 0.01]} castShadow>
-          <ClayMaterial color={roofColor} roughness={0.88} normalStrength={0.18} />
+        <ClayRoundedBox seed="maker-back-bar" deformation={0.024} args={[4.55, 0.38, 0.42]} radius={0.12} smoothness={4} position={[0, 3.84, -1.55]} rotation={[-0.006, 0, 0.01]} castShadow>
+          <ClayMaterial color={roofColor} roughness={0.94} normalStrength={0.24} />
         </ClayRoundedBox>
-        <RoundedBox args={[0.74, 0.7, 0.68]} radius={0.16} smoothness={4} position={[0, 3.22, 0.45]} castShadow>
-          <meshStandardMaterial color="#40536b" roughness={0.7} />
-        </RoundedBox>
-        <mesh position={[0, 2.65, 0.45]}>
+        <ClayRoundedBox seed="maker-print-head" deformation={0.026} args={[0.74, 0.7, 0.68]} radius={0.16} smoothness={4} position={[0, 3.22, 0.45]} rotation={[0.01, 0, -0.018]} castShadow>
+          <ClayMaterial color="#40536b" roughness={0.92} normalStrength={0.2} />
+        </ClayRoundedBox>
+        <ClayMesh seed="maker-nozzle" deformation={0.035} position={[0, 2.65, 0.45]}>
           <coneGeometry args={[0.16, 0.7, 10]} />
-          <meshStandardMaterial color="#ff6f61" roughness={0.9} />
-        </mesh>
+          <ClayMaterial color="#ff6f61" roughness={0.94} normalStrength={0.18} />
+        </ClayMesh>
         {[[-1.2, 0.48, 0.3], [-0.35, 0.72, -0.25], [0.55, 0.98, 0.22], [1.35, 1.24, -0.12]].map(
           ([blockX, blockY, blockZ], index) => (
-            <RoundedBox key={index} args={[0.7, Number(blockY), 0.78]} radius={0.12} smoothness={4} position={[Number(blockX), Number(blockY) / 2 + 0.44, Number(blockZ)]} castShadow>
-              <meshStandardMaterial color={index % 2 ? "#42b883" : "#ffbf3f"} roughness={0.92} />
-            </RoundedBox>
+            <ClayRoundedBox seed={`maker-block-${index}`} deformation={0.03} key={index} args={[0.7, Number(blockY), 0.78]} radius={0.12} smoothness={4} position={[Number(blockX), Number(blockY) / 2 + 0.44, Number(blockZ)]} rotation={[index * 0.008, 0, (index - 1.5) * 0.012]} castShadow>
+              <ClayMaterial color={index % 2 ? "#42b883" : "#ffbf3f"} roughness={0.95} normalStrength={0.22} />
+            </ClayRoundedBox>
           ),
         )}
         <group position={[1.75, 3.05, 0.35]} rotation={[Math.PI / 2 + 0.04, 0.02, -0.03]}>
-          <mesh>
+          <ClayMesh seed="maker-filament-ring" deformation={0.035} preserveBase={false}>
             <torusGeometry args={[0.46, 0.12, 10, 22]} />
-            <ClayMaterial color="#fffdf5" roughness={0.92} normalStrength={0.12} />
-          </mesh>
+            <ClayMaterial color="#fffdf5" roughness={0.95} normalStrength={0.2} />
+          </ClayMesh>
         </group>
       </>
     );
@@ -1165,6 +1332,44 @@ function CampusScene({
   onGroundNavigate: (point: THREE.Vector3) => void;
   onNearby: (id: CampusZone["id"] | null) => void;
 }) {
+  const groundGeometry = useMemo(
+    () => createIrregularDiscGeometry(21, 72, "campus-ground-edge", 0.34),
+    [],
+  );
+  const pathSeamGeometry = useMemo(
+    () => createIrregularRingGeometry(7.42, 9.28, 72, "campus-path-seam", 0.16),
+    [],
+  );
+  const pathGeometry = useMemo(
+    () => createIrregularRingGeometry(7.6, 9.1, 72, "campus-path", 0.13),
+    [],
+  );
+  const plazaSeamGeometry = useMemo(
+    () => createIrregularDiscGeometry(4.56, 56, "campus-plaza-seam", 0.12),
+    [],
+  );
+  const plazaGeometry = useMemo(
+    () => createIrregularDiscGeometry(4.4, 56, "campus-plaza", 0.1),
+    [],
+  );
+
+  useEffect(
+    () => () => {
+      groundGeometry.dispose();
+      pathSeamGeometry.dispose();
+      pathGeometry.dispose();
+      plazaSeamGeometry.dispose();
+      plazaGeometry.dispose();
+    },
+    [
+      groundGeometry,
+      pathSeamGeometry,
+      pathGeometry,
+      plazaSeamGeometry,
+      plazaGeometry,
+    ],
+  );
+
   const handleGroundClick = useCallback(
     (event: ThreeEvent<MouseEvent>) => {
       event.stopPropagation();
@@ -1202,31 +1407,64 @@ function CampusScene({
         intensity={0.42}
       />
       <mesh
+        geometry={groundGeometry}
         receiveShadow
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, -0.08, 0]}
         onClick={handleGroundClick}
       >
-        <circleGeometry args={[21, 64]} />
-        <ClayMaterial color="#bdd68f" roughness={0.98} normalStrength={0.09} />
+        <ClayMaterial color="#a8d879" roughness={0.97} normalStrength={0.16} />
+      </mesh>
+      <GroundSmudges />
+      <mesh
+        geometry={pathSeamGeometry}
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -0.052, 0]}
+        raycast={() => null}
+      >
+        <meshStandardMaterial
+          color="#aa805a"
+          transparent
+          opacity={0.22}
+          roughness={1}
+          depthWrite={false}
+          polygonOffset
+          polygonOffsetFactor={-1}
+        />
       </mesh>
       <mesh
+        geometry={pathGeometry}
         receiveShadow
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, -0.03, 0]}
         onClick={handleGroundClick}
       >
-        <ringGeometry args={[7.6, 9.1, 64]} />
-        <ClayMaterial color="#f0dfc4" roughness={0.96} normalStrength={0.08} />
+        <ClayMaterial color="#f3d39f" roughness={0.95} normalStrength={0.15} />
       </mesh>
       <mesh
+        geometry={plazaSeamGeometry}
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -0.022, 0]}
+        raycast={() => null}
+      >
+        <meshStandardMaterial
+          color="#ad7136"
+          transparent
+          opacity={0.2}
+          roughness={1}
+          depthWrite={false}
+          polygonOffset
+          polygonOffsetFactor={-1}
+        />
+      </mesh>
+      <mesh
+        geometry={plazaGeometry}
         receiveShadow
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, -0.01, 0]}
         onClick={handleGroundClick}
       >
-        <circleGeometry args={[4.4, 48]} />
-        <ClayMaterial color="#e5c36f" roughness={0.96} normalStrength={0.08} />
+        <ClayMaterial color="#efb84e" roughness={0.95} normalStrength={0.16} />
       </mesh>
       {CAMPUS_ZONES.map((zone) => (
         <Building key={zone.id} zone={zone} onSelect={onNavigate} />
