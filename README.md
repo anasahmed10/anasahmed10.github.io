@@ -11,7 +11,7 @@ Anas Ahmed’s public home for enterprise engineering work, recruiter informatio
 - Recruiter-first TabTally product story at `/products/tabtally`
 - Keyboard-controlled campus guide (`WASD` or arrow keys)
 - Touch controls for mobile and tablet
-- Six accessible, project-specific campus landmarks and case-study dialogs
+- Seven accessible, project-specific campus landmarks and case-study dialogs
 - Campus map, reset controls, reduced-motion support, and WebGL fallback
 - Conventional Recruiter Mode with impact, experience, projects, skills, contact status, and print-to-PDF résumé
 - A no-JavaScript résumé fallback

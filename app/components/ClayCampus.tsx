@@ -52,7 +52,7 @@ const BUILDING_COLLISION_PADDING = 0.7;
 const BUILDING_TOUCH_RADIUS = 1.25;
 const TREE_POSITIONS = [
   [-12, -8], [-11, 1], [-12, 10], [-5, 10], [4, 10], [12, 10],
-  [12, 1], [12, -9], [5, -12], [-6, -12], [-3, 3], [3, 3],
+  [16, 7], [12, -9], [5, -12], [-6, -12], [-3, 3], [3, 3],
 ] as const;
 const TREE_CROWN_OFFSETS = [
   new THREE.Vector3(0, 1.85, 0),
@@ -923,6 +923,80 @@ function Building({
       );
     }
 
+    if (zone.visual === "shopping-boutique") {
+      const tierColors = ["#7dd889", "#ffbf3f", "#ff7b6d"];
+      return (
+        <>
+          <ClayRoundedBox seed="shopper-shell" deformation={0.028} args={[4.6, 3.55, 4.1]} radius={0.82} smoothness={6} position={[0, 1.78, 0]} rotation={[0.006, -0.008, 0.01]} castShadow receiveShadow>
+            <ClayMaterial color={zone.color} roughness={0.94} normalStrength={0.28} />
+          </ClayRoundedBox>
+          <ClayRoundedBox seed="shopper-sign" deformation={0.024} args={[3.55, 0.48, 0.28]} radius={0.2} smoothness={4} position={[0, 3.18, 2.15]} rotation={[0, 0, -0.018]} castShadow>
+            <ClayMaterial color="#25334a" roughness={0.92} normalStrength={0.2} />
+          </ClayRoundedBox>
+          <group position={[0, 2.58, 2.26]}>
+            {[-1.45, -0.72, 0, 0.72, 1.45].map((panelX, index) => (
+              <ClayRoundedBox
+                seed={`shopper-awning-${index}`}
+                deformation={0.024}
+                key={panelX}
+                args={[0.78, 0.58, 0.62]}
+                radius={0.16}
+                smoothness={4}
+                position={[panelX, 0, 0]}
+                rotation={[0.18, 0, (index - 2) * 0.008]}
+                castShadow
+              >
+                <ClayMaterial color={index % 2 ? "#fff4df" : "#d9fff5"} roughness={0.95} normalStrength={0.21} />
+              </ClayRoundedBox>
+            ))}
+          </group>
+          <group position={[-1.05, 1.35, 2.22]} rotation={[0, 0, -0.018]}>
+            <ClayRoundedBox seed="shopper-display-frame" deformation={0.023} args={[1.95, 1.55, 0.3]} radius={0.24} smoothness={5}>
+              <ClayMaterial color="#25334a" roughness={0.9} normalStrength={0.2} />
+            </ClayRoundedBox>
+            <RoundedBox args={[1.62, 1.2, 0.08]} radius={0.18} smoothness={4} position={[0, 0, 0.2]}>
+              {glass}
+            </RoundedBox>
+            {[-0.52, 0, 0.52].map((cardX, index) => (
+              <ClayRoundedBox
+                seed={`shopper-tier-${index}`}
+                deformation={0.02}
+                key={cardX}
+                args={[0.38, 0.66 + index * 0.12, 0.1]}
+                radius={0.08}
+                smoothness={3}
+                position={[cardX, -0.08 + index * 0.05, 0.29]}
+              >
+                <ClayMaterial color={tierColors[index]} roughness={0.9} normalStrength={0.14} />
+              </ClayRoundedBox>
+            ))}
+            <mesh position={[-0.55, 0.42, 0.31]} rotation={[0, 0, 0.08]}>
+              <torusGeometry args={[0.21, 0.055, 9, 20]} />
+              <meshStandardMaterial color="#fff4df" roughness={0.9} />
+            </mesh>
+            <ClayMesh seed="shopper-search-handle" deformation={0.025} position={[-0.36, 0.22, 0.31]} rotation={[0, 0, -0.72]}>
+              <cylinderGeometry args={[0.045, 0.055, 0.42, 9]} />
+              <ClayMaterial color="#fff4df" roughness={0.92} normalStrength={0.12} />
+            </ClayMesh>
+          </group>
+          <group position={[1.18, 0, 0]}>{door}</group>
+          <group position={[0, 4.28, 0.15]}>
+            <ClayRoundedBox seed="shopper-bag" deformation={0.028} args={[1.35, 1.05, 0.42]} radius={0.26} smoothness={5} position={[0, 0, 0]} castShadow>
+              <ClayMaterial color="#fff4df" roughness={0.95} normalStrength={0.21} />
+            </ClayRoundedBox>
+            <ClayMesh seed="shopper-bag-handle" deformation={0.026} preserveBase={false} position={[0, 0.52, 0.03]} rotation={[0, 0, 0]} castShadow>
+              <torusGeometry args={[0.4, 0.095, 10, 24, Math.PI]} />
+              <ClayMaterial color="#25334a" roughness={0.94} normalStrength={0.18} />
+            </ClayMesh>
+            <mesh position={[0, 0.02, 0.24]}>
+              <circleGeometry args={[0.13, 12]} />
+              <meshStandardMaterial color="#ffbf3f" emissive="#ffbf3f" emissiveIntensity={0.18} roughness={0.8} />
+            </mesh>
+          </group>
+        </>
+      );
+    }
+
     return (
       <>
         <ClayRoundedBox seed="maker-base" deformation={0.028} args={[5.1, 0.42, 4.15]} radius={0.18} smoothness={4} position={[0, 0.23, 0]} rotation={[0, 0.006, -0.006]} receiveShadow>
@@ -1670,7 +1744,7 @@ export default function ClayCampus() {
             <p>ANAS AHMED’S INTERACTIVE PORTFOLIO</p>
             <h1 id="welcome-title">Walk through the work, or get the facts.</h1>
             <span>
-              The clay campus turns four projects, my repair-shop origin, and
+              The clay campus turns five projects, my repair-shop origin, and
               my maker hobbies into places you can visit.
             </span>
             <div className="welcome-actions">
@@ -1695,7 +1769,7 @@ export default function ClayCampus() {
           </div>
 
           <div className="welcome-preview" aria-label="Preview of the clay campus">
-            <div className="welcome-preview-image" role="img" aria-label="Colorful clay campus with six project and personal landmarks" />
+            <div className="welcome-preview-image" role="img" aria-label="Colorful clay campus with seven project and personal landmarks" />
             <div className="welcome-player-card">
               <span className="welcome-player-avatar" aria-hidden="true">
                 <i />
@@ -1821,7 +1895,12 @@ export default function ClayCampus() {
             {activeZone.tech.map((tech) => <span key={tech}>{tech}</span>)}
           </div>
           {activeZone.link && (
-            <a className="overlay-primary" href={activeZone.link.href}>
+            <a
+              className="overlay-primary"
+              href={activeZone.link.href}
+              target={activeZone.link.external ? "_blank" : undefined}
+              rel={activeZone.link.external ? "noreferrer" : undefined}
+            >
               {activeZone.link.label} <ArrowRight weight="bold" />
             </a>
           )}

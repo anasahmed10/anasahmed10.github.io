@@ -20,23 +20,23 @@ export const metadata: Metadata = {
     template: "%s · Anas Ahmed",
   },
   description:
-    "Explore Anas Ahmed’s clay campus for self-service retail, connected-vehicle mobile work, scanner automation, and TabTally.",
+    "Explore Anas Ahmed’s clay campus for enterprise Android, connected vehicles, scanner automation, TabTally, and SmartShopper AI research.",
   openGraph: {
     title: "Anas Ahmed — Android Engineering for Real Devices",
-    description: "A clay project campus for enterprise Android, connected vehicles, automation, and TabTally.",
+    description: "A seven-landmark clay project campus for enterprise Android, connected vehicles, automation, TabTally, and SmartShopper.",
     url: "https://anas-systems-campus.anas-ahmed10988004.chatgpt.site/",
     type: "website",
     images: [{
       url: "https://anas-systems-campus.anas-ahmed10988004.chatgpt.site/og.png",
       width: 1672,
       height: 941,
-      alt: "Anas Ahmed’s clay campus for Android engineering and products",
+      alt: "Anas Ahmed’s seven-landmark clay campus for Android engineering, products, and SmartShopper",
     }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Anas Ahmed — Android Engineering for Real Devices",
-    description: "A clay project campus for enterprise Android, connected vehicles, automation, and TabTally.",
+    description: "A seven-landmark clay project campus for enterprise Android, connected vehicles, automation, TabTally, and SmartShopper.",
     images: ["https://anas-systems-campus.anas-ahmed10988004.chatgpt.site/og.png"],
   },
 };

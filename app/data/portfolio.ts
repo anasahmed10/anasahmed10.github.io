@@ -4,6 +4,7 @@ export type CampusDestinationId =
   | "connected-vehicle"
   | "scanner-automation"
   | "tabtally"
+  | "smartshopper"
   | "hobbies";
 
 export type CampusDestination = {
@@ -15,6 +16,7 @@ export type CampusDestination = {
     | "vehicle-garage"
     | "scanner-depot"
     | "receipt-cafe"
+    | "shopping-boutique"
     | "maker-lab";
   navLabel: string;
   sceneLabel: string;
@@ -30,7 +32,7 @@ export type CampusDestination = {
   width: number;
   details: string[];
   tech: string[];
-  link?: { label: string; href: string };
+  link?: { label: string; href: string; external?: boolean };
 };
 
 export const CAMPUS_DESTINATIONS: CampusDestination[] = [
@@ -174,6 +176,36 @@ export const CAMPUS_DESTINATIONS: CampusDestination[] = [
     ],
     tech: ["Kotlin Multiplatform", "Compose", "ML Kit", "Vision", "Groq", "SQLDelight"],
     link: { label: "Explore TabTally", href: "/products/tabtally/" },
+  },
+  {
+    id: "smartshopper",
+    type: "project",
+    visual: "shopping-boutique",
+    navLabel: "SmartShopper",
+    sceneLabel: "SmartShopper AI Boutique",
+    accessibleName:
+      "Visit the SmartShopper AI Boutique and open the AI shopping assistant project",
+    kicker: "PERSONAL AI · SHOPPING RESEARCH",
+    title: "Shopping research that explains the tradeoffs.",
+    summary:
+      "I designed and deployed a custom AI shopping assistant that researches products and generates personalized recommendations based on budget, material, fit, style, seller reputation, ratings, review volume, and retailer availability.",
+    impact: "Budget-to-premium comparisons · purchase-ready links · reusable across 5+ categories",
+    color: "#27b8a6",
+    position: [12.6, 0, 0],
+    approach: [14.2, 0, 3.1],
+    height: 4.9,
+    width: 4.6,
+    details: [
+      "The workflow asks targeted clarifying questions before researching products, so each recommendation is grounded in the shopper's actual constraints.",
+      "It compares budget, mid-tier, and premium options, provides purchase-ready links, and explains the value tradeoffs across recommendations.",
+      "The reusable instruction system adapts its research to clothing, electronics, home improvement, cookware, hardware, and other shopping categories.",
+    ],
+    tech: ["Custom GPT", "Prompt Engineering", "Web Research"],
+    link: {
+      label: "Open SmartShopper",
+      href: "https://chatgpt.com/g/g-6a4be8c0f2ac8191a2e34a57b52f46ee-smartshopper",
+      external: true,
+    },
   },
   {
     id: "hobbies",

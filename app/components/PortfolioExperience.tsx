@@ -138,9 +138,10 @@ export default function PortfolioExperience({
     [roleLens],
   );
   const employerProjects = FEATURED_PROJECTS.filter(
-    (project) => project.id !== "tabtally",
+    (project) => project.id !== "tabtally" && project.id !== "smartshopper",
   );
   const tabTally = FEATURED_PROJECTS.find((project) => project.id === "tabtally");
+  const smartShopper = FEATURED_PROJECTS.find((project) => project.id === "smartshopper");
 
   return (
     <main>
@@ -317,11 +318,13 @@ export default function PortfolioExperience({
                 </article>
                 <article className="smartshopper-card">
                   <span>AI SHOPPING ASSISTANT · PERSONAL PROJECT</span>
-                  <h3>SmartShopper</h3>
-                  <p>Custom GPT that researches products and generates personalized recommendations across budget, material, fit, style, seller reputation, ratings, review volume, and retailer availability.</p>
-                  <p>Its reusable workflow asks targeted questions, compares budget, mid-tier, and premium options, provides purchase-ready links, and explains value tradeoffs across clothing, electronics, home improvement, cookware, and hardware.</p>
-                  <small>Custom GPT · Prompt Engineering · Web Research</small>
-                  <a className="project-link" href="https://chatgpt.com/g/g-6a4be8c0f2ac8191a2e34a57b52f46ee-smartshopper" target="_blank" rel="noreferrer">Open SmartShopper ↗</a>
+                  <h3>{smartShopper?.sceneLabel ?? "SmartShopper"}</h3>
+                  <p>{smartShopper?.summary}</p>
+                  <p>{smartShopper?.details[1]}</p>
+                  <small>{smartShopper?.tech.join(" · ")}</small>
+                  {smartShopper?.link && (
+                    <a className="project-link" href={smartShopper.link.href} target="_blank" rel="noreferrer">Open SmartShopper ↗</a>
+                  )}
                 </article>
                 <article>
                   <span>ORIGIN · AGE 17</span>
