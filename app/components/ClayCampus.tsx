@@ -8,6 +8,7 @@ import {
 } from "@react-three/drei";
 import {
   Canvas,
+  type ThreeEvent,
   type ThreeElements,
   useFrame,
   useThree,
@@ -47,6 +48,7 @@ const START = new THREE.Vector3(0, 0, 4.6);
 const WORLD_LIMIT = 15.5;
 const STEPPED_FPS = 12;
 const BUILDING_HALF_DEPTH = 2.65;
+const BUILDING_COLLISION_PADDING = 0.7;
 const BUILDING_TOUCH_RADIUS = 1.25;
 const TREE_POSITIONS = [
   [-12, -8], [-11, 1], [-12, 10], [-5, 10], [4, 10], [12, 10],
@@ -73,6 +75,28 @@ function isTouchingBuilding(position: THREE.Vector3, zone: CampusZone) {
   const outsideX = Math.max(Math.abs(position.x - x) - zone.width / 2, 0);
   const outsideZ = Math.max(Math.abs(position.z - z) - BUILDING_HALF_DEPTH, 0);
   return Math.hypot(outsideX, outsideZ) <= BUILDING_TOUCH_RADIUS;
+}
+
+function isInsideBuildingFootprint(
+  position: THREE.Vector3,
+  zone: CampusZone,
+  padding = 0,
+) {
+  const [x, , z] = zone.position;
+  return (
+    Math.abs(position.x - x) < zone.width / 2 + padding &&
+    Math.abs(position.z - z) < BUILDING_HALF_DEPTH + padding
+  );
+}
+
+function isBlockedByBuilding(position: THREE.Vector3) {
+  return CAMPUS_ZONES.some((zone) =>
+    isInsideBuildingFootprint(
+      position,
+      zone,
+      BUILDING_COLLISION_PADDING,
+    ),
+  );
 }
 
 function seedValue(seed: string) {
@@ -898,14 +922,42 @@ function Explorer({
         const next = nextPositionRef.current.copy(position).add(movement);
         next.x = THREE.MathUtils.clamp(next.x, -WORLD_LIMIT, WORLD_LIMIT);
         next.z = THREE.MathUtils.clamp(next.z, -WORLD_LIMIT, WORLD_LIMIT);
-        const blocked = CAMPUS_ZONES.some((zone) => {
-          const [x, , z] = zone.position;
-          return (
-            Math.abs(next.x - x) < zone.width / 2 + 0.7 &&
-            Math.abs(next.z - z) < 2.65
-          );
-        });
-        if (!blocked) position.copy(next);
+        if (!isBlockedByBuilding(next)) {
+          position.copy(next);
+        } else {
+          let movedAlongEdge = false;
+
+          if (Math.abs(movement.x) > 0.0001) {
+            next.copy(position);
+            next.x = THREE.MathUtils.clamp(
+              position.x + movement.x,
+              -WORLD_LIMIT,
+              WORLD_LIMIT,
+            );
+            if (!isBlockedByBuilding(next)) {
+              position.copy(next);
+              movedAlongEdge = true;
+            }
+          }
+
+          if (!movedAlongEdge && Math.abs(movement.z) > 0.0001) {
+            next.copy(position);
+            next.z = THREE.MathUtils.clamp(
+              position.z + movement.z,
+              -WORLD_LIMIT,
+              WORLD_LIMIT,
+            );
+            if (!isBlockedByBuilding(next)) {
+              position.copy(next);
+              movedAlongEdge = true;
+            }
+          }
+
+          if (!movedAlongEdge) {
+            targetRef.current = null;
+            movement.set(0, 0, 0);
+          }
+        }
         group.current.rotation.y = Math.atan2(movement.x, movement.z);
       }
     }
@@ -983,15 +1035,11 @@ function Explorer({
   return (
     <group ref={group}>
       <group ref={characterRef}>
-        <ClayMesh seed="explorer-torso" deformation={0.012} castShadow position={[0, 1.37, -0.08]} rotation={[0.006, 0, -0.008]}>
-          <capsuleGeometry args={[0.4, 0.76, 8, 14]} />
+        <ClayMesh seed="explorer-torso" deformation={0.012} castShadow position={[0, 1.37, -0.08]} rotation={[0.006, 0, -0.008]} scale={[1.04, 1.03, 1.02]}>
+          <capsuleGeometry args={[0.42, 0.78, 8, 14]} />
           <ClayMaterial color="#2f66d0" roughness={0.9} normalStrength={0.15} />
         </ClayMesh>
-        <mesh position={[0, 1.45, 0.325]}>
-          <boxGeometry args={[0.035, 0.62, 0.035]} />
-          <meshStandardMaterial color="#d9f5ff" roughness={0.64} />
-        </mesh>
-        <mesh position={[0.19, 1.55, 0.345]}>
+        <mesh position={[0, 1.55, 0.345]}>
           <circleGeometry args={[0.075, 12]} />
           <meshStandardMaterial color="#ffbf3f" roughness={0.8} />
         </mesh>
@@ -999,52 +1047,43 @@ function Explorer({
           <cylinderGeometry args={[0.25, 0.29, 0.18, 16]} />
           <ClayMaterial color="#fff3de" roughness={0.92} normalStrength={0.12} />
         </ClayMesh>
-        <ClayRoundedBox
-          seed="explorer-backpack"
-          deformation={0.012}
-          args={[0.64, 0.7, 0.24]}
-          radius={0.15}
-          smoothness={4}
-          position={[0.01, 1.5, -0.39]}
-          rotation={[0.01, -0.015, 0.012]}
-          castShadow
-        >
-          <ClayMaterial color="#ff6f61" roughness={0.9} normalStrength={0.14} />
-        </ClayRoundedBox>
-
         <group ref={headRef} position={[0, 2.46, 0]}>
-          <ClayMesh seed="explorer-head" deformation={0.011} castShadow scale={[1.015, 0.985, 1]}>
+          <ClayMesh seed="explorer-head" deformation={0.011} castShadow scale={[1.1, 1.075, 1.08]}>
             <sphereGeometry args={[0.4, 18, 14]} />
-            <ClayMaterial color="#d9946d" roughness={0.93} normalStrength={0.12} />
+            <ClayMaterial color="#cf916b" roughness={0.93} normalStrength={0.12} />
           </ClayMesh>
-          <ClayMesh seed="explorer-hair-cap" deformation={0.012} castShadow position={[0, 0.24, -0.025]} rotation={[0.012, 0, -0.018]}>
+          <ClayMesh seed="explorer-hair-cap" deformation={0.012} castShadow position={[0, 0.24, -0.025]} rotation={[0.012, 0, -0.018]} scale={[1.08, 1.03, 1.08]}>
             <sphereGeometry args={[0.405, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.52]} />
-            <ClayMaterial color="#24344a" roughness={0.92} normalStrength={0.13} />
+            <ClayMaterial color="#211f20" roughness={0.92} normalStrength={0.13} />
           </ClayMesh>
           <ClayMesh seed="explorer-hair-lock" deformation={0.014} castShadow position={[-0.2, 0.22, 0.2]} scale={[0.55, 0.32, 0.48]} rotation={[0.1, 0, -0.28]}>
             <sphereGeometry args={[0.35, 12, 9]} />
-            <ClayMaterial color="#24344a" roughness={0.92} normalStrength={0.13} />
+            <ClayMaterial color="#211f20" roughness={0.92} normalStrength={0.13} />
+          </ClayMesh>
+          <ClayMesh seed="explorer-hair-lock-right" deformation={0.014} castShadow position={[0.2, 0.22, 0.2]} scale={[0.55, 0.32, 0.48]} rotation={[0.1, 0, 0.28]}>
+            <sphereGeometry args={[0.35, 12, 9]} />
+            <ClayMaterial color="#211f20" roughness={0.92} normalStrength={0.13} />
           </ClayMesh>
           <group ref={eyesRef}>
             {[-0.13, 0.13].map((eyeX) => (
               <mesh key={eyeX} position={[eyeX, 0.035, 0.374]}>
-                <sphereGeometry args={[0.037, 10, 8]} />
-                <meshStandardMaterial color="#25334a" roughness={0.62} />
+                <sphereGeometry args={[0.042, 10, 8]} />
+                <meshStandardMaterial color="#211f20" roughness={0.62} />
               </mesh>
             ))}
           </group>
           <ClayMesh seed="explorer-nose" deformation={0.008} position={[0, -0.02, 0.39]}>
             <sphereGeometry args={[0.045, 10, 8]} />
-            <ClayMaterial color="#c77f5b" roughness={0.92} normalStrength={0.08} />
+            <ClayMaterial color="#c7835e" roughness={0.92} normalStrength={0.08} />
           </ClayMesh>
-          <RoundedBox
-            args={[0.14, 0.032, 0.028]}
-            radius={0.014}
-            smoothness={3}
-            position={[0, -0.15, 0.395]}
-          >
+          <mesh position={[0, -0.15, 0.395]} rotation={[0, 0, Math.PI]}>
+            <torusGeometry args={[0.075, 0.018, 6, 10, Math.PI]} />
             <meshStandardMaterial color="#7b493d" roughness={0.82} />
-          </RoundedBox>
+          </mesh>
+          <mesh position={[0, -0.38, 0]} rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[0.22, 0.055, 8, 16]} />
+            <meshStandardMaterial color="#fff3de" roughness={0.92} />
+          </mesh>
         </group>
 
         <group ref={leftArmRef} position={[-0.47, 1.68, 0]}>
@@ -1054,7 +1093,7 @@ function Explorer({
           </ClayMesh>
           <ClayMesh seed="explorer-left-hand" deformation={0.009} castShadow position={[0.01, -0.7, 0]}>
             <sphereGeometry args={[0.13, 10, 8]} />
-            <ClayMaterial color="#d9946d" roughness={0.93} normalStrength={0.1} />
+            <ClayMaterial color="#cf916b" roughness={0.93} normalStrength={0.1} />
           </ClayMesh>
         </group>
         <group ref={rightArmRef} position={[0.47, 1.68, 0]}>
@@ -1064,26 +1103,26 @@ function Explorer({
           </ClayMesh>
           <ClayMesh seed="explorer-right-hand" deformation={0.009} castShadow position={[-0.01, -0.7, 0]}>
             <sphereGeometry args={[0.13, 10, 8]} />
-            <ClayMaterial color="#d9946d" roughness={0.93} normalStrength={0.1} />
+            <ClayMaterial color="#cf916b" roughness={0.93} normalStrength={0.1} />
           </ClayMesh>
         </group>
         <group ref={leftLegRef} position={[-0.2, 0.9, 0]}>
           <ClayMesh seed="explorer-left-leg" deformation={0.01} castShadow position={[0, -0.42, 0]} rotation={[0, 0, 0.018]}>
             <capsuleGeometry args={[0.14, 0.54, 6, 10]} />
-            <ClayMaterial color="#40536b" roughness={0.9} normalStrength={0.12} />
+            <ClayMaterial color="#2c292b" roughness={0.9} normalStrength={0.12} />
           </ClayMesh>
-          <RoundedBox args={[0.32, 0.2, 0.46]} radius={0.1} position={[0, -0.77, 0.1]} castShadow>
-            <meshStandardMaterial color="#25334a" roughness={0.82} />
-          </RoundedBox>
+          <ClayRoundedBox seed="explorer-left-shoe" deformation={0.009} args={[0.34, 0.22, 0.48]} radius={0.11} smoothness={4} position={[0, -0.77, 0.1]} castShadow>
+            <ClayMaterial color="#211f20" roughness={0.9} normalStrength={0.1} />
+          </ClayRoundedBox>
         </group>
         <group ref={rightLegRef} position={[0.2, 0.9, 0]}>
           <ClayMesh seed="explorer-right-leg" deformation={0.01} castShadow position={[0, -0.42, 0]} rotation={[0, 0, -0.02]}>
             <capsuleGeometry args={[0.14, 0.54, 6, 10]} />
-            <ClayMaterial color="#40536b" roughness={0.9} normalStrength={0.12} />
+            <ClayMaterial color="#2c292b" roughness={0.9} normalStrength={0.12} />
           </ClayMesh>
-          <RoundedBox args={[0.32, 0.2, 0.46]} radius={0.1} position={[0, -0.77, 0.1]} castShadow>
-            <meshStandardMaterial color="#25334a" roughness={0.82} />
-          </RoundedBox>
+          <ClayRoundedBox seed="explorer-right-shoe" deformation={0.009} args={[0.34, 0.22, 0.48]} radius={0.11} smoothness={4} position={[0, -0.77, 0.1]} castShadow>
+            <ClayMaterial color="#211f20" roughness={0.9} normalStrength={0.1} />
+          </ClayRoundedBox>
         </group>
       </group>
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
@@ -1101,6 +1140,7 @@ function CampusScene({
   reducedMotion,
   renderProfile,
   onNavigate,
+  onGroundNavigate,
   onNearby,
 }: {
   moveTarget: MutableRefObject<MoveTarget>;
@@ -1109,8 +1149,19 @@ function CampusScene({
   reducedMotion: boolean;
   renderProfile: CampusRenderProfile;
   onNavigate: (zone: CampusZone) => void;
+  onGroundNavigate: (point: THREE.Vector3) => void;
   onNearby: (id: CampusZone["id"] | null) => void;
 }) {
+  const handleGroundClick = useCallback(
+    (event: ThreeEvent<MouseEvent>) => {
+      event.stopPropagation();
+      onGroundNavigate(
+        new THREE.Vector3(event.point.x, 0, event.point.z),
+      );
+    },
+    [onGroundNavigate],
+  );
+
   return (
     <>
       <color attach="background" args={["#9fd8ff"]} />
@@ -1137,15 +1188,30 @@ function CampusScene({
         position={[-12, 9, -10]}
         intensity={0.42}
       />
-      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.08, 0]}>
+      <mesh
+        receiveShadow
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -0.08, 0]}
+        onClick={handleGroundClick}
+      >
         <circleGeometry args={[21, 64]} />
         <ClayMaterial color="#bdd68f" roughness={0.98} normalStrength={0.09} />
       </mesh>
-      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.03, 0]}>
+      <mesh
+        receiveShadow
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -0.03, 0]}
+        onClick={handleGroundClick}
+      >
         <ringGeometry args={[7.6, 9.1, 64]} />
         <ClayMaterial color="#f0dfc4" roughness={0.96} normalStrength={0.08} />
       </mesh>
-      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
+      <mesh
+        receiveShadow
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -0.01, 0]}
+        onClick={handleGroundClick}
+      >
         <circleGeometry args={[4.4, 48]} />
         <ClayMaterial color="#e5c36f" roughness={0.96} normalStrength={0.08} />
       </mesh>
@@ -1289,18 +1355,38 @@ export default function ClayCampus() {
     return () => window.removeEventListener("keydown", interact);
   }, [enteredCampus, nearby, paused]);
 
-  const moveTo = useCallback((zone: CampusZone) => {
-    moveTarget.current = {
-      point: new THREE.Vector3(...zone.approach),
-    };
-  }, []);
-
   const warpTo = useCallback((zone: CampusZone) => {
     moveTarget.current = null;
     positionRef.current.set(...zone.approach);
     setNearby(zone.id);
     setActiveZone(zone);
   }, []);
+
+  const moveToPoint = useCallback(
+    (point: THREE.Vector3) => {
+      const tappedZone = CAMPUS_ZONES.find((zone) =>
+        isInsideBuildingFootprint(point, zone),
+      );
+      if (tappedZone) {
+        warpTo(tappedZone);
+        return;
+      }
+
+      point.x = THREE.MathUtils.clamp(
+        point.x,
+        -WORLD_LIMIT,
+        WORLD_LIMIT,
+      );
+      point.z = THREE.MathUtils.clamp(
+        point.z,
+        -WORLD_LIMIT,
+        WORLD_LIMIT,
+      );
+      moveTarget.current = { point };
+      setNearby(null);
+    },
+    [warpTo],
+  );
 
   const reset = useCallback(() => {
     positionRef.current.copy(START);
@@ -1421,7 +1507,8 @@ export default function ClayCampus() {
                 paused={paused}
                 reducedMotion={reducedMotion}
                 renderProfile={renderProfile}
-                onNavigate={moveTo}
+                onNavigate={warpTo}
+                onGroundNavigate={moveToPoint}
                 onNearby={setNearby}
               />
             </Canvas>
@@ -1437,7 +1524,7 @@ export default function ClayCampus() {
         <div className="control-card" aria-label="Movement instructions">
           <span className="desktop-controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> to move</span>
           <span className="desktop-controls"><kbd>Space</kbd> interact</span>
-          <span className="mobile-controls"><MouseSimple size={17} /> Tap a landmark to walk over</span>
+          <span className="mobile-controls"><MouseSimple size={17} /> Tap anywhere to move</span>
           <button onClick={reset}><ArrowCounterClockwise size={16} /> Reset</button>
           <button onClick={() => setAccessibleView(true)}><Monitor size={16} /> 2D view</button>
         </div>

@@ -36,7 +36,9 @@ No P0, P1, or P2 visual issues remain. The realtime material is intentionally su
 
 Checked at 1280 × 1478, 1280 × 720, 768 × 1024, and 390 × 844.
 
-- Landmark selection and walking remain smooth at display refresh rate.
+- Tapping or clicking open terrain sets a point-and-move destination and remains smooth at display refresh rate.
+- Movement slides along building collision edges and cancels an unreachable target instead of trapping the explorer.
+- Tapping a building, floating building label, top-navigation destination, or Campus map entry teleports the explorer and opens the matching information panel.
 - Environmental poses update on a shared 12 Hz stepped clock.
 - The TabTally dialog opens and closes correctly, and focus returns to the originating landmark button.
 - The 2D fallback exposes all six destinations and returns to the 3D campus.
@@ -61,5 +63,17 @@ Checked at 1280 × 1478, 1280 × 720, 768 × 1024, and 390 × 844.
 - Test script: passed.
 - Next.js static Pages build: passed; all routes prerendered.
 - `git diff --check`: passed.
+
+## Explorer reference pass
+
+- Source visual target: `/tmp/codex-remote-attachments/019fb655-1f60-78c3-bf40-e5d4f50bc2aa/6B2A3823-FC4C-47A6-9658-80B0F0E77E1A/1-Pasted-Image-1.jpg`
+- Browser-rendered implementation: `http://localhost:3000/`, 390 × 844 CSS px at DPR 1, with the explorer teleported to Deer Computer Repairs and the information panel closed.
+- Focused implementation crop: `/tmp/anas-clay-texture/player-final-portrait.jpg`
+- Combined comparison: `/tmp/anas-clay-texture/player-comparison.jpg`
+- Source pixels: 588 × 1280. Normalized comparison: 460 × 1000 per side.
+
+The player now uses the reference silhouette and palette: a larger warm-clay head, black bowl-style hair with side locks, black eyes and smile, white collar and sleeves, blue torso with a centered yellow button, skin-tone hands, and black clay trousers and shoes. The old chest stripe and backpack were removed because they were absent from the supplied reference. The implementation crop is necessarily softer because it is captured at the player's in-scene mobile scale; this is an expected P3 density difference, not a missing asset or layout defect.
+
+Required fidelity surfaces for this focused pass all passed: typography/UI context unchanged, spacing and camera framing preserved, clay palette aligned, no new raster asset required, and player copy/content unaffected. Interaction checks still pass for map teleport, automatic dialog opening, nearby building prompt, reduced motion, and 2D fallback.
 
 final result: passed
