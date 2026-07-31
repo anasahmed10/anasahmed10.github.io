@@ -2,12 +2,16 @@
 
 import {
   Billboard,
-  Float,
   Html,
   RoundedBox,
-  Sparkles,
+  useTexture,
 } from "@react-three/drei";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import {
+  Canvas,
+  type ThreeElements,
+  useFrame,
+  useThree,
+} from "@react-three/fiber";
 import {
   ArrowCounterClockwise,
   ArrowRight,
@@ -20,10 +24,12 @@ import {
 import Link from "next/link";
 import {
   Component,
+  type ComponentProps,
   type MutableRefObject,
   type ReactNode,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -39,53 +45,308 @@ type MoveTarget = { point: THREE.Vector3 } | null;
 
 const START = new THREE.Vector3(0, 0, 4.6);
 const WORLD_LIMIT = 15.5;
+const STEPPED_FPS = 12;
+const BUILDING_HALF_DEPTH = 2.65;
+const BUILDING_TOUCH_RADIUS = 1.25;
+const TREE_POSITIONS = [
+  [-12, -8], [-11, 1], [-12, 10], [-5, 10], [4, 10], [12, 10],
+  [12, 1], [12, -9], [5, -12], [-6, -12], [-3, 3], [3, 3],
+] as const;
+const TREE_CROWN_OFFSETS = [
+  new THREE.Vector3(0, 1.85, 0),
+  new THREE.Vector3(0.55, 1.55, 0.12),
+  new THREE.Vector3(-0.48, 1.5, -0.08),
+] as const;
+
+type CampusRenderProfile = {
+  mode: "desktop" | "mobile" | "reduced";
+  dpr: [number, number];
+  shadowMapSize: 512 | 1024;
+};
 
 const zoneById = Object.fromEntries(
   CAMPUS_ZONES.map((zone) => [zone.id, zone]),
 ) as Record<CampusZone["id"], CampusZone>;
 
-function Tree({
-  position,
-  scale = 1,
-  reducedMotion,
-  phase = 0,
-}: {
-  position: [number, number, number];
-  scale?: number;
-  reducedMotion: boolean;
-  phase?: number;
-}) {
-  const crownRef = useRef<THREE.Group>(null);
-  const animationTimeRef = useRef(phase);
-  useFrame((_, delta) => {
-    if (!crownRef.current || reducedMotion) return;
-    animationTimeRef.current += delta;
-    crownRef.current.rotation.z =
-      Math.sin(animationTimeRef.current * 0.72 + phase) * 0.035;
-    crownRef.current.rotation.x =
-      Math.cos(animationTimeRef.current * 0.54 + phase) * 0.018;
-  });
+function isTouchingBuilding(position: THREE.Vector3, zone: CampusZone) {
+  const [x, , z] = zone.position;
+  const outsideX = Math.max(Math.abs(position.x - x) - zone.width / 2, 0);
+  const outsideZ = Math.max(Math.abs(position.z - z) - BUILDING_HALF_DEPTH, 0);
+  return Math.hypot(outsideX, outsideZ) <= BUILDING_TOUCH_RADIUS;
+}
+
+function seedValue(seed: string) {
+  let value = 2166136261;
+  for (let index = 0; index < seed.length; index += 1) {
+    value ^= seed.charCodeAt(index);
+    value = Math.imul(value, 16777619);
+  }
+  return (value >>> 0) / 4294967295;
+}
+
+function deformClayGeometry(
+  source: THREE.BufferGeometry,
+  seed: string,
+  amount: number,
+  preserveBase = true,
+) {
+  const geometry = source.clone();
+  geometry.computeVertexNormals();
+  geometry.computeBoundingBox();
+  const bounds = geometry.boundingBox;
+  const position = geometry.attributes.position;
+  const normal = geometry.attributes.normal;
+  if (!bounds || !position || !normal) return geometry;
+
+  const size = new THREE.Vector3();
+  bounds.getSize(size);
+  const displacementScale =
+    Math.max(size.x, size.y, size.z) * amount * 0.2;
+  const baseFadeHeight = Math.max(size.y * 0.12, 0.001);
+  const seedPhase = seedValue(seed) * Math.PI * 8;
+
+  for (let index = 0; index < position.count; index += 1) {
+    const x = position.getX(index);
+    const y = position.getY(index);
+    const z = position.getZ(index);
+    const wave =
+      Math.sin(x * 2.31 + y * 1.77 + seedPhase) * 0.48 +
+      Math.cos(z * 2.63 - y * 1.19 + seedPhase * 0.71) * 0.34 +
+      Math.sin((x + z) * 3.17 + seedPhase * 1.31) * 0.18;
+    const baseFade = preserveBase
+      ? THREE.MathUtils.smoothstep(y, bounds.min.y, bounds.min.y + baseFadeHeight)
+      : 1;
+    const displacement = wave * displacementScale * baseFade;
+    position.setXYZ(
+      index,
+      x + normal.getX(index) * displacement,
+      y + normal.getY(index) * displacement,
+      z + normal.getZ(index) * displacement,
+    );
+  }
+
+  position.needsUpdate = true;
+  geometry.computeVertexNormals();
+  geometry.computeBoundingBox();
+  geometry.computeBoundingSphere();
+  return geometry;
+}
+
+function takeSteppedDelta(
+  accumulator: MutableRefObject<number>,
+  delta: number,
+  fps = STEPPED_FPS,
+) {
+  accumulator.current += delta;
+  const interval = 1 / fps;
+  if (accumulator.current < interval) return 0;
+  const elapsed = accumulator.current;
+  accumulator.current %= interval;
+  return elapsed;
+}
+
+type ClayMaterialProps = {
+  color: THREE.ColorRepresentation;
+  roughness?: number;
+  normalStrength?: number;
+  emissive?: THREE.ColorRepresentation;
+  emissiveIntensity?: number;
+  metalness?: number;
+};
+
+function ClayMaterial({
+  color,
+  roughness = 0.9,
+  normalStrength = 0.16,
+  emissive,
+  emissiveIntensity,
+  metalness = 0,
+}: ClayMaterialProps) {
+  const [normalMap, roughnessMap] = useTexture([
+    "/textures/clay-normal.webp",
+    "/textures/clay-roughness.webp",
+  ]);
+  const normalScale = useMemo(
+    () => new THREE.Vector2(normalStrength * 1.1, normalStrength * 1.1),
+    [normalStrength],
+  );
+
+  useEffect(() => {
+    for (const texture of [normalMap, roughnessMap]) {
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(2.5, 2.5);
+      texture.colorSpace = THREE.NoColorSpace;
+      texture.anisotropy = 2;
+      texture.needsUpdate = true;
+    }
+  }, [normalMap, roughnessMap]);
+
   return (
-    <group position={position} scale={scale}>
-      <mesh castShadow position={[0, 0.75, 0]}>
+    <meshStandardMaterial
+      color={color}
+      roughness={roughness}
+      normalMap={normalMap}
+      normalScale={normalScale}
+      roughnessMap={roughnessMap}
+      emissive={emissive}
+      emissiveIntensity={emissiveIntensity}
+      metalness={metalness}
+    />
+  );
+}
+
+type ClayRoundedBoxProps = ComponentProps<typeof RoundedBox> & {
+  seed: string;
+  deformation?: number;
+};
+
+function ClayRoundedBox({
+  seed,
+  deformation = 0.018,
+  ...props
+}: ClayRoundedBoxProps) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const sourceGeometryRef = useRef<THREE.BufferGeometry | null>(null);
+
+  useLayoutEffect(() => {
+    const mesh = meshRef.current;
+    if (!mesh) return;
+    sourceGeometryRef.current ??= mesh.geometry;
+    const source = sourceGeometryRef.current;
+    const geometry = deformClayGeometry(source, seed, deformation);
+    mesh.geometry = geometry;
+    return () => {
+      if (mesh.geometry === geometry) mesh.geometry = source;
+      geometry.dispose();
+    };
+  }, [deformation, seed]);
+
+  return <RoundedBox ref={meshRef} {...props} />;
+}
+
+type ClayMeshProps = ThreeElements["mesh"] & {
+  seed: string;
+  deformation?: number;
+  preserveBase?: boolean;
+};
+
+function ClayMesh({
+  seed,
+  deformation = 0.01,
+  preserveBase = false,
+  ...props
+}: ClayMeshProps) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const sourceGeometryRef = useRef<THREE.BufferGeometry | null>(null);
+
+  useLayoutEffect(() => {
+    const mesh = meshRef.current;
+    if (!mesh) return;
+    sourceGeometryRef.current ??= mesh.geometry;
+    const source = sourceGeometryRef.current;
+    const geometry = deformClayGeometry(
+      source,
+      seed,
+      deformation,
+      preserveBase,
+    );
+    mesh.geometry = geometry;
+    return () => {
+      if (mesh.geometry === geometry) mesh.geometry = source;
+      geometry.dispose();
+    };
+  }, [deformation, preserveBase, seed]);
+
+  return <mesh ref={meshRef} {...props} />;
+}
+
+function TreeGrove({ reducedMotion }: { reducedMotion: boolean }) {
+  const trunkRef = useRef<THREE.InstancedMesh>(null);
+  const crownMainRef = useRef<THREE.InstancedMesh>(null);
+  const crownRightRef = useRef<THREE.InstancedMesh>(null);
+  const crownLeftRef = useRef<THREE.InstancedMesh>(null);
+  const animationTimeRef = useRef(0);
+  const stepAccumulatorRef = useRef(1 / STEPPED_FPS);
+  const dummy = useMemo(() => new THREE.Object3D(), []);
+  const treeEuler = useMemo(() => new THREE.Euler(), []);
+  const treeQuaternion = useMemo(() => new THREE.Quaternion(), []);
+  const transformedOffset = useMemo(() => new THREE.Vector3(), []);
+  const crownGeometries = useMemo(
+    () => [
+      deformClayGeometry(new THREE.SphereGeometry(0.9, 14, 12), "tree-main", 0.022, false),
+      deformClayGeometry(new THREE.SphereGeometry(0.58, 12, 10), "tree-right", 0.026, false),
+      deformClayGeometry(new THREE.SphereGeometry(0.52, 12, 10), "tree-left", 0.024, false),
+    ],
+    [],
+  );
+
+  const updateTrees = useCallback((time: number) => {
+    const refs = [crownMainRef.current, crownRightRef.current, crownLeftRef.current];
+
+    TREE_POSITIONS.forEach(([x, z], index) => {
+      const scale = 0.8 + (index % 3) * 0.12;
+      dummy.position.set(x, 0.75 * scale, z);
+      dummy.rotation.set(0, 0, 0);
+      dummy.scale.setScalar(scale);
+      dummy.updateMatrix();
+      trunkRef.current?.setMatrixAt(index, dummy.matrix);
+
+      const phase = index * 0.57;
+      treeEuler.set(
+        reducedMotion ? 0 : Math.cos(time * 0.54 + phase) * 0.018,
+        0,
+        reducedMotion ? 0 : Math.sin(time * 0.72 + phase) * 0.035,
+      );
+      treeQuaternion.setFromEuler(treeEuler);
+      TREE_CROWN_OFFSETS.forEach((offset, crownIndex) => {
+        transformedOffset.copy(offset).multiplyScalar(scale).applyQuaternion(treeQuaternion);
+        dummy.position.set(x + transformedOffset.x, transformedOffset.y, z + transformedOffset.z);
+        dummy.quaternion.copy(treeQuaternion);
+        dummy.scale.setScalar(scale);
+        dummy.updateMatrix();
+        refs[crownIndex]?.setMatrixAt(index, dummy.matrix);
+      });
+    });
+
+    for (const ref of [trunkRef.current, ...refs]) {
+      if (ref) ref.instanceMatrix.needsUpdate = true;
+    }
+  }, [dummy, reducedMotion, transformedOffset, treeEuler, treeQuaternion]);
+
+  useLayoutEffect(() => {
+    updateTrees(0);
+  }, [updateTrees]);
+
+  useFrame((_, delta) => {
+    if (reducedMotion) return;
+    const steppedDelta = takeSteppedDelta(stepAccumulatorRef, delta);
+    if (!steppedDelta) return;
+    animationTimeRef.current += steppedDelta;
+    updateTrees(animationTimeRef.current);
+  });
+
+  useEffect(
+    () => () => crownGeometries.forEach((geometry) => geometry.dispose()),
+    [crownGeometries],
+  );
+
+  return (
+    <>
+      <instancedMesh ref={trunkRef} args={[undefined, undefined, TREE_POSITIONS.length]} castShadow>
         <cylinderGeometry args={[0.18, 0.24, 1.5, 10]} />
-        <meshStandardMaterial color="#936948" roughness={0.95} />
-      </mesh>
-      <group ref={crownRef} position={[0, 1.45, 0]}>
-        <mesh castShadow position={[0, 0.4, 0]}>
-          <sphereGeometry args={[0.9, 14, 12]} />
-          <meshStandardMaterial color="#55b884" roughness={0.92} />
-        </mesh>
-        <mesh castShadow position={[0.55, 0.1, 0.12]}>
-          <sphereGeometry args={[0.58, 12, 10]} />
-          <meshStandardMaterial color="#71ca96" roughness={0.92} />
-        </mesh>
-        <mesh castShadow position={[-0.48, 0.05, -0.08]}>
-          <sphereGeometry args={[0.52, 12, 10]} />
-          <meshStandardMaterial color="#64c38c" roughness={0.94} />
-        </mesh>
-      </group>
-    </group>
+        <ClayMaterial color="#936948" roughness={0.95} normalStrength={0.14} />
+      </instancedMesh>
+      <instancedMesh ref={crownMainRef} args={[crownGeometries[0], undefined, TREE_POSITIONS.length]} castShadow>
+        <ClayMaterial color="#55b884" roughness={0.92} normalStrength={0.2} />
+      </instancedMesh>
+      <instancedMesh ref={crownRightRef} args={[crownGeometries[1], undefined, TREE_POSITIONS.length]} castShadow>
+        <ClayMaterial color="#71ca96" roughness={0.92} normalStrength={0.2} />
+      </instancedMesh>
+      <instancedMesh ref={crownLeftRef} args={[crownGeometries[2], undefined, TREE_POSITIONS.length]} castShadow>
+        <ClayMaterial color="#64c38c" roughness={0.94} normalStrength={0.2} />
+      </instancedMesh>
+    </>
   );
 }
 
@@ -108,43 +369,87 @@ function ClayCloud({
       ].map(([x, y, z, size], index) => (
         <mesh key={index} position={[x, y, z]} castShadow>
           <sphereGeometry args={[size, 12, 10]} />
-          <meshStandardMaterial color="#fff7e8" roughness={0.98} />
+          <ClayMaterial color="#fff7e8" roughness={0.98} normalStrength={0.13} />
         </mesh>
       ))}
     </group>
   );
 }
 
+const FLOWER_PATCHES = [
+  [-4.4, -2.6, "#ff6f61"],
+  [4.8, 2.8, "#ffbf3f"],
+  [-2.2, 5.1, "#9b6ce0"],
+  [3.3, -5.2, "#ffffff"],
+] as const;
+
+function FlowerPatches() {
+  const refs = useRef<Array<THREE.InstancedMesh | null>>([]);
+  const dummy = useMemo(() => new THREE.Object3D(), []);
+  const geometry = useMemo(
+    () => deformClayGeometry(new THREE.SphereGeometry(0.13, 8, 6), "flower", 0.03, false),
+    [],
+  );
+
+  useLayoutEffect(() => {
+    FLOWER_PATCHES.forEach(([x, z], patchIndex) => {
+      const mesh = refs.current[patchIndex];
+      if (!mesh) return;
+      [-0.35, 0, 0.35].forEach((offset, flowerIndex) => {
+        dummy.position.set(
+          x + offset,
+          0.12 + (flowerIndex % 2 ? 0.12 : 0),
+          z + Math.sin(patchIndex + flowerIndex) * 0.25,
+        );
+        dummy.rotation.set(
+          (flowerIndex - 1) * 0.08,
+          patchIndex * 0.23,
+          (patchIndex - 1.5) * 0.04,
+        );
+        dummy.scale.setScalar(0.96 + flowerIndex * 0.04);
+        dummy.updateMatrix();
+        mesh.setMatrixAt(flowerIndex, dummy.matrix);
+      });
+      mesh.instanceMatrix.needsUpdate = true;
+    });
+  }, [dummy]);
+
+  useEffect(() => () => geometry.dispose(), [geometry]);
+
+  return FLOWER_PATCHES.map(([, , color], patchIndex) => (
+    <instancedMesh
+      key={color}
+      ref={(node) => {
+        refs.current[patchIndex] = node;
+      }}
+      args={[geometry, undefined, 3]}
+      castShadow
+    >
+      <ClayMaterial color={color} roughness={0.95} normalStrength={0.11} />
+    </instancedMesh>
+  ));
+}
+
 function LivingEnvironment({ reducedMotion }: { reducedMotion: boolean }) {
   const cloudRefs = useRef<Array<THREE.Group | null>>([]);
-  const butterflyRef = useRef<THREE.Group>(null);
   const fountainRef = useRef<THREE.Group>(null);
   const animationTimeRef = useRef(0);
+  const stepAccumulatorRef = useRef(1 / STEPPED_FPS);
 
   useFrame((_, delta) => {
     if (reducedMotion) return;
-    animationTimeRef.current += delta;
+    const steppedDelta = takeSteppedDelta(stepAccumulatorRef, delta);
+    if (!steppedDelta) return;
+    animationTimeRef.current += steppedDelta;
     cloudRefs.current.forEach((cloud, index) => {
       if (!cloud) return;
-      cloud.position.x += delta * (0.18 + index * 0.035);
+      cloud.position.x += steppedDelta * (0.18 + index * 0.035);
       if (cloud.position.x > 22) cloud.position.x = -22;
       cloud.position.y +=
         Math.sin(animationTimeRef.current * 0.35 + index) * 0.0009;
     });
-    if (butterflyRef.current) {
-      const time = animationTimeRef.current;
-      butterflyRef.current.position.set(
-        Math.sin(time * 0.55) * 5.4,
-        1.9 + Math.sin(time * 2.1) * 0.28,
-        1 + Math.cos(time * 0.7) * 4.1,
-      );
-      butterflyRef.current.rotation.y = -time * 0.55;
-      butterflyRef.current.children.forEach((wing, index) => {
-        wing.rotation.y = Math.sin(time * 8) * 0.72 * (index === 0 ? 1 : -1);
-      });
-    }
     if (fountainRef.current) {
-      fountainRef.current.rotation.y += delta * 0.28;
+      fountainRef.current.rotation.y += steppedDelta * 0.28;
       fountainRef.current.position.y =
         1.28 + Math.sin(animationTimeRef.current * 2) * 0.08;
     }
@@ -169,10 +474,10 @@ function LivingEnvironment({ reducedMotion }: { reducedMotion: boolean }) {
       />
 
       <group position={[0, 0, 0]}>
-        <mesh castShadow receiveShadow position={[0, 0.42, 0]}>
+        <ClayMesh seed="fountain-base" deformation={0.015} castShadow receiveShadow position={[0, 0.42, 0]}>
           <cylinderGeometry args={[1.28, 1.48, 0.82, 28]} />
-          <meshStandardMaterial color="#fff0d2" roughness={0.9} />
-        </mesh>
+          <ClayMaterial color="#fff0d2" roughness={0.9} normalStrength={0.14} />
+        </ClayMesh>
         <mesh position={[0, 0.86, 0]}>
           <cylinderGeometry args={[0.92, 1.08, 0.22, 28]} />
           <meshStandardMaterial color="#71c7dd" roughness={0.35} />
@@ -195,39 +500,7 @@ function LivingEnvironment({ reducedMotion }: { reducedMotion: boolean }) {
         </group>
       </group>
 
-      <group ref={butterflyRef} position={[2, 2, 2]} scale={0.7}>
-        <mesh position={[-0.2, 0, 0]} rotation={[0, 0.4, 0.25]}>
-          <sphereGeometry args={[0.27, 10, 8]} />
-          <meshStandardMaterial color="#ffbf3f" roughness={0.86} />
-        </mesh>
-        <mesh position={[0.2, 0, 0]} rotation={[0, -0.4, -0.25]}>
-          <sphereGeometry args={[0.27, 10, 8]} />
-          <meshStandardMaterial color="#ff6f61" roughness={0.86} />
-        </mesh>
-        <mesh scale={[0.28, 0.5, 0.28]}>
-          <sphereGeometry args={[0.3, 10, 8]} />
-          <meshStandardMaterial color="#25334a" roughness={0.9} />
-        </mesh>
-      </group>
-
-      {[
-        [-4.4, -2.6, "#ff6f61"],
-        [4.8, 2.8, "#ffbf3f"],
-        [-2.2, 5.1, "#9b6ce0"],
-        [3.3, -5.2, "#ffffff"],
-      ].map(([x, z, color], patchIndex) => (
-        <group key={`${x}-${z}`} position={[Number(x), 0.12, Number(z)]}>
-          {[-0.35, 0, 0.35].map((offset, flowerIndex) => (
-            <mesh
-              key={offset}
-              position={[offset, flowerIndex % 2 ? 0.12 : 0, Math.sin(patchIndex + flowerIndex) * 0.25]}
-            >
-              <sphereGeometry args={[0.13, 8, 6]} />
-              <meshStandardMaterial color={String(color)} roughness={0.95} />
-            </mesh>
-          ))}
-        </group>
-      ))}
+      <FlowerPatches />
     </>
   );
 }
@@ -277,12 +550,12 @@ function Building({
     if (zone.visual === "repair-workshop") {
       return (
         <>
-          <RoundedBox args={[4.8, 3.35, 4.1]} radius={0.72} smoothness={5} position={[0, 1.68, 0]} castShadow receiveShadow>
-            <meshStandardMaterial color={zone.color} roughness={0.9} />
-          </RoundedBox>
-          <RoundedBox args={[5.05, 0.54, 4.32]} radius={0.24} smoothness={4} position={[0, 3.45, 0]} rotation={[0, 0, -0.035]} castShadow>
-            <meshStandardMaterial color="#fff0d2" roughness={0.92} />
-          </RoundedBox>
+          <ClayRoundedBox seed="repair-shell" deformation={0.021} args={[4.8, 3.35, 4.1]} radius={0.72} smoothness={5} position={[0, 1.68, 0]} rotation={[0.008, -0.006, -0.012]} castShadow receiveShadow>
+            <ClayMaterial color={zone.color} roughness={0.9} normalStrength={0.19} />
+          </ClayRoundedBox>
+          <ClayRoundedBox seed="repair-roof" deformation={0.017} args={[5.05, 0.54, 4.32]} radius={0.24} smoothness={4} position={[0.02, 3.45, 0]} rotation={[0, 0.006, -0.035]} castShadow>
+            <ClayMaterial color="#fff0d2" roughness={0.92} normalStrength={0.16} />
+          </ClayRoundedBox>
           {door}
           <group position={[-1.35, 2.35, 2.2]} rotation={[0, 0, -0.05]}>
             <RoundedBox args={[1.25, 0.92, 0.22]} radius={0.18} smoothness={4}>
@@ -313,12 +586,12 @@ function Building({
     if (zone.visual === "copy-building") {
       return (
         <>
-          <RoundedBox args={[5.65, 4.7, 4.8]} radius={0.85} smoothness={6} position={[0, 2.35, 0]} castShadow receiveShadow>
-            <meshStandardMaterial color={zone.color} roughness={0.84} />
-          </RoundedBox>
-          <RoundedBox args={[4.1, 0.46, 3.2]} radius={0.3} smoothness={4} position={[0, 4.76, -0.25]} rotation={[0.03, 0, -0.025]}>
-            <meshStandardMaterial color="#244b9e" roughness={0.74} />
-          </RoundedBox>
+          <ClayRoundedBox seed="copy-shell" deformation={0.019} args={[5.65, 4.7, 4.8]} radius={0.85} smoothness={6} position={[0, 2.35, 0]} rotation={[-0.006, 0.008, 0.012]} castShadow receiveShadow>
+            <ClayMaterial color={zone.color} roughness={0.88} normalStrength={0.19} />
+          </ClayRoundedBox>
+          <ClayRoundedBox seed="copy-roof" deformation={0.016} args={[4.1, 0.46, 3.2]} radius={0.3} smoothness={4} position={[0, 4.76, -0.25]} rotation={[0.03, 0.008, -0.025]}>
+            <ClayMaterial color="#244b9e" roughness={0.78} normalStrength={0.15} />
+          </ClayRoundedBox>
           <RoundedBox args={[3.8, 0.42, 0.28]} radius={0.18} smoothness={4} position={[0, 3.18, 2.5]}>
             <meshStandardMaterial color="#25334a" roughness={0.76} />
           </RoundedBox>
@@ -352,22 +625,22 @@ function Building({
     if (zone.visual === "vehicle-garage") {
       return (
         <>
-          <RoundedBox args={[6.1, 3.45, 3.9]} radius={0.85} smoothness={6} position={[0, 1.72, -0.5]} castShadow receiveShadow>
-            <meshStandardMaterial color={zone.color} roughness={0.83} />
-          </RoundedBox>
-          <RoundedBox args={[4.8, 2.35, 0.22]} radius={0.48} smoothness={5} position={[0, 1.55, 1.52]}>
-            <meshStandardMaterial color="#fff4df" roughness={0.82} />
-          </RoundedBox>
+          <ClayRoundedBox seed="vehicle-shell" deformation={0.02} args={[6.1, 3.45, 3.9]} radius={0.85} smoothness={6} position={[0, 1.72, -0.5]} rotation={[0.004, -0.009, -0.008]} castShadow receiveShadow>
+            <ClayMaterial color={zone.color} roughness={0.88} normalStrength={0.2} />
+          </ClayRoundedBox>
+          <ClayRoundedBox seed="vehicle-frame" deformation={0.014} args={[4.8, 2.35, 0.22]} radius={0.48} smoothness={5} position={[0, 1.55, 1.52]}>
+            <ClayMaterial color="#fff4df" roughness={0.88} normalStrength={0.14} />
+          </ClayRoundedBox>
           <RoundedBox args={[4.25, 1.82, 0.12]} radius={0.36} smoothness={5} position={[0, 1.48, 1.68]}>
             <meshStandardMaterial color="#40536b" roughness={0.56} />
           </RoundedBox>
           <group position={[0, 0.72, 2.15]} rotation={[0, -0.03, 0]}>
-            <RoundedBox args={[3.65, 0.95, 1.82]} radius={0.45} smoothness={6} castShadow>
-              <meshStandardMaterial color="#ff6f61" roughness={0.82} />
-            </RoundedBox>
-            <RoundedBox args={[1.95, 0.84, 1.45]} radius={0.38} smoothness={6} position={[-0.15, 0.68, -0.12]} castShadow>
-              <meshStandardMaterial color="#ff8d80" roughness={0.82} />
-            </RoundedBox>
+            <ClayRoundedBox seed="vehicle-car-body" deformation={0.014} args={[3.65, 0.95, 1.82]} radius={0.45} smoothness={6} rotation={[0, 0.008, -0.01]} castShadow>
+              <ClayMaterial color="#ff6f61" roughness={0.86} normalStrength={0.14} />
+            </ClayRoundedBox>
+            <ClayRoundedBox seed="vehicle-car-cabin" deformation={0.012} args={[1.95, 0.84, 1.45]} radius={0.38} smoothness={6} position={[-0.15, 0.68, -0.12]} rotation={[0.008, -0.012, 0.008]} castShadow>
+              <ClayMaterial color="#ff8d80" roughness={0.86} normalStrength={0.13} />
+            </ClayRoundedBox>
             <RoundedBox args={[1.42, 0.48, 1.48]} radius={0.2} smoothness={4} position={[-0.12, 0.74, 0]}>
               {glass}
             </RoundedBox>
@@ -389,12 +662,12 @@ function Building({
     if (zone.visual === "scanner-depot") {
       return (
         <>
-          <RoundedBox args={[5.35, 3.4, 4.25]} radius={0.55} smoothness={5} position={[0, 1.7, 0]} castShadow receiveShadow>
-            <meshStandardMaterial color={zone.color} roughness={0.84} />
-          </RoundedBox>
-          <RoundedBox args={[3.9, 2.42, 0.22]} radius={0.32} smoothness={4} position={[0, 1.55, 2.22]}>
-            <meshStandardMaterial color="#fff4df" roughness={0.86} />
-          </RoundedBox>
+          <ClayRoundedBox seed="scanner-shell" deformation={0.019} args={[5.35, 3.4, 4.25]} radius={0.55} smoothness={5} position={[0, 1.7, 0]} rotation={[-0.006, 0.01, 0.008]} castShadow receiveShadow>
+            <ClayMaterial color={zone.color} roughness={0.88} normalStrength={0.19} />
+          </ClayRoundedBox>
+          <ClayRoundedBox seed="scanner-opening" deformation={0.014} args={[3.9, 2.42, 0.22]} radius={0.32} smoothness={4} position={[0, 1.55, 2.22]} rotation={[0, 0, -0.008]}>
+            <ClayMaterial color="#fff4df" roughness={0.9} normalStrength={0.14} />
+          </ClayRoundedBox>
           <group position={[0, 1.4, 2.42]}>
             {[-1.55, 1.55].map((postX) => (
               <RoundedBox key={postX} args={[0.42, 2.8, 0.42]} radius={0.15} smoothness={4} position={[postX, 0, 0]}>
@@ -427,9 +700,9 @@ function Building({
     if (zone.visual === "receipt-cafe") {
       return (
         <>
-          <RoundedBox args={[5.35, 3.5, 4.45]} radius={1.05} smoothness={6} position={[0, 1.75, 0]} castShadow receiveShadow>
-            <meshStandardMaterial color={zone.color} roughness={0.86} />
-          </RoundedBox>
+          <ClayRoundedBox seed="receipt-shell" deformation={0.022} args={[5.35, 3.5, 4.45]} radius={1.05} smoothness={6} position={[0, 1.75, 0]} rotation={[0.006, -0.008, 0.01]} castShadow receiveShadow>
+            <ClayMaterial color={zone.color} roughness={0.9} normalStrength={0.2} />
+          </ClayRoundedBox>
           <mesh position={[0, 4.02, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
             <cylinderGeometry args={[0.72, 0.72, 3.25, 24]} />
             <meshStandardMaterial color="#fffdf5" roughness={0.94} />
@@ -461,22 +734,22 @@ function Building({
 
     return (
       <>
-        <RoundedBox args={[5.1, 0.42, 4.15]} radius={0.18} smoothness={4} position={[0, 0.23, 0]} receiveShadow>
-          <meshStandardMaterial color="#fff0d2" roughness={0.92} />
-        </RoundedBox>
+        <ClayRoundedBox seed="maker-base" deformation={0.018} args={[5.1, 0.42, 4.15]} radius={0.18} smoothness={4} position={[0, 0.23, 0]} rotation={[0, 0.006, -0.006]} receiveShadow>
+          <ClayMaterial color="#fff0d2" roughness={0.92} normalStrength={0.17} />
+        </ClayRoundedBox>
         {[-2.05, 2.05].flatMap((postX) =>
           [-1.55, 1.55].map((postZ) => (
-            <RoundedBox key={`${postX}-${postZ}`} args={[0.34, 3.7, 0.34]} radius={0.12} smoothness={4} position={[postX, 2.05, postZ]} castShadow>
-              <meshStandardMaterial color={zone.color} roughness={0.86} />
-            </RoundedBox>
+            <ClayRoundedBox seed={`maker-post-${postX}-${postZ}`} deformation={0.015} key={`${postX}-${postZ}`} args={[0.34, 3.7, 0.34]} radius={0.12} smoothness={4} position={[postX, 2.05, postZ]} rotation={[postZ * 0.003, 0, postX * 0.004]} castShadow>
+              <ClayMaterial color={zone.color} roughness={0.9} normalStrength={0.18} />
+            </ClayRoundedBox>
           )),
         )}
-        <RoundedBox args={[4.55, 0.38, 0.42]} radius={0.12} smoothness={4} position={[0, 3.84, 1.55]} castShadow>
-          <meshStandardMaterial color={roofColor} roughness={0.84} />
-        </RoundedBox>
-        <RoundedBox args={[4.55, 0.38, 0.42]} radius={0.12} smoothness={4} position={[0, 3.84, -1.55]} castShadow>
-          <meshStandardMaterial color={roofColor} roughness={0.84} />
-        </RoundedBox>
+        <ClayRoundedBox seed="maker-front-bar" deformation={0.015} args={[4.55, 0.38, 0.42]} radius={0.12} smoothness={4} position={[0, 3.84, 1.55]} rotation={[0.006, 0, -0.012]} castShadow>
+          <ClayMaterial color={roofColor} roughness={0.88} normalStrength={0.18} />
+        </ClayRoundedBox>
+        <ClayRoundedBox seed="maker-back-bar" deformation={0.015} args={[4.55, 0.38, 0.42]} radius={0.12} smoothness={4} position={[0, 3.84, -1.55]} rotation={[-0.006, 0, 0.01]} castShadow>
+          <ClayMaterial color={roofColor} roughness={0.88} normalStrength={0.18} />
+        </ClayRoundedBox>
         <RoundedBox args={[0.74, 0.7, 0.68]} radius={0.16} smoothness={4} position={[0, 3.22, 0.45]} castShadow>
           <meshStandardMaterial color="#40536b" roughness={0.7} />
         </RoundedBox>
@@ -491,12 +764,12 @@ function Building({
             </RoundedBox>
           ),
         )}
-        <Float speed={1.15} rotationIntensity={0.08} floatIntensity={0.18}>
-          <mesh position={[1.75, 3.05, 0.35]} rotation={[Math.PI / 2, 0, 0]}>
+        <group position={[1.75, 3.05, 0.35]} rotation={[Math.PI / 2 + 0.04, 0.02, -0.03]}>
+          <mesh>
             <torusGeometry args={[0.46, 0.12, 10, 22]} />
-            <meshStandardMaterial color="#fffdf5" roughness={0.9} />
+            <ClayMaterial color="#fffdf5" roughness={0.92} normalStrength={0.12} />
           </mesh>
-        </Float>
+        </group>
       </>
     );
   })();
@@ -520,6 +793,14 @@ function Building({
       }}
     >
       {buildingShape}
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, 0.012, 0]}
+        scale={[1.15, 0.72, 1]}
+      >
+        <circleGeometry args={[zone.width / 2 + 0.18, 28]} />
+        <meshBasicMaterial color="#49372d" transparent opacity={0.075} depthWrite={false} />
+      </mesh>
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.035, 0]}>
         <ringGeometry args={[zone.width / 2 + 0.15, zone.width / 2 + (hovered ? 0.34 : 0.24), 36]} />
         <meshBasicMaterial color={zone.color} transparent opacity={hovered ? 0.58 : 0.18} />
@@ -568,7 +849,11 @@ function Explorer({
   const rightLegRef = useRef<THREE.Group>(null);
   const keys = useRef(new Set<string>());
   const previousNearby = useRef<CampusZone["id"] | null>(null);
-  const animationTimeRef = useRef(0);
+  const poseTimeRef = useRef(0);
+  const poseAccumulatorRef = useRef(1 / STEPPED_FPS);
+  const movementRef = useRef(new THREE.Vector3());
+  const nextPositionRef = useRef(new THREE.Vector3());
+  const desiredCameraRef = useRef(new THREE.Vector3());
   const { camera } = useThree();
 
   useEffect(() => {
@@ -589,9 +874,7 @@ function Explorer({
   useFrame((_, delta) => {
     if (!group.current) return;
     const position = positionRef.current;
-    const movement = new THREE.Vector3();
-    animationTimeRef.current += delta;
-
+    const movement = movementRef.current.set(0, 0, 0);
     if (!paused) {
       if (keys.current.has("w") || keys.current.has("arrowup")) movement.z -= 1;
       if (keys.current.has("s") || keys.current.has("arrowdown")) movement.z += 1;
@@ -612,7 +895,7 @@ function Explorer({
       }
 
       if (movement.lengthSq() > 0) {
-        const next = position.clone().add(movement);
+        const next = nextPositionRef.current.copy(position).add(movement);
         next.x = THREE.MathUtils.clamp(next.x, -WORLD_LIMIT, WORLD_LIMIT);
         next.z = THREE.MathUtils.clamp(next.z, -WORLD_LIMIT, WORLD_LIMIT);
         const blocked = CAMPUS_ZONES.some((zone) => {
@@ -628,52 +911,71 @@ function Explorer({
     }
 
     const isMoving = movement.lengthSq() > 0.00001;
-    const time = animationTimeRef.current;
-    const walkCycle = Math.sin(time * 10);
-    const idleCycle = Math.sin(time * 1.7);
-    group.current.position.copy(position);
-    group.current.position.y =
-      reducedMotion ? 0 : isMoving ? Math.abs(Math.sin(time * 10)) * 0.08 : idleCycle * 0.018;
+    group.current.position.x = position.x;
+    group.current.position.z = position.z;
 
-    if (characterRef.current) {
-      const targetScaleY = reducedMotion ? 1 : isMoving ? 1 + Math.abs(walkCycle) * 0.025 : 1 + idleCycle * 0.012;
-      characterRef.current.scale.y = THREE.MathUtils.lerp(
-        characterRef.current.scale.y,
-        targetScaleY,
-        0.12,
-      );
-      characterRef.current.rotation.z = THREE.MathUtils.lerp(
-        characterRef.current.rotation.z,
-        reducedMotion || isMoving ? 0 : Math.sin(time * 0.8) * 0.018,
-        0.08,
-      );
-    }
-    if (leftArmRef.current && rightArmRef.current && leftLegRef.current && rightLegRef.current) {
-      const limbSwing = reducedMotion || !isMoving ? 0 : walkCycle * 0.62;
-      leftArmRef.current.rotation.x = THREE.MathUtils.lerp(leftArmRef.current.rotation.x, limbSwing, 0.22);
-      rightArmRef.current.rotation.x = THREE.MathUtils.lerp(rightArmRef.current.rotation.x, -limbSwing, 0.22);
-      leftLegRef.current.rotation.x = THREE.MathUtils.lerp(leftLegRef.current.rotation.x, -limbSwing * 0.72, 0.22);
-      rightLegRef.current.rotation.x = THREE.MathUtils.lerp(rightLegRef.current.rotation.x, limbSwing * 0.72, 0.22);
-    }
-    if (headRef.current) {
-      headRef.current.rotation.y = reducedMotion || isMoving ? 0 : Math.sin(time * 0.72) * 0.16;
-      headRef.current.rotation.z = reducedMotion || isMoving ? 0 : Math.sin(time * 0.5) * 0.035;
-    }
-    if (eyesRef.current) {
-      const blink = !reducedMotion && Math.sin(time * 0.83) > 0.992 ? 0.12 : 1;
-      eyesRef.current.scale.y = THREE.MathUtils.lerp(eyesRef.current.scale.y, blink, 0.55);
+    const steppedDelta = reducedMotion
+      ? 0
+      : takeSteppedDelta(poseAccumulatorRef, delta);
+    if (reducedMotion || steppedDelta) {
+      if (steppedDelta) poseTimeRef.current += steppedDelta;
+      const poseTime = poseTimeRef.current;
+      const walkCycle = Math.sin(poseTime * 10);
+      const idleCycle = Math.sin(poseTime * 1.7);
+      group.current.position.y = reducedMotion
+        ? 0
+        : isMoving
+          ? Math.abs(walkCycle) * 0.08
+          : idleCycle * 0.018;
+
+      if (characterRef.current) {
+        const targetScaleY = reducedMotion
+          ? 1
+          : isMoving
+            ? 1 + Math.abs(walkCycle) * 0.028
+            : 1 + idleCycle * 0.012;
+        characterRef.current.scale.y = THREE.MathUtils.lerp(
+          characterRef.current.scale.y,
+          targetScaleY,
+          reducedMotion ? 1 : 0.42,
+        );
+        characterRef.current.rotation.z = reducedMotion
+          ? 0
+          : isMoving
+            ? 0
+            : Math.sin(poseTime * 0.8) * 0.018;
+      }
+      if (leftArmRef.current && rightArmRef.current && leftLegRef.current && rightLegRef.current) {
+        const limbSwing = reducedMotion || !isMoving ? 0 : walkCycle * 0.62;
+        leftArmRef.current.rotation.x = limbSwing;
+        rightArmRef.current.rotation.x = -limbSwing;
+        leftLegRef.current.rotation.x = -limbSwing * 0.72;
+        rightLegRef.current.rotation.x = limbSwing * 0.72;
+      }
+      if (headRef.current) {
+        headRef.current.rotation.y =
+          reducedMotion || isMoving ? 0 : Math.sin(poseTime * 0.72) * 0.16;
+        headRef.current.rotation.z =
+          reducedMotion || isMoving ? 0 : Math.sin(poseTime * 0.5) * 0.035;
+      }
+      if (eyesRef.current) {
+        const blink =
+          !reducedMotion && Math.sin(poseTime * 0.83) > 0.992 ? 0.12 : 1;
+        eyesRef.current.scale.y = blink;
+      }
     }
 
-    const nearest = CAMPUS_ZONES.find((zone) => {
-      const approach = new THREE.Vector3(...zone.approach);
-      return approach.distanceTo(position) < 2.2;
-    })?.id ?? null;
+    const nearest = CAMPUS_ZONES.find((zone) => isTouchingBuilding(position, zone))?.id ?? null;
     if (nearest !== previousNearby.current) {
       previousNearby.current = nearest;
       onNearby(nearest);
     }
 
-    const desiredCamera = new THREE.Vector3(position.x + 10.5, 12.8, position.z + 14);
+    const desiredCamera = desiredCameraRef.current.set(
+      position.x + 10.5,
+      12.8,
+      position.z + 14,
+    );
     camera.position.lerp(desiredCamera, reducedMotion ? 0.18 : 0.075);
     camera.lookAt(position.x, 1.1, position.z - 1.2);
   });
@@ -681,10 +983,10 @@ function Explorer({
   return (
     <group ref={group}>
       <group ref={characterRef}>
-        <mesh castShadow position={[0, 1.37, -0.08]}>
+        <ClayMesh seed="explorer-torso" deformation={0.012} castShadow position={[0, 1.37, -0.08]} rotation={[0.006, 0, -0.008]}>
           <capsuleGeometry args={[0.4, 0.76, 8, 14]} />
-          <meshStandardMaterial color="#2f66d0" roughness={0.88} />
-        </mesh>
+          <ClayMaterial color="#2f66d0" roughness={0.9} normalStrength={0.15} />
+        </ClayMesh>
         <mesh position={[0, 1.45, 0.325]}>
           <boxGeometry args={[0.035, 0.62, 0.035]} />
           <meshStandardMaterial color="#d9f5ff" roughness={0.64} />
@@ -693,33 +995,36 @@ function Explorer({
           <circleGeometry args={[0.075, 12]} />
           <meshStandardMaterial color="#ffbf3f" roughness={0.8} />
         </mesh>
-        <mesh castShadow position={[0, 2.08, 0]}>
+        <ClayMesh seed="explorer-neck" deformation={0.01} castShadow position={[0, 2.08, 0]} rotation={[0, 0.02, 0.01]}>
           <cylinderGeometry args={[0.25, 0.29, 0.18, 16]} />
-          <meshStandardMaterial color="#fff3de" roughness={0.9} />
-        </mesh>
-        <RoundedBox
+          <ClayMaterial color="#fff3de" roughness={0.92} normalStrength={0.12} />
+        </ClayMesh>
+        <ClayRoundedBox
+          seed="explorer-backpack"
+          deformation={0.012}
           args={[0.64, 0.7, 0.24]}
           radius={0.15}
           smoothness={4}
-          position={[0, 1.5, -0.39]}
+          position={[0.01, 1.5, -0.39]}
+          rotation={[0.01, -0.015, 0.012]}
           castShadow
         >
-          <meshStandardMaterial color="#ff6f61" roughness={0.88} />
-        </RoundedBox>
+          <ClayMaterial color="#ff6f61" roughness={0.9} normalStrength={0.14} />
+        </ClayRoundedBox>
 
         <group ref={headRef} position={[0, 2.46, 0]}>
-          <mesh castShadow>
+          <ClayMesh seed="explorer-head" deformation={0.011} castShadow scale={[1.015, 0.985, 1]}>
             <sphereGeometry args={[0.4, 18, 14]} />
-            <meshStandardMaterial color="#d9946d" roughness={0.92} />
-          </mesh>
-          <mesh castShadow position={[0, 0.24, -0.025]}>
+            <ClayMaterial color="#d9946d" roughness={0.93} normalStrength={0.12} />
+          </ClayMesh>
+          <ClayMesh seed="explorer-hair-cap" deformation={0.012} castShadow position={[0, 0.24, -0.025]} rotation={[0.012, 0, -0.018]}>
             <sphereGeometry args={[0.405, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.52]} />
-            <meshStandardMaterial color="#24344a" roughness={0.9} />
-          </mesh>
-          <mesh castShadow position={[-0.2, 0.22, 0.2]} scale={[0.55, 0.32, 0.48]} rotation={[0.1, 0, -0.28]}>
+            <ClayMaterial color="#24344a" roughness={0.92} normalStrength={0.13} />
+          </ClayMesh>
+          <ClayMesh seed="explorer-hair-lock" deformation={0.014} castShadow position={[-0.2, 0.22, 0.2]} scale={[0.55, 0.32, 0.48]} rotation={[0.1, 0, -0.28]}>
             <sphereGeometry args={[0.35, 12, 9]} />
-            <meshStandardMaterial color="#24344a" roughness={0.9} />
-          </mesh>
+            <ClayMaterial color="#24344a" roughness={0.92} normalStrength={0.13} />
+          </ClayMesh>
           <group ref={eyesRef}>
             {[-0.13, 0.13].map((eyeX) => (
               <mesh key={eyeX} position={[eyeX, 0.035, 0.374]}>
@@ -728,10 +1033,10 @@ function Explorer({
               </mesh>
             ))}
           </group>
-          <mesh position={[0, -0.02, 0.39]}>
+          <ClayMesh seed="explorer-nose" deformation={0.008} position={[0, -0.02, 0.39]}>
             <sphereGeometry args={[0.045, 10, 8]} />
-            <meshStandardMaterial color="#c77f5b" roughness={0.9} />
-          </mesh>
+            <ClayMaterial color="#c77f5b" roughness={0.92} normalStrength={0.08} />
+          </ClayMesh>
           <RoundedBox
             args={[0.14, 0.032, 0.028]}
             radius={0.014}
@@ -743,39 +1048,39 @@ function Explorer({
         </group>
 
         <group ref={leftArmRef} position={[-0.47, 1.68, 0]}>
-          <mesh castShadow position={[0, -0.38, 0]}>
+          <ClayMesh seed="explorer-left-arm" deformation={0.01} castShadow position={[0, -0.38, 0]} rotation={[0, 0, 0.025]}>
             <capsuleGeometry args={[0.12, 0.48, 6, 10]} />
-            <meshStandardMaterial color="#fff3de" roughness={0.9} />
-          </mesh>
-          <mesh castShadow position={[0, -0.7, 0]}>
+            <ClayMaterial color="#fff3de" roughness={0.92} normalStrength={0.11} />
+          </ClayMesh>
+          <ClayMesh seed="explorer-left-hand" deformation={0.009} castShadow position={[0.01, -0.7, 0]}>
             <sphereGeometry args={[0.13, 10, 8]} />
-            <meshStandardMaterial color="#d9946d" roughness={0.92} />
-          </mesh>
+            <ClayMaterial color="#d9946d" roughness={0.93} normalStrength={0.1} />
+          </ClayMesh>
         </group>
         <group ref={rightArmRef} position={[0.47, 1.68, 0]}>
-          <mesh castShadow position={[0, -0.38, 0]}>
+          <ClayMesh seed="explorer-right-arm" deformation={0.01} castShadow position={[0, -0.38, 0]} rotation={[0, 0, -0.022]}>
             <capsuleGeometry args={[0.12, 0.48, 6, 10]} />
-            <meshStandardMaterial color="#fff3de" roughness={0.9} />
-          </mesh>
-          <mesh castShadow position={[0, -0.7, 0]}>
+            <ClayMaterial color="#fff3de" roughness={0.92} normalStrength={0.11} />
+          </ClayMesh>
+          <ClayMesh seed="explorer-right-hand" deformation={0.009} castShadow position={[-0.01, -0.7, 0]}>
             <sphereGeometry args={[0.13, 10, 8]} />
-            <meshStandardMaterial color="#d9946d" roughness={0.92} />
-          </mesh>
+            <ClayMaterial color="#d9946d" roughness={0.93} normalStrength={0.1} />
+          </ClayMesh>
         </group>
         <group ref={leftLegRef} position={[-0.2, 0.9, 0]}>
-          <mesh castShadow position={[0, -0.42, 0]}>
+          <ClayMesh seed="explorer-left-leg" deformation={0.01} castShadow position={[0, -0.42, 0]} rotation={[0, 0, 0.018]}>
             <capsuleGeometry args={[0.14, 0.54, 6, 10]} />
-            <meshStandardMaterial color="#40536b" roughness={0.88} />
-          </mesh>
+            <ClayMaterial color="#40536b" roughness={0.9} normalStrength={0.12} />
+          </ClayMesh>
           <RoundedBox args={[0.32, 0.2, 0.46]} radius={0.1} position={[0, -0.77, 0.1]} castShadow>
             <meshStandardMaterial color="#25334a" roughness={0.82} />
           </RoundedBox>
         </group>
         <group ref={rightLegRef} position={[0.2, 0.9, 0]}>
-          <mesh castShadow position={[0, -0.42, 0]}>
+          <ClayMesh seed="explorer-right-leg" deformation={0.01} castShadow position={[0, -0.42, 0]} rotation={[0, 0, -0.02]}>
             <capsuleGeometry args={[0.14, 0.54, 6, 10]} />
-            <meshStandardMaterial color="#40536b" roughness={0.88} />
-          </mesh>
+            <ClayMaterial color="#40536b" roughness={0.9} normalStrength={0.12} />
+          </ClayMesh>
           <RoundedBox args={[0.32, 0.2, 0.46]} radius={0.1} position={[0, -0.77, 0.1]} castShadow>
             <meshStandardMaterial color="#25334a" roughness={0.82} />
           </RoundedBox>
@@ -794,6 +1099,7 @@ function CampusScene({
   positionRef,
   paused,
   reducedMotion,
+  renderProfile,
   onNavigate,
   onNearby,
 }: {
@@ -801,64 +1107,53 @@ function CampusScene({
   positionRef: PositionRef;
   paused: boolean;
   reducedMotion: boolean;
+  renderProfile: CampusRenderProfile;
   onNavigate: (zone: CampusZone) => void;
   onNearby: (id: CampusZone["id"] | null) => void;
 }) {
-  const trees = useMemo(
-    () =>
-      [
-        [-12, -8], [-11, 1], [-12, 10], [-5, 10], [4, 10], [12, 10],
-        [12, 1], [12, -9], [5, -12], [-6, -12], [-3, 3], [3, 3],
-      ] as [number, number][],
-    [],
-  );
-
   return (
     <>
       <color attach="background" args={["#9fd8ff"]} />
       <fog attach="fog" args={["#b9e4ff", 24, 46]} />
-      <ambientLight intensity={1.65} />
-      <hemisphereLight args={["#fff7dd", "#79b98a", 1.6]} />
+      <ambientLight intensity={0.2} />
+      <hemisphereLight args={["#fff0d4", "#607d61", 0.72]} />
       <directionalLight
         castShadow
-        position={[10, 18, 8]}
-        intensity={2.3}
-        shadow-mapSize-width={reducedMotion ? 1024 : 2048}
-        shadow-mapSize-height={reducedMotion ? 1024 : 2048}
+        color="#ffd8ad"
+        position={[10, 18, 7]}
+        intensity={2.38}
+        shadow-mapSize-width={renderProfile.shadowMapSize}
+        shadow-mapSize-height={renderProfile.shadowMapSize}
         shadow-camera-far={48}
-        shadow-camera-left={-22}
-        shadow-camera-right={22}
-        shadow-camera-top={22}
-        shadow-camera-bottom={-22}
+        shadow-camera-left={-18}
+        shadow-camera-right={18}
+        shadow-camera-top={18}
+        shadow-camera-bottom={-18}
+        shadow-bias={-0.00045}
+        shadow-normalBias={0.025}
+      />
+      <directionalLight
+        color="#b9d9ff"
+        position={[-12, 9, -10]}
+        intensity={0.42}
       />
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.08, 0]}>
         <circleGeometry args={[21, 64]} />
-        <meshStandardMaterial color="#cce8a4" roughness={1} />
+        <ClayMaterial color="#bdd68f" roughness={0.98} normalStrength={0.09} />
       </mesh>
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.03, 0]}>
         <ringGeometry args={[7.6, 9.1, 64]} />
-        <meshStandardMaterial color="#fff1d7" roughness={0.98} />
+        <ClayMaterial color="#f0dfc4" roughness={0.96} normalStrength={0.08} />
       </mesh>
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
         <circleGeometry args={[4.4, 48]} />
-        <meshStandardMaterial color="#f7d58d" roughness={0.98} />
+        <ClayMaterial color="#e5c36f" roughness={0.96} normalStrength={0.08} />
       </mesh>
       {CAMPUS_ZONES.map((zone) => (
         <Building key={zone.id} zone={zone} onSelect={onNavigate} />
       ))}
-      {trees.map(([x, z], index) => (
-        <Tree
-          key={`${x}-${z}`}
-          position={[x, 0, z]}
-          scale={0.8 + (index % 3) * 0.12}
-          reducedMotion={reducedMotion}
-          phase={index * 0.57}
-        />
-      ))}
+      <TreeGrove reducedMotion={reducedMotion} />
       <LivingEnvironment reducedMotion={reducedMotion} />
-      {!reducedMotion && (
-        <Sparkles count={48} scale={[32, 7, 32]} size={1.5} speed={0.22} color="#ffffff" opacity={0.35} />
-      )}
       <Explorer
         positionRef={positionRef}
         targetRef={moveTarget}
@@ -938,17 +1233,31 @@ export default function ClayCampus() {
   const [accessibleView, setAccessibleView] = useState(false);
   const [nearby, setNearby] = useState<CampusZone["id"] | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [compactRendering, setCompactRendering] = useState(false);
   const [webglAvailable, setWebglAvailable] = useState(true);
   const positionRef = useRef(START.clone());
   const moveTarget = useRef<MoveTarget>(null);
   const showAccessible = accessibleView || !webglAvailable;
   const paused = Boolean(!enteredCampus || activeZone || recruiterOpen || showAccessible);
+  const renderProfile = useMemo<CampusRenderProfile>(() => {
+    if (reducedMotion) {
+      return { mode: "reduced", dpr: [1, 1.15], shadowMapSize: 512 };
+    }
+    if (compactRendering) {
+      return { mode: "mobile", dpr: [1, 1.25], shadowMapSize: 512 };
+    }
+    return { mode: "desktop", dpr: [1, 1.5], shadowMapSize: 1024 };
+  }, [compactRendering, reducedMotion]);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const compactMedia = window.matchMedia("(max-width: 768px), (pointer: coarse)");
     const updateMotion = () => setReducedMotion(media.matches);
+    const updateRendering = () => setCompactRendering(compactMedia.matches);
     updateMotion();
+    updateRendering();
     media.addEventListener("change", updateMotion);
+    compactMedia.addEventListener("change", updateRendering);
     try {
       const canvas = document.createElement("canvas");
       const available = Boolean(canvas.getContext("webgl2") || canvas.getContext("webgl"));
@@ -956,7 +1265,10 @@ export default function ClayCampus() {
     } catch {
       queueMicrotask(() => setWebglAvailable(false));
     }
-    return () => media.removeEventListener("change", updateMotion);
+    return () => {
+      media.removeEventListener("change", updateMotion);
+      compactMedia.removeEventListener("change", updateRendering);
+    };
   }, []);
 
   useEffect(() => {
@@ -1094,16 +1406,21 @@ export default function ClayCampus() {
         {!showAccessible && (
           <CampusCanvasBoundary onError={() => setWebglAvailable(false)}>
             <Canvas
-              shadows
-              dpr={[1, reducedMotion ? 1.25 : 1.65]}
+              shadows="basic"
+              dpr={renderProfile.dpr}
               camera={{ position: [10.5, 12.8, 18.6], fov: 50, near: 0.1, far: 80 }}
               gl={{ antialias: true, powerPreference: "high-performance" }}
+              onCreated={({ gl }) => {
+                gl.toneMapping = THREE.ACESFilmicToneMapping;
+                gl.toneMappingExposure = 0.98;
+              }}
             >
               <CampusScene
                 moveTarget={moveTarget}
                 positionRef={positionRef}
                 paused={paused}
                 reducedMotion={reducedMotion}
+                renderProfile={renderProfile}
                 onNavigate={moveTo}
                 onNearby={setNearby}
               />
@@ -1142,7 +1459,7 @@ export default function ClayCampus() {
               <button
                 key={zone.id}
                 style={{ "--zone": zone.color } as React.CSSProperties}
-                onClick={() => moveTo(zone)}
+                onClick={() => warpTo(zone)}
                 aria-label={`Go to ${zone.sceneLabel}`}
               >
                 <i />{zone.sceneLabel}

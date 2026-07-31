@@ -222,7 +222,7 @@ export default function PortfolioExperience({
                     <p>STAPLES</p>
                     <h3>Software Engineer II, Mobile</h3>
                     <ul>
-                      <li>Owned the architecture and primary implementation for modernizing a self-service print application from Java on Android 7 to Kotlin on Android 13.</li>
+                      <li>Served as lead architect for the complete Android 13 redesign of the self-service print application, coordinating an external vendor, the UI team, and internal engineering partners while replacing its Java and Android 7 foundation with Kotlin.</li>
                       <li>Enabled multilingual support, Google Drive and Dropbox workflows, and Android integration with Xerox printers, scanners, payments, PIN pads, and store networks.</li>
                       <li>Implemented Apple Pay and Google Pay support and helped design a four-stage local update for bank-mandated payment-terminal software. The process brought vendor-technician cost for the rollout to $0 and reached 800+ locations with zero production failures.</li>
                       <li>Built real-time printer status-light monitoring and Splunk dashboards for issue duration, frequency, and production diagnosis.</li>

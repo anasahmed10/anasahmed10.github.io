@@ -70,7 +70,7 @@ export const CAMPUS_DESTINATIONS: CampusDestination[] = [
     kicker: "STAPLES · ENTERPRISE ANDROID",
     title: "An all-in-one self-service print, copy, and payment platform.",
     summary:
-      "I owned the architecture and primary implementation for modernizing a hardware-integrated Android application from Java on Android 7 to Kotlin on Android 13.",
+      "I served as lead architect, working with an external vendor, the UI team, and internal engineering partners to redesign the application for Android 13, replacing its Java and Android 7 foundation with Kotlin.",
     impact: "800+ locations · $0 vendor-technician rollout cost · zero production failures",
     color: "#2f66d0",
     position: [9, 0, -6],
@@ -78,7 +78,8 @@ export const CAMPUS_DESTINATIONS: CampusDestination[] = [
     height: 5.6,
     width: 5.8,
     details: [
-      "The modernization improved maintainability and enabled multilingual support plus Google Drive and Dropbox workflows across Xerox self-service devices.",
+      "I led the architecture across the external vendor, UI team, and internal engineering partners, aligning the redesigned experience with Xerox hardware, payments, store networks, and support requirements.",
+      "The full Android 13 redesign improved maintainability and enabled multilingual support plus Google Drive and Dropbox workflows across Xerox self-service devices.",
       "I implemented Apple Pay and Google Pay support within the same retail flow.",
       "During a bank-mandated payment-terminal software update, I helped design a four-stage local upgrade process that brought vendor-technician cost for the rollout to $0. It reached more than 800 locations with zero production failures.",
       "I also built real-time printer status-light monitoring in Splunk so technical teams and management could see issue duration and frequency.",
@@ -204,4 +205,3 @@ export const CAMPUS_DESTINATIONS: CampusDestination[] = [
 export const FEATURED_PROJECTS = CAMPUS_DESTINATIONS.filter(
   (destination) => destination.type === "project",
 );
-
