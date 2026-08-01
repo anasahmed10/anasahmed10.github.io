@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://anas-systems-campus.anas-ahmed10988004.chatgpt.site/"),
+  metadataBase: new URL("https://anasahmed10.github.io/"),
   title: {
     default: "Anas Ahmed — Android Engineering & Products",
     template: "%s · Anas Ahmed",
@@ -24,10 +24,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Anas Ahmed — Android Engineering for Real Devices",
     description: "A seven-landmark clay project campus for enterprise Android, connected vehicles, automation, TabTally, and SmartShopper.",
-    url: "https://anas-systems-campus.anas-ahmed10988004.chatgpt.site/",
+    url: "https://anasahmed10.github.io/",
     type: "website",
     images: [{
-      url: "https://anas-systems-campus.anas-ahmed10988004.chatgpt.site/og.png",
+      url: "https://anasahmed10.github.io/og.png",
       width: 1672,
       height: 941,
       alt: "Anas Ahmed’s seven-landmark clay campus for Android engineering, products, and SmartShopper",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Anas Ahmed — Android Engineering for Real Devices",
     description: "A seven-landmark clay project campus for enterprise Android, connected vehicles, automation, TabTally, and SmartShopper.",
-    images: ["https://anas-systems-campus.anas-ahmed10988004.chatgpt.site/og.png"],
+    images: ["https://anasahmed10.github.io/og.png"],
   },
 };
 

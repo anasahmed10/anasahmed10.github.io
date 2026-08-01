@@ -35,6 +35,114 @@ export type CampusDestination = {
   link?: { label: string; href: string; external?: boolean };
 };
 
+export type CareerRole = {
+  company: string;
+  title: string;
+  dates: string;
+  location: string;
+  bullets: string[];
+};
+
+export type SkillGroup = {
+  label: string;
+  skills: string[];
+};
+
+export const CAREER_ROLES: CareerRole[] = [
+  {
+    company: "Staples",
+    title: "Software Engineer II, Mobile",
+    dates: "Oct. 2022 - Present",
+    location: "Framingham, MA",
+    bullets: [
+      "Own Android architecture and primary implementation for modernizing a high-traffic self-service print application from Java on Android 7 to Kotlin on Android 13, including multilingual, Google Drive, and Dropbox workflows.",
+      "Build production Android workflows across Xerox AltaLink C8145/C8245 printers, scanners, Ingenico Lane 3000 and Verifone payment terminals, PIN pads, and store networks, including Apple Pay and Google Pay support.",
+      "Helped design a four-stage local payment-terminal update that reached 800+ locations with zero production failures and eliminated onsite vendor-technician cost for the rollout.",
+      "Built real-time printer status-light monitoring and Splunk dashboards for issue duration, frequency, and production diagnosis.",
+    ],
+  },
+  {
+    company: "General Motors",
+    title: "Sr. Mobile Device Software Developer",
+    dates: "Jul. 2021 - Jul. 2022",
+    location: "Remote",
+    bullets: [
+      "Developed Android, iOS, and React Native features for General Motors mobile applications, including authentication and routing through push notifications.",
+      "Created a Universal Deep Link Handler in React Native to consolidate Android routing and simplify future development.",
+      "Built a web dashboard that used Jenkins pipeline data to track Android and iOS app-size changes, and deployed mobile build and release pipelines in Azure DevOps.",
+    ],
+  },
+  {
+    company: "Syntax Tutoring",
+    title: "Founder and CEO",
+    dates: "Aug. 2021 - Jan. 2024",
+    location: "Foxborough, MA",
+    bullets: [
+      "Founded a programming tutoring company and designed practical Android and web curricula, interactive applications, lectures, and hands-on labs.",
+    ],
+  },
+];
+
+export const SKILL_GROUPS: SkillGroup[] = [
+  {
+    label: "Android engineering",
+    skills: [
+      "Android SDK",
+      "Kotlin",
+      "Jetpack Compose",
+      "Coroutines",
+      "Flow / StateFlow",
+      "ViewModel",
+      "Room",
+      "WorkManager",
+      "Navigation",
+      "Hilt / Dagger",
+      "MVVM",
+      "LiveData",
+      "RxJava",
+      "Retrofit",
+      "Gradle",
+    ],
+  },
+  {
+    label: "Testing and quality",
+    skills: ["JUnit", "Espresso", "MockK", "POS automation", "Production diagnostics"],
+  },
+  {
+    label: "Devices and systems",
+    skills: [
+      "Hardware SDK / API integration",
+      "REST / JSON APIs",
+      "Local networking",
+      "NanoHttpd",
+      "NFC",
+      "Payments",
+      "Printers",
+      "Scanners",
+      "Splunk",
+    ],
+  },
+  {
+    label: "Cross-platform and delivery",
+    skills: [
+      "Kotlin Multiplatform",
+      "Compose Multiplatform",
+      "React Native",
+      "Ktor",
+      "Koin",
+      "SQLDelight",
+      "Jenkins",
+      "Azure DevOps",
+      "Firebase",
+      "Git",
+    ],
+  },
+  {
+    label: "Languages",
+    skills: ["Java", "JavaScript", "Swift", "Python", "C#", "C++", "C", "SQL", "HTML / CSS"],
+  },
+];
+
 export const CAMPUS_DESTINATIONS: CampusDestination[] = [
   {
     id: "origin",
@@ -173,6 +281,7 @@ export const CAMPUS_DESTINATIONS: CampusDestination[] = [
       "Shared geometry reconstruction repairs weak rows before strict-schema extraction through Groq.",
       "People review names, prices, assignments, tip, and totals before deterministic shared logic calculates the split.",
       "Compose Multiplatform, Ktor, Koin, and SQLDelight support one product across both platforms.",
+      "TabTally has been submitted for Apple App Store review and is in Google Play external testing.",
     ],
     tech: ["Kotlin Multiplatform", "Compose", "ML Kit", "Vision", "Groq", "SQLDelight"],
     link: { label: "Explore TabTally", href: "/products/tabtally/" },

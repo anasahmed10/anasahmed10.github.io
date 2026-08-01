@@ -31,7 +31,7 @@ The primary deployment uses Vinext and Vite. `vite.config.ts` composes Vinext, t
 | `app/public-site.css` | Recruiter and product page styling |
 | `app/clay-campus.css` | Campus canvas, overlays, dialogs, controls, fallbacks, and responsive rules |
 | `public/` | Images, clay textures, and downloadable resume PDFs |
-| `scripts/generate_resumes.py` | Generates the resume PDF variants |
+| `scripts/generate_resumes.py` | Generates four local-only recruiter-lens resume drafts under `outputs/resume-drafts/` |
 
 ## Supporting infrastructure
 

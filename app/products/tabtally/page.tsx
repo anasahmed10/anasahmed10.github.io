@@ -18,9 +18,11 @@ import {
   UsersThree,
 } from "@phosphor-icons/react/dist/ssr";
 import { PublicFooter, PublicHeader } from "../../components/PublicHeader";
+import { PRODUCTS } from "../../data/products";
 
 const SUPPORT_URL = "https://anasahmed10.github.io/tabtally-support/";
 const PRIVACY_URL = "https://anasahmed10.github.io/tabtally-support/privacy/";
+const TABTALLY = PRODUCTS.find((product) => product.id === "tabtally")!;
 
 export const metadata: Metadata = {
   title: "TabTally — Kotlin Multiplatform Receipt Splitting",
@@ -31,7 +33,7 @@ export const metadata: Metadata = {
     description:
       "A recruiter-first product story covering Kotlin Multiplatform, on-device OCR, human-reviewed AI, and dependable bill-splitting logic.",
     type: "website",
-    url: "https://anas-systems-campus.anas-ahmed10988004.chatgpt.site/products/tabtally/",
+    url: "https://anasahmed10.github.io/products/tabtally/",
     images: [
       {
         url: "/products/tabtally/og.png",
@@ -109,7 +111,7 @@ export default function TabTallyPage() {
           <div className="tabtally-brand-line">
             <img src="/products/tabtally/app-icon.png" alt="" />
             <span>TabTally</span>
-            <small>Coming soon · Android + iOS</small>
+            <small>{TABTALLY.status} · Android + iOS</small>
           </div>
           <p className="tabtally-kicker">KOTLIN MULTIPLATFORM · MOBILE AI · PRODUCT SYSTEMS</p>
           <h1 id="tabtally-title">From messy receipt to trustworthy split.</h1>
@@ -257,11 +259,11 @@ export default function TabTallyPage() {
       <section className="tabtally-availability">
         <img src="/products/tabtally/app-icon.png" alt="" />
         <div>
-          <p>COMING SOON · ANDROID + iOS</p>
+          <p>APPLE REVIEW · GOOGLE PLAY EXTERNAL TESTING</p>
           <h2>Built carefully enough to review. Simple enough to use at dinner.</h2>
           <span>
-            Store links will appear here when the public release is verified.
-            Support and privacy information are available now.
+            {TABTALLY.availability.apple}. {TABTALLY.availability.googlePlay}.
+            Store links will appear here when public availability is verified.
           </span>
         </div>
         <div>
