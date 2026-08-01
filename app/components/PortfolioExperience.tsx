@@ -1,138 +1,79 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { FEATURED_PROJECTS } from "../data/portfolio";
+import { CAREER_ROLES, FEATURED_PROJECTS, SKILL_GROUPS } from "../data/portfolio";
+import { PRODUCTS } from "../data/products";
 
 type RoleLens = {
   id: string;
   label: string;
   title: string;
   summary: string;
-  focus: string;
-  resume: string;
+  focus: string[];
 };
 
 const RESUME_HREF = "/resumes/Anas_Ahmed_Resume.pdf";
 
 const ROLE_LENSES: RoleLens[] = [
   {
-    id: "enterprise",
-    label: "Enterprise devices",
-    title: "Enterprise Android Engineer · Hardware-Integrated Mobile Systems",
+    id: "enterprise-mobile",
+    label: "Enterprise mobile",
+    title: "Enterprise Mobile Engineer",
     summary:
-      "Android engineer building production software around printers, scanners, payment terminals, tablets, and store networks.",
-    focus: "Kotlin modernization · hardware integration · production reliability",
-    resume: RESUME_HREF,
+      "Android and cross-platform engineering for production workflows that connect software, devices, and the people operating them.",
+    focus: ["Kotlin", "Android architecture", "Production reliability"],
   },
   {
-    id: "payments",
-    label: "Payments & POS",
-    title: "Android Payments / POS Device Integration Engineer",
-    summary:
-      "Production Android experience across contactless payments, PIN pads, POS automation, printers, and distributed retail devices.",
-    focus: "Apple Pay · Google Pay · PIN pads · field-device rollouts",
-    resume: RESUME_HREF,
-  },
-  {
-    id: "platform",
+    id: "android-platform",
     label: "Android platform",
     title: "Senior Android Engineer · Kotlin, Architecture & Mobile Platform",
     summary:
-      "Android ownership spanning Java-to-Kotlin modernization, maintainable architecture, delivery tooling, observability, and device integration.",
-    focus: "Android 7→13 · architecture · CI/CD · observability",
-    resume: RESUME_HREF,
+      "Android ownership spanning Java-to-Kotlin modernization, maintainable architecture, delivery tooling, observability, and long-lived applications.",
+    focus: ["Android 7 to 13", "Architecture", "CI/CD"],
   },
   {
-    id: "lead",
-    label: "Technical ownership",
-    title: "Lead Mobile Engineer · Enterprise Android",
+    id: "payments-pos",
+    label: "Payments & POS",
+    title: "Android Payments & POS Integration Engineer",
     summary:
-      "Mobile engineer comfortable owning architecture, implementation, debugging, rollout support, and long-term maintenance.",
-    focus: "Independent delivery · cross-functional work · maintainable handoff",
-    resume: RESUME_HREF,
+      "Production Android experience across contactless payments, PIN pads, POS automation, printers, scanners, and distributed retail devices.",
+    focus: ["Apple Pay", "Google Pay", "Payment terminals"],
   },
   {
-    id: "ai",
-    label: "Mobile AI",
-    title: "Mobile Engineer · Android, AI Integration & Product Systems",
+    id: "mobile-hardware",
+    label: "Mobile + hardware",
+    title: "Mobile + Hardware Systems Engineer · Device Integration",
     summary:
-      "Android and Kotlin production experience paired with practical OCR, reviewed AI extraction, and cross-platform product work.",
-    focus: "Kotlin Multiplatform · OCR · Groq · Firebase",
-    resume: RESUME_HREF,
-  },
-  {
-    id: "robotics",
-    label: "Robotics & HMI",
-    title: "Android HMI / Robotics Software Engineer",
-    summary:
-      "Application-layer Android engineer interested in operator controls, device communication, networking, sensors, and automation.",
-    focus: "Android/Linux interfaces · networking · HMI · device systems",
-    resume: RESUME_HREF,
-  },
-  {
-    id: "logistics",
-    label: "Logistics & IoT",
-    title: "Android Logistics / Warehouse Automation Engineer",
-    summary:
-      "Android engineer focused on tablet workflows, scanner automation, local networking, and software used around physical operations.",
-    focus: "Tablets · scanners · edge applications · local networking",
-    resume: RESUME_HREF,
-  },
-  {
-    id: "medical",
-    label: "Medical devices",
-    title: "Android Medical Device / Enterprise Device Software Engineer",
-    summary:
-      "Reliability-focused Android engineer experienced in device communication, operational monitoring, and troubleshooting near the hardware boundary.",
-    focus: "Device communication · observability · production stability",
-    resume: RESUME_HREF,
+      "Application-layer mobile engineering around printers, scanners, payment terminals, local networks, sensors, and physical operations.",
+    focus: ["Hardware SDKs", "Device communication", "Observability"],
   },
 ];
 
-const SKILLS = [
-  "Kotlin",
-  "Java",
-  "JavaScript",
-  "Swift",
-  "Python",
-  "C#",
-  "C++",
-  "C",
-  "SQL",
-  "HTML/CSS",
-  "Android",
-  "Jetpack Compose",
-  "Kotlin Multiplatform",
-  "Compose Multiplatform",
-  "Coroutines",
-  "MVVM",
-  "RxJava",
-  "Retrofit",
-  "Gradle",
-  "React Native",
-  "Node.js",
-  "Hardware SDK/API integration",
-  "Local networking",
-  "NanoHttpd",
-  "Jenkins",
-  "Azure DevOps",
-  "Firebase",
-  "Splunk",
-  "Koin",
-  "Ktor",
-  "OCR.space",
-  "Qwen",
+const IMPACT = [
+  {
+    value: "800+",
+    label: "locations",
+    detail: "Staged payment-terminal update",
+  },
+  {
+    value: "0 / $0",
+    label: "failures / onsite cost",
+    detail: "Production rollout result",
+  },
+  {
+    value: "65 / +55%",
+    label: "tests / automation",
+    detail: "POS scanner automation",
+  },
+  {
+    value: "7 to 13",
+    label: "Android versions",
+    detail: "Java-to-Kotlin modernization",
+  },
 ];
 
-const tabTallyFlow = ["Capture", "On-device OCR", "Review", "Assign", "Calculate", "Share"];
-
-export default function PortfolioExperience({
-  initialMode,
-}: {
-  initialMode: "campus" | "recruiter";
-}) {
-  void initialMode;
-  const [roleLens, setRoleLens] = useState("enterprise");
+export default function PortfolioExperience() {
+  const [roleLens, setRoleLens] = useState(ROLE_LENSES[0].id);
   const activeLens = useMemo(
     () => ROLE_LENSES.find((lens) => lens.id === roleLens) ?? ROLE_LENSES[0],
     [roleLens],
@@ -142,215 +83,195 @@ export default function PortfolioExperience({
   );
   const tabTally = FEATURED_PROJECTS.find((project) => project.id === "tabtally");
   const smartShopper = FEATURED_PROJECTS.find((project) => project.id === "smartshopper");
+  const tabTallyProduct = PRODUCTS.find((product) => product.id === "tabtally");
 
   return (
-    <main>
-      <a className="skip-link" href="#experience">Skip to experience</a>
-
-      <section className="resume-view" aria-labelledby="resume-title">
-        <div className="resume-topbar">
-          <p><i /> RECRUITER VIEW · VERIFIED PROJECT AND EXPERIENCE SUMMARY</p>
-          <div>
-            <a href="/campus/">Open 3D campus</a>
-            <a href="/products/">Products</a>
-            <a href="mailto:anas.ahmed10@outlook.com">Contact</a>
+    <>
+      <div className="recruiter-view">
+        <section className="recruiter-hero" aria-labelledby="recruiter-title">
+          <div className="recruiter-hero-copy">
+            <p className="recruiter-eyebrow">ANAS AHMED · ENTERPRISE MOBILE ENGINEER</p>
+            <h1 id="recruiter-title">Android systems built around real devices.</h1>
+            <p className="recruiter-lede">
+              5+ years building Kotlin, Android, and cross-platform software for
+              printers, scanners, payment terminals, POS automation, and
+              connected-device workflows at Staples and General Motors.
+            </p>
+            <div className="recruiter-actions">
+              <a className="recruiter-primary" href={RESUME_HREF} download>Download résumé</a>
+              <a href="#experience">View experience</a>
+              <a href="mailto:anas.ahmed10@outlook.com">Email Anas</a>
+              <a href="https://www.linkedin.com/in/anas-ahmed-28b391166" target="_blank" rel="noreferrer">LinkedIn ↗</a>
+            </div>
           </div>
-        </div>
 
-        <section className="role-lens-panel" aria-labelledby="lens-heading">
-          <div className="lens-intro">
-            <small>ROLE LENS</small>
-            <h2 id="lens-heading">Same experience, different emphasis.</h2>
-            <p>Choose the role closest to the work you are hiring for.</p>
+          <aside className="recruiter-profile" aria-label="Current profile">
+            <div className="recruiter-monogram" aria-hidden="true">AA</div>
+            <dl>
+              <div><dt>Current role</dt><dd>Software Engineer II, Mobile</dd></div>
+              <div><dt>Current company</dt><dd>Staples</dd></div>
+              <div><dt>Location</dt><dd>Greater Boston</dd></div>
+              <div><dt>Availability</dt><dd>Remote · Boston-area hybrid</dd></div>
+              <div><dt>Education</dt><dd>B.S. Computer Science</dd></div>
+            </dl>
+          </aside>
+        </section>
+
+        <dl className="recruiter-impact" aria-label="Selected engineering impact">
+          {IMPACT.map((item) => (
+            <div key={item.label}>
+              <dt><strong>{item.value}</strong><span>{item.label}</span></dt>
+              <dd>{item.detail}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <section className="recruiter-lenses" aria-labelledby="role-lens-title">
+          <div className="recruiter-section-intro">
+            <p>ROLE EMPHASIS</p>
+            <h2 id="role-lens-title">One background, four relevant hiring paths.</h2>
+            <span>Choose the closest target role. Employment titles and dates remain unchanged.</span>
           </div>
-          <div className="lens-controls" role="tablist" aria-label="Role lenses">
+          <div className="recruiter-lens-controls" aria-label="Choose a target role emphasis">
             {ROLE_LENSES.map((lens) => (
               <button
                 key={lens.id}
-                role="tab"
-                aria-selected={roleLens === lens.id}
-                className={roleLens === lens.id ? "active" : ""}
+                type="button"
+                aria-pressed={roleLens === lens.id}
                 onClick={() => setRoleLens(lens.id)}
               >
                 {lens.label}
               </button>
             ))}
           </div>
-          <div className="lens-readout" role="tabpanel">
+          <div className="recruiter-lens-readout" aria-live="polite">
             <div>
-              <span>CURRENT LENS</span>
-              <strong>{activeLens.title}</strong>
+              <small>TARGET ROLE LENS</small>
+              <h3>{activeLens.title}</h3>
               <p>{activeLens.summary}</p>
-              <small>{activeLens.focus}</small>
+              <ul aria-label="Role focus">
+                {activeLens.focus.map((item) => <li key={item}>{item}</li>)}
+              </ul>
             </div>
-            <a href={activeLens.resume} download>
-              Download current résumé <span aria-hidden="true">↓</span>
-            </a>
+            <a href={RESUME_HREF} download>Download canonical résumé</a>
           </div>
         </section>
 
-        <div className="resume-hero">
-          <div className="resume-identity">
-            <p className="system-kicker"><span /> ANDROID · PHYSICAL SYSTEMS · PRODUCTION</p>
-            <h1 id="resume-title">Anas Ahmed</h1>
-            <h2>{activeLens.title}</h2>
-            <p>{activeLens.summary}</p>
-            <div className="resume-actions">
-              <a href="#experience">View experience</a>
-              <a href="mailto:anas.ahmed10@outlook.com">Email Anas</a>
-              <a href={activeLens.resume} download>Download résumé</a>
-            </div>
-          </div>
-          <div className="profile-card">
-            <div className="profile-monogram" aria-label="Anas Ahmed monogram">AA</div>
-            <div>
-              <span>BASED IN</span><strong>Greater Boston</strong>
-              <span>WORK STYLE</span><strong>Remote-first</strong>
-              <span>EXPERIENCE</span><strong>Staples · General Motors</strong>
-              <span>EDUCATION</span><strong>B.S. Computer Science</strong>
-            </div>
-          </div>
-        </div>
-
-        <div className="impact-strip" aria-label="Selected impact">
-          <div><strong>800+</strong><span>locations upgraded</span></div>
-          <div><strong>$0</strong><span>vendor technician cost</span></div>
-          <div><strong>0</strong><span>production failures</span></div>
-          <div><strong>65</strong><span>automated POS tests</span></div>
-          <div><strong>55%</strong><span>more POS automation</span></div>
-          <div><strong>7→13</strong><span>Android modernization</span></div>
-        </div>
-
-        <div className="resume-grid">
-          <div className="resume-main">
-            <section id="experience" className="resume-section">
-              <div className="section-label"><span>01</span><p>Career timeline</p></div>
-              <div className="career-timeline">
-                <article>
-                  <div className="career-meta"><span>2022—PRESENT</span><small>FRAMINGHAM, MA</small></div>
-                  <div>
-                    <p>STAPLES</p>
-                    <h3>Software Engineer II, Mobile</h3>
-                    <ul>
-                      <li>Served as lead architect for the complete Android 13 redesign of the self-service print application, coordinating an external vendor, the UI team, and internal engineering partners while replacing its Java and Android 7 foundation with Kotlin.</li>
-                      <li>Enabled multilingual support, Google Drive and Dropbox workflows, and Android integration with Xerox printers, scanners, payments, PIN pads, and store networks.</li>
-                      <li>Implemented Apple Pay and Google Pay support and helped design a four-stage local update for bank-mandated payment-terminal software. The process brought vendor-technician cost for the rollout to $0 and reached 800+ locations with zero production failures.</li>
-                      <li>Built real-time printer status-light monitoring and Splunk dashboards for issue duration, frequency, and production diagnosis.</li>
-                    </ul>
-                  </div>
-                </article>
-                <article>
-                  <div className="career-meta"><span>2021—2022</span><small>REMOTE</small></div>
-                  <div>
-                    <p>GENERAL MOTORS</p>
-                    <h3>Sr. Mobile Device Software Developer</h3>
-                    <ul>
-                      <li>Built a web dashboard that used Jenkins pipeline data to track Android and iOS app-size changes.</li>
-                      <li>Deployed mobile build and release pipelines in Azure DevOps.</li>
-                      <li>Created a Universal Deep Link Handler in React Native to consolidate routing and make future mobile development easier.</li>
-                    </ul>
-                  </div>
-                </article>
-                <article>
-                  <div className="career-meta"><span>2021—2024</span><small>FOXBOROUGH, MA</small></div>
-                  <div>
-                    <p>SYNTAX TUTORING</p>
-                    <h3>Founder and CEO</h3>
-                    <ul>
-                      <li>Founded a programming tutoring company and designed practical Android and web curricula, interactive applications, lectures, and hands-on labs.</li>
-                    </ul>
-                  </div>
-                </article>
+        <div className="recruiter-content-grid">
+          <div className="recruiter-main-content">
+            <section id="experience" className="recruiter-section" aria-labelledby="experience-title">
+              <div className="recruiter-section-heading">
+                <span>01</span>
+                <div><p>EXPERIENCE</p><h2 id="experience-title">Production ownership, clearly stated.</h2></div>
               </div>
-            </section>
-
-            <section id="featured-systems" className="resume-section">
-              <div className="section-label"><span>02</span><p>Featured systems</p></div>
-              <div className="experience-list">
-                {employerProjects.map((project, index) => (
-                  <article key={project.id}>
-                    <div className={`experience-icon ${index === 0 ? "tone-amber" : index === 2 ? "tone-green" : ""}`}><i /></div>
+              <div className="recruiter-timeline">
+                {CAREER_ROLES.map((role) => (
+                  <article key={`${role.company}-${role.title}`}>
+                    <div className="recruiter-role-meta">
+                      <time>{role.dates}</time>
+                      <span>{role.location}</span>
+                    </div>
                     <div>
-                      <small>{project.kicker}</small>
-                      <h3>{project.title}</h3>
-                      <p>{project.summary}</p>
-                      <strong>{project.impact}</strong>
+                      <p>{role.company}</p>
+                      <h3>{role.title}</h3>
+                      <ul>
+                        {role.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}
+                      </ul>
                     </div>
                   </article>
                 ))}
               </div>
             </section>
 
-            <section className="resume-section">
-              <div className="section-label"><span>03</span><p>Product and additional work</p></div>
-              <div className="project-grid">
-                <article className="tabtally-card">
-                  <div className="project-card-head">
-                    <span>PERSONAL PRODUCT</span><small>KMP · COMPOSE</small>
-                  </div>
+            <section className="recruiter-section" aria-labelledby="systems-title">
+              <div className="recruiter-section-heading">
+                <span>02</span>
+                <div><p>FEATURED SYSTEMS</p><h2 id="systems-title">Evidence at the device boundary.</h2></div>
+              </div>
+              <div className="recruiter-system-list">
+                {employerProjects.map((project) => (
+                  <article key={project.id}>
+                    <small>{project.kicker}</small>
+                    <h3>{project.title}</h3>
+                    <p>{project.summary}</p>
+                    <strong>{project.impact}</strong>
+                    {project.id === "scanner-automation" && (
+                      <span>Established the architecture and workflow, then provided technical direction for a 4–8-engineer maintainer group.</span>
+                    )}
+                  </article>
+                ))}
+              </div>
+            </section>
+
+            <section className="recruiter-section" aria-labelledby="products-title">
+              <div className="recruiter-section-heading">
+                <span>03</span>
+                <div><p>PRODUCT WORK</p><h2 id="products-title">Products that extend the same engineering habits.</h2></div>
+              </div>
+              <div className="recruiter-project-grid">
+                <article className="recruiter-project-feature">
+                  <small>ACTIVE PERSONAL PRODUCT · ANDROID + iOS</small>
                   <h3>{tabTally?.sceneLabel ?? "TabTally"}</h3>
                   <p>{tabTally?.summary}</p>
-                  <div className="flow-list" aria-label="TabTally product flow">
-                    {tabTallyFlow.map((step, index) => (
-                      <div key={step}><span>{index + 1}</span><strong>{step}</strong></div>
-                    ))}
-                  </div>
-                  <a className="project-link" href="/products/tabtally/">View the complete product story →</a>
+                  <ul>
+                    <li>ML Kit on Android · Apple Vision on iOS</li>
+                    <li>Groq extraction · SQLDelight persistence</li>
+                    <li>{tabTallyProduct?.availability.apple}</li>
+                    <li>{tabTallyProduct?.availability.googlePlay}</li>
+                  </ul>
+                  <a href="/products/tabtally/">View the product and engineering story →</a>
                 </article>
-                <article className="robotics-card">
-                  <div className="project-card-head">
-                    <span>FUTURE DIRECTION</span><small>APPLICATION LAYER</small>
-                  </div>
-                  <div className="robotics-diagram" aria-hidden="true">
-                    <i className="robot-base" /><i className="robot-sensor" /><i className="robot-signal one" /><i className="robot-signal two" />
-                  </div>
-                  <h3>Robotics applications</h3>
-                  <p>My focus is Android and Linux control surfaces, networking, sensors, automation, and operator-facing HMI software.</p>
-                  <div className="scope-note"><strong>Scope</strong> Application software and interfaces.</div>
-                </article>
-              </div>
-              <div className="additional-projects">
                 <article>
-                  <span>ANDROID MARKETPLACE · ADDITIONAL WORK</span>
-                  <h3>Yardscape</h3>
-                  <p>Android marketplace application for browsing and posting yard-sale listings with authentication, storage, and API-backed workflows.</p>
-                  <small>Kotlin · Java · MVVM · Coroutines · Volley · Firebase</small>
-                </article>
-                <article className="smartshopper-card">
-                  <span>AI SHOPPING ASSISTANT · PERSONAL PROJECT</span>
+                  <small>AI SHOPPING ASSISTANT</small>
                   <h3>{smartShopper?.sceneLabel ?? "SmartShopper"}</h3>
                   <p>{smartShopper?.summary}</p>
-                  <p>{smartShopper?.details[1]}</p>
-                  <small>{smartShopper?.tech.join(" · ")}</small>
                   {smartShopper?.link && (
-                    <a className="project-link" href={smartShopper.link.href} target="_blank" rel="noreferrer">Open SmartShopper ↗</a>
+                    <a href={smartShopper.link.href} target="_blank" rel="noreferrer">Open SmartShopper ↗</a>
                   )}
                 </article>
                 <article>
-                  <span>ORIGIN · AGE 17</span>
-                  <h3>Deer Computer Repairs</h3>
-                  <p>Co-founding a computer repair business taught me to diagnose technical problems, explain tradeoffs, and stand behind the work.</p>
-                  <small>PC repair · upgrades · refurbishment · customer service</small>
+                  <small>ANDROID MARKETPLACE</small>
+                  <h3>Yardscape</h3>
+                  <p>Android yard-sale marketplace with authentication, cloud listing storage, and API-backed browsing and publishing workflows.</p>
+                  <span>Kotlin · Java · MVVM · Coroutines · Volley · Firebase</span>
+                </article>
+                <article>
+                  <small>TARGET WORK</small>
+                  <h3>Mobile software for physical systems</h3>
+                  <p>I am interested in application-layer Android and Linux work around device communication, networking, automation, sensors, and operator-facing HMI software.</p>
+                  <span>Application software · interfaces · production reliability</span>
                 </article>
               </div>
             </section>
           </div>
 
-          <aside className="resume-sidebar">
-            <section className="resume-section">
-              <div className="section-label"><span>04</span><p>Technical skills</p></div>
-              <div className="skill-cloud">
-                {SKILLS.map((skill) => <span key={skill}>{skill}</span>)}
+          <aside className="recruiter-sidebar" aria-label="Skills, education, and working principles">
+            <section className="recruiter-section" aria-labelledby="skills-title">
+              <div className="recruiter-section-heading compact">
+                <span>04</span>
+                <div><p>TECHNICAL SKILLS</p><h2 id="skills-title">Searchable and grouped.</h2></div>
+              </div>
+              <div className="recruiter-skill-groups">
+                {SKILL_GROUPS.map((group) => (
+                  <section key={group.label}>
+                    <h3>{group.label}</h3>
+                    <ul>
+                      {group.skills.map((skill) => <li key={skill}>{skill}</li>)}
+                    </ul>
+                  </section>
+                ))}
               </div>
             </section>
-            <section className="resume-section education-card">
-              <div className="section-label"><span>05</span><p>Education</p></div>
-              <small>UNIVERSITY OF MASSACHUSETTS LOWELL</small>
-              <h3>Bachelor of Science in Computer Science</h3>
-              <p>Dean&apos;s List Recipient · Lowell, Massachusetts</p>
+
+            <section className="recruiter-side-card">
+              <small>EDUCATION</small>
+              <h2>University of Massachusetts Lowell</h2>
+              <p>Bachelor of Science in Computer Science</p>
+              <span>Dean&apos;s List Recipient</span>
             </section>
-            <section className="resume-section principles">
-              <div className="section-label"><span>06</span><p>How I work</p></div>
+
+            <section className="recruiter-side-card">
+              <small>HOW I WORK</small>
               <blockquote>Production reliability comes before a flashy demo.</blockquote>
               <blockquote>A prototype matters when another engineer can maintain it.</blockquote>
               <blockquote>Good device integration disappears into the workflow.</blockquote>
@@ -358,30 +279,20 @@ export default function PortfolioExperience({
           </aside>
         </div>
 
-        <section id="contact" className="contact-panel">
+        <section className="recruiter-contact" aria-labelledby="contact-title">
           <div>
-            <p className="system-kicker"><span /> CONTACT</p>
-            <h2>Let&apos;s build dependable software around real devices.</h2>
-            <p>Greater Boston · Remote-first · Enterprise Android · Application-layer robotics</p>
+            <p>CONTACT</p>
+            <h2 id="contact-title">Let&apos;s build dependable software around real devices.</h2>
+            <span>Enterprise mobile · Android · Device integration · Greater Boston</span>
           </div>
-          <div className="contact-links">
+          <div>
             <a href="mailto:anas.ahmed10@outlook.com"><span>Email</span><strong>anas.ahmed10@outlook.com</strong></a>
             <a href="tel:+17743007831"><span>Phone</span><strong>774-300-7831</strong></a>
             <a href="https://www.linkedin.com/in/anas-ahmed-28b391166" target="_blank" rel="noreferrer"><span>LinkedIn</span><strong>View profile ↗</strong></a>
             <a href="https://github.com/anasahmed10" target="_blank" rel="noreferrer"><span>GitHub</span><strong>@anasahmed10 ↗</strong></a>
-            <a href={activeLens.resume} download><span>Current résumé</span><strong>Download résumé ↓</strong></a>
           </div>
         </section>
-      </section>
-
-      <noscript>
-        <section className="noscript-resume">
-          <p>ANAS AHMED · ENTERPRISE ANDROID ENGINEER</p>
-          <h1>Software for printers, scanners, payment terminals, and store networks.</h1>
-          <p>Software Engineer II, Mobile at Staples. Previously Sr. Mobile Device Software Developer at General Motors.</p>
-          <p>Email: anas.ahmed10@outlook.com · Phone: 774-300-7831</p>
-        </section>
-      </noscript>
-    </main>
+      </div>
+    </>
   );
 }

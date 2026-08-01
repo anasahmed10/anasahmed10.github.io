@@ -11,7 +11,7 @@ import { PRODUCTS } from "../data/products";
 export const metadata: Metadata = {
   title: "Products",
   description:
-    "Explore products designed and engineered by Anas Ahmed, beginning with the Kotlin Multiplatform receipt-splitting app TabTally.",
+    "Explore products designed and engineered by Anas Ahmed, including the Kotlin Multiplatform app TabTally and the SmartShopper AI research assistant.",
 };
 
 export default function ProductsPage() {
@@ -50,16 +50,49 @@ export default function ProductsPage() {
               <div className="product-tech">
                 {product.technologies.map((technology) => <span key={technology}>{technology}</span>)}
               </div>
-              <a className="public-primary" href={product.href}>
-                View the product story <ArrowRight size={17} weight="bold" aria-hidden />
+              <a
+                className="public-primary"
+                href={product.href}
+                target={product.external ? "_blank" : undefined}
+                rel={product.external ? "noreferrer" : undefined}
+              >
+                {product.external ? `Open ${product.name}` : "View the product story"}
+                <ArrowRight size={17} weight="bold" aria-hidden />
               </a>
             </div>
-            <a className="product-feature-art" href={product.href} aria-label={`Explore ${product.name}`}>
-              <img src={product.artwork} alt={`${product.name}: ${product.tagline}`} />
+            <a
+              className={`product-feature-art product-feature-art-${product.id}`}
+              href={product.href}
+              aria-label={`Explore ${product.name}`}
+              target={product.external ? "_blank" : undefined}
+              rel={product.external ? "noreferrer" : undefined}
+            >
+              {product.artwork ? (
+                <img src={product.artwork} alt={`${product.name}: ${product.tagline}`} />
+              ) : (
+                <div className="smartshopper-art" aria-hidden="true">
+                  <div className="smartshopper-art-head">
+                    <span>SMARTSHOPPER</span>
+                    <i>RESEARCH BRIEF</i>
+                  </div>
+                  <strong>What matters most?</strong>
+                  <p>Budget · material · fit · retailer</p>
+                  <div className="smartshopper-options">
+                    <span><b>01</b> Best value</span>
+                    <span><b>02</b> Balanced pick</span>
+                    <span><b>03</b> Premium option</span>
+                  </div>
+                  <small>Recommendations include sources, purchase links, and clear tradeoffs.</small>
+                </div>
+              )}
               <div>
-                <img src="/products/tabtally/app-icon.png" alt="" />
-                <span>Android + iOS</span>
-                <strong>One shared product system</strong>
+                {product.id === "tabtally" ? (
+                  <img src="/products/tabtally/app-icon.png" alt="" />
+                ) : (
+                  <b className="product-art-monogram" aria-hidden="true">SS</b>
+                )}
+                <span>{product.artworkLabel}</span>
+                <strong>{product.artworkDetail}</strong>
               </div>
             </a>
           </article>
@@ -68,11 +101,11 @@ export default function ProductsPage() {
 
       <section className="future-products">
         <span>PRODUCT SYSTEM · EXPANDABLE</span>
-        <h2>This directory is designed to grow.</h2>
+        <h2>Two products, one standard for useful software.</h2>
         <p>
-          Future products will receive the same combination of a concise public
-          story, authentic visuals, and engineering detail. This page will grow
-          when another product is ready to show.
+          TabTally demonstrates cross-platform product engineering. SmartShopper
+          demonstrates structured AI research and recommendation design. Future
+          products will receive the same concise story and engineering detail.
         </p>
       </section>
 
