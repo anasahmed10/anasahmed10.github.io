@@ -15,7 +15,7 @@ export type CampusDestination = {
     | "copy-building"
     | "vehicle-garage"
     | "scanner-depot"
-    | "receipt-cafe"
+    | "splitdish-table"
     | "shopping-boutique"
     | "maker-lab";
   navLabel: string;
@@ -261,17 +261,17 @@ export const CAMPUS_DESTINATIONS: CampusDestination[] = [
   {
     id: "splitdish",
     type: "project",
-    visual: "receipt-cafe",
+    visual: "splitdish-table",
     navLabel: "SplitDish",
-    sceneLabel: "SplitDish Receipt Café",
+    sceneLabel: "SplitDish Table",
     accessibleName:
-      "Visit the SplitDish Receipt Cafe and open the receipt-splitting product story",
+      "Visit SplitDish Table and open the receipt-splitting product story",
     kicker: "PERSONAL PRODUCT · KOTLIN MULTIPLATFORM",
     title: "From a messy receipt to a trustworthy split.",
     summary:
       "I designed and built a Kotlin Multiplatform product that turns receipt capture, OCR, reviewed AI extraction, item assignment, and bill splitting into one clear flow.",
     impact: "Shared Android + iOS product · editable before calculation",
-    color: "#ffbf3f",
+    color: "#5D6639",
     position: [9.5, 0, 7.4],
     approach: [9.5, 0, 11],
     height: 4.2,

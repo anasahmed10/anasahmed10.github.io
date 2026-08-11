@@ -888,37 +888,104 @@ function Building({
       );
     }
 
-    if (zone.visual === "receipt-cafe") {
+    if (zone.visual === "splitdish-table") {
+      const dinerColors = ["#C76F3E", "#9D3F48", "#E6C99A", "#7D874B"];
       return (
         <>
-          <ClayRoundedBox seed="receipt-shell" deformation={0.028} args={[5.35, 3.5, 4.45]} radius={1.05} smoothness={6} position={[0, 1.75, 0]} rotation={[0.006, -0.008, 0.01]} castShadow receiveShadow>
+          <ClayRoundedBox seed="splitdish-shell" deformation={0.028} args={[5.35, 3.5, 4.45]} radius={1.05} smoothness={6} position={[0, 1.75, 0]} rotation={[0.006, -0.008, 0.01]} castShadow receiveShadow>
             <ClayMaterial color={zone.color} roughness={0.94} normalStrength={0.28} />
           </ClayRoundedBox>
-          <mesh position={[0, 4.02, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
-            <cylinderGeometry args={[0.72, 0.72, 3.25, 24]} />
-            <meshStandardMaterial color="#fffdf5" roughness={0.94} />
-          </mesh>
-          <RoundedBox args={[2.85, 2.1, 0.18]} radius={0.16} smoothness={4} position={[0, 3.12, 2.28]} rotation={[0, 0, -0.025]}>
-            <meshStandardMaterial color="#fffdf5" roughness={0.98} />
-          </RoundedBox>
-          {[2.52, 2.2, 1.88].map((lineY, index) => (
-            <RoundedBox key={lineY} args={[index === 0 ? 1.85 : 1.35, 0.08, 0.04]} radius={0.03} position={[0, lineY, 2.4]}>
-              <meshStandardMaterial color={index === 0 ? "#25334a" : "#9b8d77"} roughness={0.85} />
-            </RoundedBox>
-          ))}
-          {[-1.35, 1.35].map((tableX) => (
-            <group key={tableX} position={[tableX, 0.62, 2.52]}>
-              <ClayMesh seed={`receipt-tabletop-${tableX}`} deformation={0.035} preserveBase={false}>
-                <cylinderGeometry args={[0.62, 0.68, 0.18, 18]} />
-                <ClayMaterial color="#fff0d2" roughness={0.95} normalStrength={0.2} />
+          <ClayRoundedBox seed="splitdish-cream-entry" deformation={0.024} args={[1.62, 2.38, 0.34]} radius={0.5} smoothness={5} position={[0, 1.2, 2.2]} rotation={[0, 0, -0.012]} castShadow>
+            <ClayMaterial color="#F6E8CC" roughness={0.95} normalStrength={0.22} />
+          </ClayRoundedBox>
+          <ClayRoundedBox seed="splitdish-door" deformation={0.022} args={[1.08, 1.88, 0.18]} radius={0.34} smoothness={5} position={[0, 1.08, 2.42]}>
+            <ClayMaterial color="#4A3428" roughness={0.92} normalStrength={0.18} />
+          </ClayRoundedBox>
+          <ClayRoundedBox seed="splitdish-plaque" deformation={0.025} args={[3.25, 0.62, 0.28]} radius={0.22} smoothness={5} position={[0, 3.15, 2.24]} rotation={[0, 0, -0.018]} castShadow>
+            <ClayMaterial color="#F6E8CC" roughness={0.95} normalStrength={0.2} />
+          </ClayRoundedBox>
+
+          <group position={[0, 4.38, 0.12]} rotation={[0.02, -0.03, -0.02]}>
+            <ClayMesh seed="splitdish-logo-rim" deformation={0.028} preserveBase={false} castShadow>
+              <torusGeometry args={[0.94, 0.16, 12, 32]} />
+              <ClayMaterial color="#4A3428" roughness={0.96} normalStrength={0.22} />
+            </ClayMesh>
+            <mesh position={[0, 0, -0.04]}>
+              <circleGeometry args={[0.9, 32]} />
+              <meshStandardMaterial color="#F6E8CC" roughness={0.95} />
+            </mesh>
+            {["#C76F3E", "#F6E8CC", "#9D3F48", "#7D874B"].map((color, index) => (
+              <ClayMesh
+                seed={`splitdish-logo-quadrant-${index}`}
+                deformation={0.018}
+                preserveBase={false}
+                key={color}
+                position={[0, 0, 0.03]}
+              >
+                <circleGeometry args={[0.78, 18, index * Math.PI / 2, Math.PI / 2]} />
+                <ClayMaterial color={color} roughness={0.95} normalStrength={0.17} />
               </ClayMesh>
-              <ClayMesh seed={`receipt-table-leg-${tableX}`} deformation={0.04} position={[0, -0.44, 0]}>
-                <cylinderGeometry args={[0.11, 0.14, 0.8, 10]} />
-                <ClayMaterial color="#40536b" roughness={0.93} normalStrength={0.18} />
+            ))}
+            {[[-0.42, 0.38], [0.42, 0.38], [-0.42, -0.38], [0.42, -0.38]].map(([motifX, motifY], index) => (
+              <ClayMesh
+                seed={`splitdish-logo-motif-${index}`}
+                deformation={0.028}
+                key={`${motifX}-${motifY}`}
+                position={[motifX, motifY, 0.11]}
+                scale={[1, 0.55, 0.42]}
+                rotation={[0, 0, index % 2 ? -0.65 : 0.65]}
+              >
+                <sphereGeometry args={[0.16, 12, 9]} />
+                <ClayMaterial color={index % 2 ? "#5D6639" : "#F6E8CC"} roughness={0.96} normalStrength={0.18} />
+              </ClayMesh>
+            ))}
+          </group>
+
+          <group position={[0, 0.72, 2.75]} rotation={[0, -0.04, 0]}>
+            <ClayMesh seed="splitdish-tabletop" deformation={0.034} preserveBase={false} castShadow>
+              <cylinderGeometry args={[1.48, 1.56, 0.2, 24]} />
+              <ClayMaterial color="#F6E8CC" roughness={0.96} normalStrength={0.22} />
+            </ClayMesh>
+            <ClayMesh seed="splitdish-table-leg" deformation={0.038} position={[0, -0.46, 0]} castShadow>
+              <cylinderGeometry args={[0.16, 0.22, 0.86, 12]} />
+              <ClayMaterial color="#4A3428" roughness={0.95} normalStrength={0.2} />
+            </ClayMesh>
+            <ClayRoundedBox seed="splitdish-receipt-strip" deformation={0.018} args={[0.54, 0.06, 1.34]} radius={0.04} smoothness={3} position={[0.08, 0.16, 0]} rotation={[0, 0.22, -0.02]}>
+              <ClayMaterial color="#FFF8E8" roughness={0.98} normalStrength={0.12} />
+            </ClayRoundedBox>
+            {[-0.3, 0, 0.3].map((lineZ, index) => (
+              <RoundedBox key={lineZ} args={[0.3 + index * 0.06, 0.025, 0.035]} radius={0.012} position={[0.06, 0.205, lineZ]} rotation={[0, 0.22, 0]}>
+                <meshStandardMaterial color="#7A6757" roughness={0.9} />
+              </RoundedBox>
+            ))}
+            {dinerColors.map((color, index) => {
+              const angle = index * Math.PI / 2 + Math.PI / 4;
+              return (
+                <ClayMesh
+                  seed={`splitdish-diner-token-${index}`}
+                  deformation={0.03}
+                  preserveBase={false}
+                  key={color}
+                  position={[Math.cos(angle) * 0.98, 0.19, Math.sin(angle) * 0.98]}
+                  rotation={[Math.PI / 2, 0, angle]}
+                >
+                  <cylinderGeometry args={[0.16, 0.18, 0.08, 14]} />
+                  <ClayMaterial color={color} roughness={0.95} normalStrength={0.18} />
+                </ClayMesh>
+              );
+            })}
+          </group>
+          {[-1.9, 1.9].map((benchX, index) => (
+            <group key={benchX} position={[benchX, 0.38, 2.62]} rotation={[0, 0, index ? -0.025 : 0.025]}>
+              <ClayRoundedBox seed={`splitdish-bench-${index}`} deformation={0.028} args={[0.52, 0.2, 1.55]} radius={0.13} smoothness={4}>
+                <ClayMaterial color={index ? "#9D3F48" : "#C76F3E"} roughness={0.95} normalStrength={0.2} />
+              </ClayRoundedBox>
+              <ClayMesh seed={`splitdish-bench-leg-${index}`} deformation={0.035} position={[0, -0.28, 0]}>
+                <cylinderGeometry args={[0.09, 0.12, 0.48, 10]} />
+                <ClayMaterial color="#4A3428" roughness={0.95} normalStrength={0.18} />
               </ClayMesh>
             </group>
           ))}
-          {door}
         </>
       );
     }

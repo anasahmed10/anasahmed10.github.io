@@ -107,6 +107,23 @@ Required fidelity surfaces passed: UI typography and copy are unchanged; the ori
 
 final result: passed
 
+## SplitDish Table campus replacement
+
+- Date: 2026-08-11
+- Live landmark: `splitdish-table` at the existing SplitDish position, approach point, footprint, height, and width.
+- Static artwork: `public/campus/campus-preview.webp` at 1400 × 788 and `public/og.png` at 1672 × 941.
+- Checked viewports: 1280 × 720, 768 × 1024, and 390 × 844 at DPR 1.
+
+The former café landmark is now SplitDish Table. The live scene uses the product's deep olive `#5D6639` shell, warm-cream entry and table surfaces, burnt-orange and cranberry seating, dark-brown grounding details, a four-quadrant plate mark, a shared receipt, and four diner-assignment tokens. The exact HTML scene label is `SplitDish Table`, and the shared accessible name is “Visit SplitDish Table and open the receipt-splitting product story.” The original destination coordinates and collision dimensions are unchanged.
+
+Both static campus assets were inspected at original resolution after a footprint-constrained edit. The new landmark has the exact sign `SPLITDISH TABLE`, the same plate, table, receipt, and diner-token motifs as the live scene, and no residual legacy branding or mustard café treatment. Every neighboring landmark, label, character, path, cloud, and the overall composition remain sourced from the original artwork outside the replaced landmark footprint.
+
+Responsive and interaction checks passed at all three target viewports. Header navigation, the Campus map, and the nearby SplitDish action opened the correct product dialog; closing the dialog returned focus to the originating `Open SplitDish Table` control. Pointer movement changed the scene, keyboard navigation remained active, the 2D fallback exposed the SplitDish product story, and reduced-motion emulation produced identical environmental frames 800 ms apart while destination navigation remained available. The mobile and tablet compositions kept the olive landmark and roof mark readable without obscuring the controls.
+
+No application console errors were found. The console contained only the existing Three.js `Clock` deprecation warning. ESLint passed with the seven existing `next/no-img-element` warnings, the Vinext production build passed, the GitHub Pages static export prerendered all routes, the tracked-text search found no legacy brand or visual-identifier references, and `git diff --check` passed.
+
+final result: passed
+
 ## Buildings and environment clay pass
 
 - Source visual truth: `/var/folders/t5/ldjqvjls55vfj04ph9vq926w0000gn/T/codex-clipboard-b4f8bf38-e3b1-40fe-852d-625933e45d09.png`
