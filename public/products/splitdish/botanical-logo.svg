@@ -1,0 +1,47 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="quadrant-disc">
+      <circle cx="512" cy="512" r="282"/>
+    </clipPath>
+  </defs>
+  <circle cx="512" cy="512" r="320" fill="#FFFDFC" stroke="#5D6639" stroke-width="24"/>
+  <g clip-path="url(#quadrant-disc)">
+    <rect x="220" y="220" width="284" height="284" rx="28" fill="#C64D12"/>
+    <rect x="520" y="220" width="284" height="284" rx="28" fill="#F3E6D2"/>
+    <rect x="220" y="520" width="284" height="284" rx="28" fill="#B93A2E"/>
+    <rect x="520" y="520" width="284" height="284" rx="28" fill="#5D6639"/>
+  </g>
+
+  <g clip-path="url(#quadrant-disc)" fill="#FFFDFC">
+    <path d="M319 427C351 392 385 351 441 307C415 356 380 402 333 443C325 450 312 437 319 427Z"/>
+    <path d="M346 388C324 357 329 329 354 305C363 339 362 365 346 388Z"/>
+    <path d="M378 355C373 316 393 286 429 269C426 308 408 336 378 355Z"/>
+    <path d="M397 383C424 354 456 349 488 364C459 389 429 396 397 383Z"/>
+    <path d="M367 415C398 395 430 398 456 421C419 436 389 433 367 415Z"/>
+
+    <path d="M635 733C665 686 698 638 751 591C727 645 694 695 648 744C641 752 628 742 635 733Z"/>
+    <path d="M658 697C642 662 651 632 680 610C684 648 677 674 658 697Z"/>
+    <path d="M689 658C691 618 714 591 752 578C743 618 722 644 689 658Z"/>
+    <path d="M704 688C735 662 768 663 797 682C763 704 733 705 704 688Z"/>
+    <path d="M674 718C708 702 739 710 762 735C724 745 694 739 674 718Z"/>
+  </g>
+
+  <g clip-path="url(#quadrant-disc)" fill="#5D6639">
+    <path d="M618 382C593 350 598 316 629 288C640 327 636 358 618 382Z"/>
+    <path d="M659 343C660 301 685 273 726 261C718 304 694 331 659 343Z"/>
+    <path d="M648 399C682 368 722 369 757 394C719 421 682 422 648 399Z"/>
+  </g>
+
+  <g clip-path="url(#quadrant-disc)" stroke="#FFFDFC" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M335 718C369 681 391 641 399 596"/>
+    <path d="M359 686L318 638"/>
+    <path d="M378 651L428 619"/>
+    <path d="M393 615L354 577"/>
+  </g>
+  <g clip-path="url(#quadrant-disc)" fill="#F3E6D2">
+    <circle cx="314" cy="633" r="24"/>
+    <circle cx="434" cy="615" r="24"/>
+    <circle cx="350" cy="571" r="24"/>
+    <circle cx="334" cy="720" r="15"/>
+  </g>
+</svg>

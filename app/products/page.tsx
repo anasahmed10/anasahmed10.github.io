@@ -11,7 +11,7 @@ import { PRODUCTS } from "../data/products";
 export const metadata: Metadata = {
   title: "Products",
   description:
-    "Explore products designed and engineered by Anas Ahmed, including the Kotlin Multiplatform app TabTally and the SmartShopper AI research assistant.",
+    "Explore products designed and engineered by Anas Ahmed, including the Kotlin Multiplatform app SplitDish and the SmartShopper AI research assistant.",
 };
 
 export default function ProductsPage() {
@@ -86,8 +86,8 @@ export default function ProductsPage() {
                 </div>
               )}
               <div>
-                {product.id === "tabtally" ? (
-                  <img src="/products/tabtally/app-icon.png" alt="" />
+                {product.id === "splitdish" ? (
+                  <img src="/products/splitdish/app-icon.png" alt="" />
                 ) : (
                   <b className="product-art-monogram" aria-hidden="true">SS</b>
                 )}
@@ -103,7 +103,7 @@ export default function ProductsPage() {
         <span>PRODUCT SYSTEM · EXPANDABLE</span>
         <h2>Two products, one standard for useful software.</h2>
         <p>
-          TabTally demonstrates cross-platform product engineering. SmartShopper
+          SplitDish demonstrates cross-platform product engineering. SmartShopper
           demonstrates structured AI research and recommendation design. Future
           products will receive the same concise story and engineering detail.
         </p>

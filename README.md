@@ -8,7 +8,7 @@ Anas Ahmed’s public home for enterprise engineering work, recruiter informatio
 - Enterprise Systems Campus at `/campus`
 - Recruiter View at `/recruiter`
 - Product directory at `/products`
-- Recruiter-first TabTally product story at `/products/tabtally`
+- Recruiter-first SplitDish product story at `/products/splitdish`
 - Keyboard-controlled campus guide (`WASD` or arrow keys)
 - Touch controls for mobile and tablet
 - Seven accessible, project-specific campus landmarks and case-study dialogs
@@ -17,7 +17,7 @@ Anas Ahmed’s public home for enterprise engineering work, recruiter informatio
 - A no-JavaScript résumé fallback
 - Responsive layouts and reduced-motion support
 
-The product pages use sanitized application visuals and avoid unverified store, release, adoption, and privacy claims. TabTally Support and Privacy remain independently published public pages.
+The product pages use sanitized application visuals and avoid unverified store, release, adoption, and privacy claims. SplitDish Support and Privacy remain independently published public pages.
 
 ## Local development
 
@@ -54,4 +54,4 @@ The static output is written to `out/`.
 
 ## Content verification
 
-Experience claims and project outcomes are drawn from the supplied resumes, user-confirmed details, and the local TabTally repository. The public copy avoids unverified adoption, store-count, and revenue claims.
+Experience claims and project outcomes are drawn from the supplied resumes, user-confirmed details, and the local SplitDish repository. The public copy avoids unverified adoption, store-count, and revenue claims.

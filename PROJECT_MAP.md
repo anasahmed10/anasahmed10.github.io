@@ -14,7 +14,7 @@ The primary deployment uses Vinext and Vite. `vite.config.ts` composes Vinext, t
 | `/campus` | `app/campus/page.tsx` | Explicit campus route |
 | `/recruiter` | `app/recruiter/page.tsx` | Conventional recruiter-first portfolio |
 | `/products` | `app/products/page.tsx` | Product directory |
-| `/products/tabtally` | `app/products/tabtally/page.tsx` | TabTally product and engineering story |
+| `/products/splitdish` | `app/products/splitdish/page.tsx` | SplitDish product and engineering story |
 
 `app/layout.tsx` owns global metadata, fonts, and stylesheet imports.
 
@@ -46,6 +46,6 @@ The primary deployment uses Vinext and Vite. `vite.config.ts` composes Vinext, t
 
 ## Content ownership
 
-Campus dialogs and the recruiter view both derive project information from `app/data/portfolio.ts`; edit shared facts there first. The product directory derives its cards from `app/data/products.ts`. The detailed TabTally page contains additional route-specific narrative and support/privacy links.
+Campus dialogs and the recruiter view both derive project information from `app/data/portfolio.ts`; edit shared facts there first. The product directory derives its cards from `app/data/products.ts`. The detailed SplitDish page contains additional route-specific narrative and support/privacy links.
 
 When adding a campus destination, update the destination ID/type and data, provide its scene representation, account for collision and approach coordinates, and verify every navigation surface and fallback. When adding a conventional route, include route metadata, use the shared public chrome where appropriate, and confirm it is emitted by the GitHub Pages static build.

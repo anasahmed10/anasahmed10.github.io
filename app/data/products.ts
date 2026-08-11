@@ -22,14 +22,14 @@ export type Product = {
 
 export const PRODUCTS: Product[] = [
   {
-    id: "tabtally",
-    name: "TabTally",
+    id: "splitdish",
+    name: "SplitDish",
     status: "App review + external testing",
     availability: {
       apple: "Submitted for Apple App Store review",
       googlePlay: "Google Play external testing",
     },
-    tagline: "Scan receipts. Split bills. Keep everyone on the same page.",
+    tagline: "Scan receipts. Split fairly. Share totals.",
     consumerSummary:
       "A clear, editable way to turn a restaurant receipt into a fair split for everyone at the table.",
     engineeringSummary:
@@ -42,12 +42,12 @@ export const PRODUCTS: Product[] = [
       "Ktor",
       "SQLDelight",
     ],
-    artwork: "/products/tabtally/feature-graphic.png",
+    artwork: "/products/splitdish/feature-graphic.png",
     artworkLabel: "Android + iOS",
     artworkDetail: "One shared product system",
-    href: "/products/tabtally/",
-    supportHref: "https://anasahmed10.github.io/tabtally-support/",
-    privacyHref: "https://anasahmed10.github.io/tabtally-support/privacy/",
+    href: "/products/splitdish/",
+    supportHref: "https://anasahmed10.github.io/splitdish-support/",
+    privacyHref: "https://anasahmed10.github.io/splitdish-support/privacy/",
   },
   {
     id: "smartshopper",

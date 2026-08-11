@@ -82,7 +82,7 @@ GM_BULLETS = (
 
 PROJECTS = (
     ("Barcode Scanner", "Kotlin, Compose, MVVM, Coroutines, NanoHttpd", "Built the company's first Kotlin Android application with a tablet-hosted server and physical scanner; automated 65 POS tests, increased POS automation by 55%, won first place in the 2025 company hackathon, and provide technical direction to its 4-8-engineer maintainer group."),
-    ("TabTally", "Kotlin Multiplatform, Compose Multiplatform, ML Kit, Apple Vision, Groq, SQLDelight", "Built a shared Android/iOS receipt-splitting product; submitted for Apple App Store review and in Google Play external testing."),
+    ("SplitDish", "Kotlin Multiplatform, Compose Multiplatform, ML Kit, Apple Vision, Groq, SQLDelight", "Built a shared Android/iOS receipt-splitting product; submitted for Apple App Store review and in Google Play external testing."),
     ("SmartShopper", "Custom GPT, Prompt Engineering, Web Research", "Designed a shopping assistant for targeted clarification, product research, comparisons, purchase-ready links, and value-tradeoff analysis."),
 )
 

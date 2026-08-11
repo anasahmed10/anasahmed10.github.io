@@ -3,7 +3,7 @@ export type CampusDestinationId =
   | "self-serve-copy"
   | "connected-vehicle"
   | "scanner-automation"
-  | "tabtally"
+  | "splitdish"
   | "smartshopper"
   | "hobbies";
 
@@ -259,13 +259,13 @@ export const CAMPUS_DESTINATIONS: CampusDestination[] = [
     },
   },
   {
-    id: "tabtally",
+    id: "splitdish",
     type: "project",
     visual: "receipt-cafe",
-    navLabel: "TabTally",
-    sceneLabel: "TabTally Receipt Café",
+    navLabel: "SplitDish",
+    sceneLabel: "SplitDish Receipt Café",
     accessibleName:
-      "Visit the TabTally Receipt Cafe and open the receipt-splitting product story",
+      "Visit the SplitDish Receipt Cafe and open the receipt-splitting product story",
     kicker: "PERSONAL PRODUCT · KOTLIN MULTIPLATFORM",
     title: "From a messy receipt to a trustworthy split.",
     summary:
@@ -281,10 +281,10 @@ export const CAMPUS_DESTINATIONS: CampusDestination[] = [
       "Shared geometry reconstruction repairs weak rows before strict-schema extraction through Groq.",
       "People review names, prices, assignments, tip, and totals before deterministic shared logic calculates the split.",
       "Compose Multiplatform, Ktor, Koin, and SQLDelight support one product across both platforms.",
-      "TabTally has been submitted for Apple App Store review and is in Google Play external testing.",
+      "SplitDish has been submitted for Apple App Store review and is in Google Play external testing.",
     ],
     tech: ["Kotlin Multiplatform", "Compose", "ML Kit", "Vision", "Groq", "SQLDelight"],
-    link: { label: "Explore TabTally", href: "/products/tabtally/" },
+    link: { label: "Explore SplitDish", href: "/products/splitdish/" },
   },
   {
     id: "smartshopper",

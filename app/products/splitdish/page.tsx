@@ -20,34 +20,34 @@ import {
 import { PublicFooter, PublicHeader } from "../../components/PublicHeader";
 import { PRODUCTS } from "../../data/products";
 
-const SUPPORT_URL = "https://anasahmed10.github.io/tabtally-support/";
-const PRIVACY_URL = "https://anasahmed10.github.io/tabtally-support/privacy/";
-const TABTALLY = PRODUCTS.find((product) => product.id === "tabtally")!;
+const SUPPORT_URL = "https://anasahmed10.github.io/splitdish-support/";
+const PRIVACY_URL = "https://anasahmed10.github.io/splitdish-support/privacy/";
+const SPLITDISH = PRODUCTS.find((product) => product.id === "splitdish")!;
 
 export const metadata: Metadata = {
-  title: "TabTally — Kotlin Multiplatform Receipt Splitting",
+  title: "SplitDish — Kotlin Multiplatform Receipt Splitting",
   description:
-    "See how TabTally combines native capture, on-device OCR, human-reviewed AI extraction, and shared Kotlin Multiplatform UI to split restaurant receipts.",
+    "See how SplitDish combines native capture, on-device OCR, human-reviewed AI extraction, and shared Kotlin Multiplatform UI to split restaurant receipts.",
   openGraph: {
-    title: "TabTally — From messy receipt to trustworthy split",
+    title: "SplitDish — From messy receipt to trustworthy split",
     description:
       "A recruiter-first product story covering Kotlin Multiplatform, on-device OCR, human-reviewed AI, and dependable bill-splitting logic.",
     type: "website",
-    url: "https://anasahmed10.github.io/products/tabtally/",
+    url: "https://anasahmed10.github.io/products/splitdish/",
     images: [
       {
-        url: "/products/tabtally/og.png",
-        width: 1536,
-        height: 1024,
-        alt: "TabTally product story",
+        url: "/products/splitdish/og.png",
+        width: 1024,
+        height: 500,
+        alt: "SplitDish product story",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "TabTally — From messy receipt to trustworthy split",
+    title: "SplitDish — From messy receipt to trustworthy split",
     description: "Kotlin Multiplatform, on-device OCR, and human-reviewed mobile AI.",
-    images: ["/products/tabtally/og.png"],
+    images: ["/products/splitdish/og.png"],
   },
 };
 
@@ -91,59 +91,58 @@ const architecture = [
 ];
 
 const journey = [
-  { image: "ios-setup.png", step: "01", title: "Add the table", copy: "Start with everyone sharing the bill." },
-  { image: "ios-scan.png", step: "02", title: "Scan the receipt", copy: "Capture it or choose a photo." },
-  { image: "ios-review.png", step: "03", title: "Review the items", copy: "Correct names, prices, and totals." },
-  { image: "ios-assign.png", step: "04", title: "Tap to split", copy: "Assign individual and shared items." },
-  { image: "ios-summary.png", step: "05", title: "Ready to share", copy: "See a clear total for everyone." },
+  { image: "02-setup.png", step: "01", title: "Add the table", copy: "Start with everyone sharing the bill." },
+  { image: "04-review.png", step: "02", title: "Review the items", copy: "Correct names, prices, and totals." },
+  { image: "05-summary.png", step: "03", title: "Ready to share", copy: "See a clear total for everyone." },
+  { image: "06-history.png", step: "04", title: "Keep the history", copy: "Return to completed splits on the device." },
 ];
 
-export default function TabTallyPage() {
+export default function SplitDishPage() {
   return (
-    <main className="public-shell tabtally-shell">
+    <main className="public-shell splitdish-shell">
       <PublicHeader active="products" />
 
-      <section className="tabtally-hero" aria-labelledby="tabtally-title">
-        <div className="tabtally-hero-copy">
+      <section className="splitdish-hero" aria-labelledby="splitdish-title">
+        <div className="splitdish-hero-copy">
           <a className="text-back-link" href="/products/">
             <ArrowLeft size={15} weight="bold" aria-hidden /> Products
           </a>
-          <div className="tabtally-brand-line">
-            <img src="/products/tabtally/app-icon.png" alt="" />
-            <span>TabTally</span>
-            <small>{TABTALLY.status} · Android + iOS</small>
+          <div className="splitdish-brand-line">
+            <img src="/products/splitdish/app-icon.png" alt="" />
+            <span>SplitDish</span>
+            <small>{SPLITDISH.status} · Android + iOS</small>
           </div>
-          <p className="tabtally-kicker">KOTLIN MULTIPLATFORM · MOBILE AI · PRODUCT SYSTEMS</p>
-          <h1 id="tabtally-title">From messy receipt to trustworthy split.</h1>
-          <p className="tabtally-hero-lede">
-            TabTally is a full product system: native image capture, on-device
+          <p className="splitdish-kicker">KOTLIN MULTIPLATFORM · MOBILE AI · PRODUCT SYSTEMS</p>
+          <h1 id="splitdish-title">From messy receipt to trustworthy split.</h1>
+          <p className="splitdish-hero-lede">
+            SplitDish is a full product system: native image capture, on-device
             OCR, geometry-aware text reconstruction, strict-schema AI
             extraction, editable review, and fair split calculation in one
             shared Android and iOS experience.
           </p>
-          <div className="tabtally-actions">
-            <a className="tabtally-primary" href="#engineering">
+          <div className="splitdish-actions">
+            <a className="splitdish-primary" href="#engineering">
               Explore the engineering <ArrowRight size={17} weight="bold" aria-hidden />
             </a>
-            <a className="tabtally-secondary" href={SUPPORT_URL}>
+            <a className="splitdish-secondary" href={SUPPORT_URL}>
               Visit Support
             </a>
           </div>
-          <div className="tabtally-signals" aria-label="TabTally engineering highlights">
+          <div className="splitdish-signals" aria-label="SplitDish engineering highlights">
             <span><DeviceMobile size={18} weight="duotone" aria-hidden /> Shared Compose UI</span>
             <span><Eye size={18} weight="duotone" aria-hidden /> On-device OCR</span>
             <span><ShieldCheck size={18} weight="duotone" aria-hidden /> Human-reviewed AI</span>
           </div>
         </div>
 
-        <div className="tabtally-device-stage" aria-label="TabTally running on Android and iOS">
+        <div className="splitdish-device-stage" aria-label="SplitDish running on Android and iOS">
           <div className="device-card device-card-back">
             <span>ANDROID</span>
-            <img src="/products/tabtally/android-review.png" alt="TabTally review and assignment screen on Android" />
+            <img src="/products/splitdish/android-review.png" alt="SplitDish review and assignment screen on Android" />
           </div>
           <div className="device-card device-card-front">
             <span>iOS</span>
-            <img src="/products/tabtally/ios-summary.png" alt="TabTally split summary screen on iOS" />
+            <img src="/products/splitdish/ios-summary.png" alt="SplitDish split setup screen on iOS" />
           </div>
           <div className="stage-note">
             <Receipt size={22} weight="duotone" aria-hidden />
@@ -153,15 +152,15 @@ export default function TabTallyPage() {
         </div>
       </section>
 
-      <section className="tabtally-proof-strip" aria-label="TabTally product facts">
+      <section className="splitdish-proof-strip" aria-label="SplitDish product facts">
         <div><strong>2</strong><span>native platforms</span></div>
         <div><strong>1</strong><span>shared product core</span></div>
         <div><strong>100%</strong><span>editable before split</span></div>
         <div><strong>0</strong><span>payment processing</span></div>
       </section>
 
-      <section id="engineering" className="tabtally-engineering" aria-labelledby="engineering-title">
-        <div className="tabtally-section-heading">
+      <section id="engineering" className="splitdish-engineering" aria-labelledby="engineering-title">
+        <div className="splitdish-section-heading">
           <p>01 · ENGINEERING STORY</p>
           <h2 id="engineering-title">A receipt is a small systems problem.</h2>
           <span>
@@ -180,7 +179,7 @@ export default function TabTallyPage() {
         </div>
       </section>
 
-      <section className="tabtally-stack" aria-labelledby="stack-title">
+      <section className="splitdish-stack" aria-labelledby="stack-title">
         <div>
           <p>02 · SHARED CORE, NATIVE EDGES</p>
           <h2 id="stack-title">Cross-platform without flattening the platforms.</h2>
@@ -208,8 +207,8 @@ export default function TabTallyPage() {
         </div>
       </section>
 
-      <section className="tabtally-journey" aria-labelledby="journey-title">
-        <div className="tabtally-section-heading">
+      <section className="splitdish-journey" aria-labelledby="journey-title">
+        <div className="splitdish-section-heading">
           <p>03 · PRODUCT EXPERIENCE</p>
           <h2 id="journey-title">The complexity stays behind a four-step mental model.</h2>
           <span>Real, sanitized application screens from the Android and iOS release workflow.</span>
@@ -218,7 +217,7 @@ export default function TabTallyPage() {
           {journey.map((item) => (
             <article key={item.step}>
               <div className="journey-phone">
-                <img src={`/products/tabtally/${item.image}`} alt={`TabTally ${item.title} screen`} />
+                <img src={`/products/splitdish/${item.image}`} alt={`SplitDish ${item.title} screen`} />
               </div>
               <span>{item.step}</span>
               <h3>{item.title}</h3>
@@ -228,12 +227,12 @@ export default function TabTallyPage() {
         </div>
       </section>
 
-      <section className="tabtally-control" aria-labelledby="control-title">
+      <section className="splitdish-control" aria-labelledby="control-title">
         <div className="control-copy">
           <p>04 · RESPONSIBLE PRODUCT BEHAVIOR</p>
           <h2 id="control-title">AI proposes structure. People stay in control.</h2>
           <p>
-            Receipt recognition is probabilistic, so TabTally never treats the
+            Receipt recognition is probabilistic, so SplitDish never treats the
             first parse as the final bill. Names, prices, assignments, tip, and
             the receipt total remain visible before calculation.
           </p>
@@ -241,7 +240,7 @@ export default function TabTallyPage() {
             <li><CheckCircle size={18} weight="fill" aria-hidden /> Original receipt images stay out of the AI extraction request.</li>
             <li><CheckCircle size={18} weight="fill" aria-hidden /> Receipt-derived text is sent securely to the configured AI provider.</li>
             <li><CheckCircle size={18} weight="fill" aria-hidden /> Users can correct every item before calculating.</li>
-            <li><CheckCircle size={18} weight="fill" aria-hidden /> TabTally calculates social splits; it does not process payments.</li>
+            <li><CheckCircle size={18} weight="fill" aria-hidden /> SplitDish calculates social splits; it does not process payments.</li>
           </ul>
           <a href={PRIVACY_URL}>Read the full privacy policy <ArrowRight size={16} weight="bold" aria-hidden /></a>
         </div>
@@ -256,19 +255,19 @@ export default function TabTallyPage() {
         </div>
       </section>
 
-      <section className="tabtally-availability">
-        <img src="/products/tabtally/app-icon.png" alt="" />
+      <section className="splitdish-availability">
+        <img src="/products/splitdish/app-icon.png" alt="" />
         <div>
           <p>APPLE REVIEW · GOOGLE PLAY EXTERNAL TESTING</p>
           <h2>Built carefully enough to review. Simple enough to use at dinner.</h2>
           <span>
-            {TABTALLY.availability.apple}. {TABTALLY.availability.googlePlay}.
+            {SPLITDISH.availability.apple}. {SPLITDISH.availability.googlePlay}.
             Store links will appear here when public availability is verified.
           </span>
         </div>
         <div>
-          <a className="tabtally-primary" href={SUPPORT_URL}>TabTally Support</a>
-          <a className="tabtally-secondary" href={PRIVACY_URL}>Privacy Policy</a>
+          <a className="splitdish-primary" href={SUPPORT_URL}>SplitDish Support</a>
+          <a className="splitdish-secondary" href={PRIVACY_URL}>Privacy Policy</a>
         </div>
       </section>
 

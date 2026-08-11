@@ -20,10 +20,10 @@ export const metadata: Metadata = {
     template: "%s · Anas Ahmed",
   },
   description:
-    "Explore Anas Ahmed’s clay campus for enterprise Android, connected vehicles, scanner automation, TabTally, and SmartShopper AI research.",
+    "Explore Anas Ahmed’s clay campus for enterprise Android, connected vehicles, scanner automation, SplitDish, and SmartShopper AI research.",
   openGraph: {
     title: "Anas Ahmed — Android Engineering for Real Devices",
-    description: "A seven-landmark clay project campus for enterprise Android, connected vehicles, automation, TabTally, and SmartShopper.",
+    description: "A seven-landmark clay project campus for enterprise Android, connected vehicles, automation, SplitDish, and SmartShopper.",
     url: "https://anasahmed10.github.io/",
     type: "website",
     images: [{
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Anas Ahmed — Android Engineering for Real Devices",
-    description: "A seven-landmark clay project campus for enterprise Android, connected vehicles, automation, TabTally, and SmartShopper.",
+    description: "A seven-landmark clay project campus for enterprise Android, connected vehicles, automation, SplitDish, and SmartShopper.",
     images: ["https://anasahmed10.github.io/og.png"],
   },
 };

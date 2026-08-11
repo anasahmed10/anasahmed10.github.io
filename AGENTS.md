@@ -7,7 +7,7 @@ This file is the operating guide for coding agents working in this repository. R
 This is Anas Ahmed's public engineering and product portfolio. It has two complementary experiences:
 
 - an interactive, accessible 3D "Enterprise Systems Campus" at `/` and `/campus`;
-- conventional recruiter and product pages at `/recruiter`, `/products`, and `/products/tabtally`.
+- conventional recruiter and product pages at `/recruiter`, `/products`, and `/products/splitdish`.
 
 Preserve the site's credibility. Do not invent employment details, outcomes, adoption figures, store status, privacy claims, testimonials, or product capabilities. Treat the existing copy, supplied resumes, and user-provided facts as the source of truth. Ask before publishing a claim that cannot be verified locally.
 
@@ -44,7 +44,7 @@ GITHUB_REPOSITORY="owner/repository-name" pnpm build:pages
 - Keep route-specific product narrative in its route only when it is not shared catalog data.
 - Reuse `PublicHeader` and `PublicFooter` for conventional public pages.
 - Keep global public-page styles in `app/public-site.css`, global resets/tokens in `app/globals.css`, and campus-specific styles in `app/clay-campus.css`.
-- Store public assets under `public/` and reference them with root-relative URLs such as `/products/tabtally/og.png`. The GitHub Pages configuration rewrites the deployment base path.
+- Store public assets under `public/` and reference them with root-relative URLs such as `/products/splitdish/og.png`. The GitHub Pages configuration rewrites the deployment base path.
 - Treat `app/components/ClayCampus.tsx` as performance-sensitive interactive code. Keep world coordinates, approach points, collision behavior, and destination data aligned.
 
 ## Campus requirements

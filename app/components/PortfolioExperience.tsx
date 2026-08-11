@@ -79,11 +79,11 @@ export default function PortfolioExperience() {
     [roleLens],
   );
   const employerProjects = FEATURED_PROJECTS.filter(
-    (project) => project.id !== "tabtally" && project.id !== "smartshopper",
+    (project) => project.id !== "splitdish" && project.id !== "smartshopper",
   );
-  const tabTally = FEATURED_PROJECTS.find((project) => project.id === "tabtally");
+  const splitDish = FEATURED_PROJECTS.find((project) => project.id === "splitdish");
   const smartShopper = FEATURED_PROJECTS.find((project) => project.id === "smartshopper");
-  const tabTallyProduct = PRODUCTS.find((product) => product.id === "tabtally");
+  const splitDishProduct = PRODUCTS.find((product) => product.id === "splitdish");
 
   return (
     <>
@@ -211,15 +211,15 @@ export default function PortfolioExperience() {
               <div className="recruiter-project-grid">
                 <article className="recruiter-project-feature">
                   <small>ACTIVE PERSONAL PRODUCT · ANDROID + iOS</small>
-                  <h3>{tabTally?.sceneLabel ?? "TabTally"}</h3>
-                  <p>{tabTally?.summary}</p>
+                  <h3>{splitDish?.sceneLabel ?? "SplitDish"}</h3>
+                  <p>{splitDish?.summary}</p>
                   <ul>
                     <li>ML Kit on Android · Apple Vision on iOS</li>
                     <li>Groq extraction · SQLDelight persistence</li>
-                    <li>{tabTallyProduct?.availability.apple}</li>
-                    <li>{tabTallyProduct?.availability.googlePlay}</li>
+                    <li>{splitDishProduct?.availability.apple}</li>
+                    <li>{splitDishProduct?.availability.googlePlay}</li>
                   </ul>
-                  <a href="/products/tabtally/">View the product and engineering story →</a>
+                  <a href="/products/splitdish/">View the product and engineering story →</a>
                 </article>
                 <article>
                   <small>AI SHOPPING ASSISTANT</small>

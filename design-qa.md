@@ -40,7 +40,7 @@ Checked at 1280 × 1478, 1280 × 720, 768 × 1024, and 390 × 844.
 - Movement slides along building collision edges and cancels an unreachable target instead of trapping the explorer.
 - Tapping a building, floating building label, top-navigation destination, or Campus map entry teleports the explorer and opens the matching information panel.
 - Environmental poses update on a shared 12 Hz stepped clock.
-- The TabTally dialog opens and closes correctly, and focus returns to the originating landmark button.
+- The SplitDish dialog opens and closes correctly, and focus returns to the originating landmark button.
 - The 2D fallback exposes all six destinations and returns to the 3D campus.
 - Reduced-motion emulation produced pixel-identical environmental frames 750 ms apart while leaving navigation available.
 - Desktop labels, mobile map behavior, hover states, routes, recruiter view, and keyboard controls remain unchanged.
