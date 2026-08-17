@@ -87,7 +87,7 @@ export default function ProductsPage() {
               )}
               <div>
                 {product.id === "splitdish" ? (
-                  <img src="/products/splitdish/app-icon.png" alt="" />
+                  <img src="/products/splitdish/app-icon-v2.png" alt="" />
                 ) : (
                   <b className="product-art-monogram" aria-hidden="true">SS</b>
                 )}

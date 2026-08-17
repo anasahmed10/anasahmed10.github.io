@@ -108,7 +108,7 @@ export default function SplitDishPage() {
             <ArrowLeft size={15} weight="bold" aria-hidden /> Products
           </a>
           <div className="splitdish-brand-line">
-            <img src="/products/splitdish/app-icon.png" alt="" />
+            <img src="/products/splitdish/app-icon-v2.png" alt="" />
             <span>SplitDish</span>
             <small>{SPLITDISH.status} · Android + iOS</small>
           </div>
@@ -256,7 +256,7 @@ export default function SplitDishPage() {
       </section>
 
       <section className="splitdish-availability">
-        <img src="/products/splitdish/app-icon.png" alt="" />
+        <img src="/products/splitdish/app-icon-v2.png" alt="" />
         <div>
           <p>APPLE REVIEW · GOOGLE PLAY EXTERNAL TESTING</p>
           <h2>Built carefully enough to review. Simple enough to use at dinner.</h2>
