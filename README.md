@@ -11,7 +11,7 @@ Anas Ahmed’s public home for enterprise engineering work, recruiter informatio
 - Recruiter-first SplitDish product story at `/products/splitdish`
 - Keyboard-controlled campus guide (`WASD` or arrow keys)
 - Touch controls for mobile and tablet
-- Seven accessible, project-specific campus landmarks and case-study dialogs
+- Eight accessible campus landmarks and case-study dialogs, including Highlight Corner
 - Campus map, reset controls, reduced-motion support, and WebGL fallback
 - Conventional Recruiter Mode with impact, experience, projects, skills, contact status, and print-to-PDF résumé
 - A no-JavaScript résumé fallback
@@ -27,6 +27,12 @@ Requires Node.js 22.13 or newer.
 pnpm install
 pnpm dev
 ```
+
+Campus data and traversal checks run with `pnpm test:campus`. For browser checks,
+serve the Pages export at `http://127.0.0.1:4173` and run
+`node tests/campus-browser.mjs` with an existing Playwright installation and Chrome.
+Set `PLAYWRIGHT_MODULE` to its module path when Playwright is supplied by an external
+runtime. `CAMPUS_TEST_URL` overrides the test server; screenshots go to `/tmp` by default.
 
 ## Production build
 

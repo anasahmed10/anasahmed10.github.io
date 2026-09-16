@@ -12,6 +12,8 @@ export type Product = {
   platforms: string[];
   technologies: string[];
   artwork?: string;
+  artworkVariant?: "smartshopper" | "highlight-corner";
+  monogram?: string;
   artworkLabel: string;
   artworkDetail: string;
   href: string;
@@ -71,7 +73,36 @@ export const PRODUCTS: Product[] = [
     ],
     artworkLabel: "Reusable across 5+ categories",
     artworkDetail: "Constraints in · researched options out",
+    artworkVariant: "smartshopper",
+    monogram: "SS",
     href: "https://chatgpt.com/g/g-6a4be8c0f2ac8191a2e34a57b52f46ee-smartshopper",
+    external: true,
+  },
+  {
+    id: "highlight-corner",
+    name: "Highlight Corner",
+    status: "Live 2026 season product",
+    availability: {
+      apple: "Live at highlightcorner.com",
+      googlePlay: "Responsive web experience",
+    },
+    tagline: "NFL highlights without the scoreboard ambush.",
+    consumerSummary:
+      "A fan passion project that makes official NFL highlights easy to find in one place, with spoiler-conscious browsing of the 2026 season and concise original game recaps.",
+    engineeringSummary:
+      "A React and TypeScript product built around a curated 272-game catalog, verified official video playback, a board-wide spoiler-free mode, sourced recaps, fantasy-style player stats, and Cloudflare Workers delivery.",
+    platforms: ["Responsive web"],
+    technologies: [
+      "React 19",
+      "TypeScript",
+      "Vinext + Vite",
+      "Cloudflare Workers",
+    ],
+    artworkVariant: "highlight-corner",
+    monogram: "HC",
+    artworkLabel: "2026 NFL regular season",
+    artworkDetail: "272 games · spoiler-conscious browsing",
+    href: "https://highlightcorner.com/",
     external: true,
   },
 ];

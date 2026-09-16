@@ -163,3 +163,19 @@ The side-by-side review confirms visible hand-worked texture on the ground, tree
 The active texture pair transfers 41,046 bytes, remaining below the 100 KB clay asset budget. TypeScript, ESLint, the GitHub Pages production build, and `git diff --check` pass; ESLint still reports only the seven existing `next/no-img-element` warnings.
 
 final result: passed
+
+## 2026-09-16 — Highlight Corner campus destination
+
+Added the eighth destination with approved product facts sourced from the product catalog. The user-approved story leads with a fan passion project that makes official NFL highlights easy to find in one place, supported by the 272-game catalog, spoiler-conscious browsing, and approved engineering summary.
+
+The supplied film-room reference informed the blue roof and piers, navy raised-letter plaque, cream screen surround, ochre shell, football/replay roof emblem, and physical “Score hidden” cover. The model reuses clay textures and deformation helpers, with shared lace geometry/materials and locally bundled font outlines. The smooth screen is static. Compared with the reference and canonical campus preview, the booth simplifies the story to one readable screen and football silhouette.
+
+The initially proposed north/east placement was rejected in rendered review because Self-Serve Copy obscured the screen and shared the arrival proximity region. The final booth is at `[-16.7, 0, 0]`, approach `[-16.7, 0, 3.75]`, width `4.4`, label height `5.1`. The west movement boundary permits walking around it; a 20.3-unit radial limit keeps the explorer within the 21-unit island. SmartShopper's approach moved from z=3.1 to z=3.6 to clear its existing collision padding. Decorative tree meshes no longer consume navigation raycasts.
+
+`pnpm test:campus` covers canonical facts, exact URL, unique arrival proximity, full booth-perimeter clearance, and flood-fill reachability of all eight approaches using the runtime collision helpers.
+
+Playwright with installed Chrome tested the Pages export at `http://127.0.0.1:4173` at 1280×720, 768×1024, and 390×844, including phone touch emulation. Map selection, physical booth pointer selection, pointer ground traversal, arrow/WASD movement, Space interaction, reset, reduced-motion navigation, dialog naming, Escape, focus return, safe external-link attributes, and 2D access passed. Both `/` and `/campus/` passed forced WebGL-unavailable tests. Stable dialog callbacks and pre-paint focus initialization preserve focus return. The 2D view stays mounted underneath its dialog. Mobile prompt/map overlap and legacy control-class conflicts were corrected and verified with bounding-box assertions and screenshots.
+
+Evidence: `/tmp/highlight-campus-1280.png`, `/tmp/highlight-campus-768.png`, `/tmp/highlight-campus-390.png` (temporary local QA artifacts). Screenshots show the blue booth, raised label, football emblem, and separated mobile controls. Existing preview/OG artwork remains unchanged; alt text describes the illustration without claiming it includes the new destination.
+
+The final Vinext build, GitHub Pages export including TypeScript, lint, and `git diff --check` pass. Lint retains seven known image warnings. No application exceptions or broken application assets were recorded. Chrome reported the existing Three.js Clock deprecation; the simple static server returned a favicon 404. The public product URL returned HTTP 200. Browser interaction QA used the static export; Vinext was build-validated. No deployment was performed.

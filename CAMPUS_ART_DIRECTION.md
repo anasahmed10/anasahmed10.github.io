@@ -49,7 +49,7 @@ The reference is art direction, not a pixel-exact layout mandate. The live campu
 
 ### Composition and scale
 
-- The campus reads as one oval island with a looping path, a central explorer, and six distinct destinations around the perimeter.
+- The campus reads as one oval island with a looping path, a central explorer, and eight distinct destinations around the perimeter.
 - Maintain generous negative space between landmarks so their silhouettes and labels remain readable.
 - Props are intentionally oversized relative to architecture; this is a storytelling miniature, not an architectural scale model.
 - The explorer should feel like a clay figure belonging to the same set, with compact proportions, simple facial features, and a stable readable silhouette.

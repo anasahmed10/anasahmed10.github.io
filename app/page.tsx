@@ -4,7 +4,7 @@ import ClayCampus from "./components/ClayCampus";
 export const metadata: Metadata = {
   title: { absolute: "Anas Ahmed — Android Engineering & Products" },
   description:
-    "Explore Anas Ahmed’s clay campus for enterprise Android, connected vehicles, scanner automation, SplitDish, and SmartShopper AI research.",
+    "Explore eight clay landmarks spanning enterprise Android, connected vehicles, scanner automation, SplitDish, SmartShopper, and Highlight Corner, a live NFL highlights product built around a 272-game catalog.",
 };
 
 export default function Home() {

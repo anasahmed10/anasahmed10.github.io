@@ -1,3 +1,7 @@
+import { PRODUCTS } from "./products";
+
+const highlightCorner = PRODUCTS.find((product) => product.id === "highlight-corner")!;
+
 export type CampusDestinationId =
   | "origin"
   | "self-serve-copy"
@@ -5,6 +9,7 @@ export type CampusDestinationId =
   | "scanner-automation"
   | "splitdish"
   | "smartshopper"
+  | "highlight-corner"
   | "hobbies";
 
 export type CampusDestination = {
@@ -17,6 +22,7 @@ export type CampusDestination = {
     | "scanner-depot"
     | "splitdish-table"
     | "shopping-boutique"
+    | "broadcast-booth"
     | "maker-lab";
   navLabel: string;
   sceneLabel: string;
@@ -301,7 +307,7 @@ export const CAMPUS_DESTINATIONS: CampusDestination[] = [
     impact: "Budget-to-premium comparisons · purchase-ready links · reusable across 5+ categories",
     color: "#27b8a6",
     position: [12.6, 0, 0],
-    approach: [14.2, 0, 3.1],
+    approach: [14.2, 0, 3.6],
     height: 4.9,
     width: 4.6,
     details: [
@@ -315,6 +321,30 @@ export const CAMPUS_DESTINATIONS: CampusDestination[] = [
       href: "https://chatgpt.com/g/g-6a4be8c0f2ac8191a2e34a57b52f46ee-smartshopper",
       external: true,
     },
+  },
+  {
+    id: "highlight-corner",
+    type: "project",
+    visual: "broadcast-booth",
+    navLabel: highlightCorner.name,
+    sceneLabel: highlightCorner.name,
+    accessibleName: "Visit Highlight Corner and explore the live NFL highlights product",
+    kicker: `HIGHLIGHT CORNER · ${highlightCorner.status}`,
+    title: "Highlight Corner: a fan passion project built for a 272-game season.",
+    summary: highlightCorner.consumerSummary,
+    impact: "272-game catalog · Spoiler-conscious browsing · Cloudflare Workers delivery",
+    color: "#c99446",
+    position: [-16.7, 0, 0],
+    approach: [-16.7, 0, 3.75],
+    height: 5.1,
+    width: 4.4,
+    details: [
+      highlightCorner.tagline,
+      highlightCorner.engineeringSummary,
+      `${highlightCorner.status} · ${highlightCorner.platforms.join(" · ")}`,
+    ],
+    tech: highlightCorner.technologies,
+    link: { label: "Explore Highlight Corner", href: highlightCorner.href, external: true },
   },
   {
     id: "hobbies",

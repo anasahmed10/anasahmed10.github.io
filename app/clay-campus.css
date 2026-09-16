@@ -289,7 +289,7 @@
   right: 18px;
   min-height: 66px;
   display: grid;
-  grid-template-columns: minmax(300px, 1fr) auto minmax(220px, 1fr);
+  grid-template-columns: minmax(240px, 1fr) minmax(0, 2fr) auto;
   align-items: center;
   gap: 1rem;
   padding: .55rem .65rem;
@@ -333,9 +333,11 @@
 
 .clay-header nav {
   display: flex;
+  overflow-x: auto;
   align-items: center;
   gap: .15rem;
 }
+.clay-header nav button { flex: 0 0 auto; }
 .clay-header nav button,
 .quick-view-button {
   min-height: 42px;
@@ -446,7 +448,7 @@
   font-weight: 800;
 }
 .control-card button:hover { background: #f0eadf; }
-.mobile-controls { display: none !important; }
+.control-card > .campus-mobile-controls { display: none; }
 
 .campus-map {
   position: absolute;
@@ -864,11 +866,19 @@
     transform: none;
     justify-content: space-between;
   }
-  .desktop-controls { display: none !important; }
-  .mobile-controls { display: inline-flex !important; }
+  .control-card > .campus-desktop-controls { display: none; }
+  .control-card > .campus-mobile-controls { display: inline-flex; }
   .control-card > span,
   .control-card button { padding: 0 .45rem; font-size: .59rem; }
-  .nearby-prompt { bottom: 135px; }
+  .nearby-prompt {
+    left: 10px;
+    bottom: 85px;
+    transform: none;
+    width: calc(100vw - 198px);
+    padding: .65rem;
+    font-size: .68rem;
+    text-align: left;
+  }
   .clay-overlay-backdrop { padding: .65rem; }
   .clay-overlay {
     max-height: calc(100dvh - 1.3rem);

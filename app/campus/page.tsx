@@ -4,7 +4,7 @@ import ClayCampus from "../components/ClayCampus";
 export const metadata: Metadata = {
   title: "Interactive Project Campus",
   description:
-    "Walk through seven clay landmarks covering enterprise Android, connected-vehicle mobile work, scanner automation, SplitDish, SmartShopper, and Anas Ahmed’s origin and hobbies.",
+    "Walk through eight clay landmarks covering enterprise Android, connected vehicles, scanner automation, SplitDish, SmartShopper, Highlight Corner, and Anas Ahmed’s origin and hobbies.",
 };
 
 export default function CampusPage() {

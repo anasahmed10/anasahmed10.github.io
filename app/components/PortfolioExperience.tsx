@@ -79,11 +79,12 @@ export default function PortfolioExperience() {
     [roleLens],
   );
   const employerProjects = FEATURED_PROJECTS.filter(
-    (project) => project.id !== "splitdish" && project.id !== "smartshopper",
+    (project) => project.id !== "splitdish" && project.id !== "smartshopper" && project.id !== "highlight-corner",
   );
   const splitDish = FEATURED_PROJECTS.find((project) => project.id === "splitdish");
   const smartShopper = FEATURED_PROJECTS.find((project) => project.id === "smartshopper");
   const splitDishProduct = PRODUCTS.find((product) => product.id === "splitdish");
+  const highlightCornerProduct = PRODUCTS.find((product) => product.id === "highlight-corner");
 
   return (
     <>
@@ -227,6 +228,15 @@ export default function PortfolioExperience() {
                   <p>{smartShopper?.summary}</p>
                   {smartShopper?.link && (
                     <a href={smartShopper.link.href} target="_blank" rel="noreferrer">Open SmartShopper ↗</a>
+                  )}
+                </article>
+                <article>
+                  <small>LIVE SPORTS WEB PRODUCT</small>
+                  <h3>{highlightCornerProduct?.name ?? "Highlight Corner"}</h3>
+                  <p>{highlightCornerProduct?.consumerSummary}</p>
+                  <span>React 19 · TypeScript · Cloudflare Workers</span>
+                  {highlightCornerProduct && (
+                    <a href={highlightCornerProduct.href} target="_blank" rel="noreferrer">Open Highlight Corner ↗</a>
                   )}
                 </article>
                 <article>

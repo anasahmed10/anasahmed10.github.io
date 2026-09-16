@@ -706,6 +706,95 @@
   font: .56rem/1.6 var(--mono);
 }
 
+.product-feature-art > .highlight-corner-art {
+  min-height: clamp(340px, 42vw, 570px);
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+  display: flex;
+  grid-template-columns: none;
+  flex-direction: column;
+  justify-content: center;
+  border: 0;
+  background:
+    radial-gradient(circle at 82% 12%, rgba(238, 77, 71, .28), transparent 27%),
+    linear-gradient(145deg, #101f38 0%, #07101d 78%);
+}
+
+.highlight-corner-art-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, .16);
+  color: #f5f7fb;
+  font: .58rem var(--mono);
+  letter-spacing: .12em;
+}
+
+.highlight-corner-art-head i {
+  color: #ff7671;
+  font-style: normal;
+}
+
+.highlight-corner-matchup {
+  margin: clamp(2rem, 5vw, 4.5rem) 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: clamp(.75rem, 2vw, 1.5rem);
+  align-items: center;
+}
+
+.highlight-corner-matchup span {
+  display: grid;
+  gap: .8rem;
+  color: #c8d2e1;
+  font: .62rem var(--mono);
+  text-align: center;
+}
+
+.highlight-corner-matchup b {
+  width: clamp(64px, 10vw, 104px);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .07);
+  color: #fff;
+  font-size: clamp(1rem, 2vw, 1.6rem);
+}
+
+.highlight-corner-matchup em {
+  color: #ff7671;
+  font: 700 clamp(.8rem, 1.6vw, 1.2rem) var(--mono);
+  font-style: normal;
+}
+
+.highlight-corner-controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .9rem 1rem;
+  border: 1px solid rgba(255, 255, 255, .13);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .04);
+}
+
+.highlight-corner-controls strong,
+.highlight-corner-controls span {
+  font: .58rem var(--mono);
+}
+
+.highlight-corner-controls strong { color: #ff9b97; }
+.highlight-corner-controls span { color: #aebdd1; }
+
+.highlight-corner-art > small {
+  margin-top: 1rem;
+  color: #7f90a7;
+  font: .56rem var(--mono);
+  text-align: center;
+}
+
 .product-art-monogram {
   grid-row: span 2;
   width: 46px;

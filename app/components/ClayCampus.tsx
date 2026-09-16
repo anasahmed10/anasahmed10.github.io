@@ -36,6 +36,15 @@ import {
   useState,
 } from "react";
 import * as THREE from "three";
+import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
+import campusPlaqueFont from "../data/campus-plaque-font";
+import {
+  clampToCampus,
+  BUILDING_COLLISION_PADDING,
+  isInsideBuildingFootprint,
+  isTouchingBuilding,
+} from "../data/campus-navigation";
 import {
   CAMPUS_DESTINATIONS as CAMPUS_ZONES,
   type CampusDestination as CampusZone,
@@ -45,11 +54,7 @@ type PositionRef = MutableRefObject<THREE.Vector3>;
 type MoveTarget = { point: THREE.Vector3 } | null;
 
 const START = new THREE.Vector3(0, 0, 4.6);
-const WORLD_LIMIT = 15.5;
 const STEPPED_FPS = 12;
-const BUILDING_HALF_DEPTH = 2.65;
-const BUILDING_COLLISION_PADDING = 0.7;
-const BUILDING_TOUCH_RADIUS = 1.25;
 const TREE_POSITIONS = [
   [-12, -8], [-11, 1], [-12, 10], [-5, 10], [4, 10], [12, 10],
   [16, 7], [12, -9], [5, -12], [-6, -12], [-3, 3], [3, 3],
@@ -69,25 +74,6 @@ type CampusRenderProfile = {
 const zoneById = Object.fromEntries(
   CAMPUS_ZONES.map((zone) => [zone.id, zone]),
 ) as Record<CampusZone["id"], CampusZone>;
-
-function isTouchingBuilding(position: THREE.Vector3, zone: CampusZone) {
-  const [x, , z] = zone.position;
-  const outsideX = Math.max(Math.abs(position.x - x) - zone.width / 2, 0);
-  const outsideZ = Math.max(Math.abs(position.z - z) - BUILDING_HALF_DEPTH, 0);
-  return Math.hypot(outsideX, outsideZ) <= BUILDING_TOUCH_RADIUS;
-}
-
-function isInsideBuildingFootprint(
-  position: THREE.Vector3,
-  zone: CampusZone,
-  padding = 0,
-) {
-  const [x, , z] = zone.position;
-  return (
-    Math.abs(position.x - x) < zone.width / 2 + padding &&
-    Math.abs(position.z - z) < BUILDING_HALF_DEPTH + padding
-  );
-}
 
 function isBlockedByBuilding(position: THREE.Vector3) {
   return CAMPUS_ZONES.some((zone) =>
@@ -510,16 +496,16 @@ function TreeGrove({ reducedMotion }: { reducedMotion: boolean }) {
 
   return (
     <>
-      <instancedMesh ref={trunkRef} args={[treeGeometries[0], undefined, TREE_POSITIONS.length]} castShadow>
+      <instancedMesh ref={trunkRef} args={[treeGeometries[0], undefined, TREE_POSITIONS.length]} raycast={ignoreRaycast} castShadow>
         <ClayMaterial color="#a66b43" roughness={0.96} normalStrength={0.22} />
       </instancedMesh>
-      <instancedMesh ref={crownMainRef} args={[treeGeometries[1], undefined, TREE_POSITIONS.length]} castShadow>
+      <instancedMesh ref={crownMainRef} args={[treeGeometries[1], undefined, TREE_POSITIONS.length]} raycast={ignoreRaycast} castShadow>
         <ClayMaterial color="#50b978" roughness={0.94} normalStrength={0.27} />
       </instancedMesh>
-      <instancedMesh ref={crownRightRef} args={[treeGeometries[2], undefined, TREE_POSITIONS.length]} castShadow>
+      <instancedMesh ref={crownRightRef} args={[treeGeometries[2], undefined, TREE_POSITIONS.length]} raycast={ignoreRaycast} castShadow>
         <ClayMaterial color="#74ce91" roughness={0.94} normalStrength={0.27} />
       </instancedMesh>
-      <instancedMesh ref={crownLeftRef} args={[treeGeometries[3], undefined, TREE_POSITIONS.length]} castShadow>
+      <instancedMesh ref={crownLeftRef} args={[treeGeometries[3], undefined, TREE_POSITIONS.length]} raycast={ignoreRaycast} castShadow>
         <ClayMaterial color="#63c787" roughness={0.95} normalStrength={0.27} />
       </instancedMesh>
     </>
@@ -692,6 +678,83 @@ function LivingEnvironment({ reducedMotion }: { reducedMotion: boolean }) {
   );
 }
 
+const plaqueFont = new FontLoader().parse(campusPlaqueFont);
+const ignoreRaycast = () => {};
+
+function RaisedPlaqueText({ text, width, position }: {
+  text: string;
+  width: number;
+  position: [number, number, number];
+}) {
+  const geometry = useMemo(() => {
+    const letters = new TextGeometry(text, {
+      font: plaqueFont, size: 0.3, depth: 0.045, curveSegments: 4,
+      bevelEnabled: true, bevelThickness: 0.009, bevelSize: 0.006, bevelSegments: 2,
+    });
+    letters.computeBoundingBox();
+    const bounds = letters.boundingBox!;
+    const scale = width / (bounds.max.x - bounds.min.x);
+    letters.scale(scale, scale, 1);
+    letters.center();
+    return letters;
+  }, [text, width]);
+  useEffect(() => () => geometry.dispose(), [geometry]);
+  return <mesh geometry={geometry} position={position} raycast={ignoreRaycast} castShadow>
+    <ClayMaterial color="#fff0d2" roughness={0.95} normalStrength={0.08} />
+  </mesh>;
+}
+
+function HighlightCornerBooth({ color }: { color: string }) {
+  const laceGeometry = useMemo(() => new THREE.CapsuleGeometry(0.035, 0.22, 3, 6), []);
+  const laceMaterial = useMemo(() => new THREE.MeshStandardMaterial({ color: "#fff0d2", roughness: 0.96 }), []);
+  useEffect(() => () => { laceGeometry.dispose(); laceMaterial.dispose(); }, [laceGeometry, laceMaterial]);
+  return <group>
+    <ClayRoundedBox seed="highlight-shell" args={[4.15, 3.55, 3.7]} radius={0.65} smoothness={5} deformation={0.028} position={[0, 1.78, 0]} rotation={[0.006, 0, -0.01]} castShadow receiveShadow>
+      <ClayMaterial color={color} roughness={0.95} normalStrength={0.25} />
+    </ClayRoundedBox>
+    <ClayRoundedBox seed="highlight-roof" args={[4.25, 0.45, 3.8]} radius={0.21} smoothness={4} position={[0, 3.55, 0]} rotation={[0, 0, 0.016]} raycast={ignoreRaycast} castShadow>
+      <ClayMaterial color="#4878b8" roughness={0.96} normalStrength={0.22} />
+    </ClayRoundedBox>
+    {[-1.94, 1.94].map((x) => <ClayRoundedBox key={x} seed={`highlight-blue-pier-${x}`} args={[0.42, 2.9, 0.5]} radius={0.18} smoothness={4} position={[x, 1.5, 1.7]} raycast={ignoreRaycast} castShadow>
+      <ClayMaterial color="#4878b8" roughness={0.95} normalStrength={0.23} />
+    </ClayRoundedBox>)}
+    <ClayRoundedBox seed="highlight-screen-surround" args={[3.75, 2.45, 0.36]} radius={0.42} smoothness={5} position={[0, 1.65, 1.85]} raycast={ignoreRaycast} castShadow>
+      <ClayMaterial color="#fff0d2" roughness={0.95} normalStrength={0.2} />
+    </ClayRoundedBox>
+    <RoundedBox args={[3.3, 2.03, 0.12]} radius={0.24} smoothness={4} position={[0, 1.65, 2.08]} raycast={ignoreRaycast}>
+      <meshStandardMaterial color="#25334a" roughness={0.5} />
+    </RoundedBox>
+    <RoundedBox args={[2.95, 1.43, 0.06]} radius={0.15} smoothness={4} position={[0, 1.85, 2.17]} raycast={ignoreRaycast}>
+      <meshStandardMaterial color="#577a60" roughness={0.48} />
+    </RoundedBox>
+    {/* A static play symbol conveys video without displaying scores or real teams. */}
+    <mesh position={[-0.16, 1.84, 2.23]} raycast={ignoreRaycast}>
+      <circleGeometry args={[0.4, 3]} />
+      <meshStandardMaterial color="#fff0d2" roughness={0.7} />
+    </mesh>
+    <ClayRoundedBox seed="highlight-score-cover" args={[2.96, 0.43, 0.18]} radius={0.13} smoothness={4} position={[0, 0.92, 2.18]} rotation={[0.045, 0, -0.016]} raycast={ignoreRaycast} castShadow>
+      <ClayMaterial color="#c99446" roughness={0.96} normalStrength={0.23} />
+    </ClayRoundedBox>
+    <RaisedPlaqueText text="Score hidden" width={1.7} position={[0, 0.92, 2.29]} />
+    <ClayRoundedBox seed="highlight-plaque" args={[3.95, 0.62, 0.32]} radius={0.2} smoothness={5} position={[0, 3.24, 1.94]} rotation={[0, 0, -0.012]} raycast={ignoreRaycast} castShadow>
+      <ClayMaterial color="#25334a" roughness={0.94} normalStrength={0.18} />
+    </ClayRoundedBox>
+    <RaisedPlaqueText text="Highlight Corner" width={3.48} position={[0, 3.24, 2.13]} />
+    <group position={[0, 4.35, 0.2]} rotation={[0, 0, -0.15]}>
+      <ClayMesh seed="highlight-replay-ring" deformation={0.025} scale={[1, 0.7, 1]} position={[0, 0, -0.12]} raycast={ignoreRaycast} castShadow>
+        <torusGeometry args={[1.15, 0.11, 10, 32, Math.PI * 1.8]} />
+        <ClayMaterial color="#e6b75c" roughness={0.95} normalStrength={0.18} />
+      </ClayMesh>
+      <ClayMesh seed="highlight-football" deformation={0.04} scale={[1.1, 0.59, 0.53]} raycast={ignoreRaycast} castShadow>
+        <sphereGeometry args={[1, 24, 16]} />
+        <ClayMaterial color="#8d553b" roughness={0.96} normalStrength={0.23} />
+      </ClayMesh>
+      {[-0.42, -0.21, 0, 0.21, 0.42].map((x) => <mesh key={x} geometry={laceGeometry} material={laceMaterial} position={[x, 0.04, 0.5]} raycast={ignoreRaycast} />)}
+      <mesh geometry={laceGeometry} material={laceMaterial} position={[0, 0.04, 0.52]} rotation={[0, 0, Math.PI / 2]} scale={[1, 3.7, 1]} raycast={ignoreRaycast} />
+    </group>
+  </group>;
+}
+
 function Building({
   zone,
   onSelect,
@@ -738,6 +801,9 @@ function Building({
   );
 
   const buildingShape = (() => {
+    if (zone.visual === "broadcast-booth") {
+      return <HighlightCornerBooth color={zone.color} />;
+    }
     if (zone.visual === "repair-workshop") {
       return (
         <>
@@ -1228,8 +1294,7 @@ function Explorer({
 
       if (movement.lengthSq() > 0) {
         const next = nextPositionRef.current.copy(position).add(movement);
-        next.x = THREE.MathUtils.clamp(next.x, -WORLD_LIMIT, WORLD_LIMIT);
-        next.z = THREE.MathUtils.clamp(next.z, -WORLD_LIMIT, WORLD_LIMIT);
+        clampToCampus(next);
         if (!isBlockedByBuilding(next)) {
           position.copy(next);
         } else {
@@ -1237,11 +1302,8 @@ function Explorer({
 
           if (Math.abs(movement.x) > 0.0001) {
             next.copy(position);
-            next.x = THREE.MathUtils.clamp(
-              position.x + movement.x,
-              -WORLD_LIMIT,
-              WORLD_LIMIT,
-            );
+            next.x = position.x + movement.x;
+            clampToCampus(next);
             if (!isBlockedByBuilding(next)) {
               position.copy(next);
               movedAlongEdge = true;
@@ -1250,11 +1312,8 @@ function Explorer({
 
           if (!movedAlongEdge && Math.abs(movement.z) > 0.0001) {
             next.copy(position);
-            next.z = THREE.MathUtils.clamp(
-              position.z + movement.z,
-              -WORLD_LIMIT,
-              WORLD_LIMIT,
-            );
+            next.z = position.z + movement.z;
+            clampToCampus(next);
             if (!isBlockedByBuilding(next)) {
               position.copy(next);
               movedAlongEdge = true;
@@ -1634,7 +1693,7 @@ function OverlayShell({
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
-  useEffect(() => {
+  useLayoutEffect(() => {
     returnFocusRef.current = document.activeElement as HTMLElement | null;
     panelRef.current?.focus();
     const onKey = (event: KeyboardEvent) => {
@@ -1693,6 +1752,8 @@ export default function ClayCampus() {
   const [reducedMotion, setReducedMotion] = useState(false);
   const [compactRendering, setCompactRendering] = useState(false);
   const [webglAvailable, setWebglAvailable] = useState(true);
+  const closeZone = useCallback(() => setActiveZone(null), []);
+  const closeRecruiter = useCallback(() => setRecruiterOpen(false), []);
   const positionRef = useRef(START.clone());
   const moveTarget = useRef<MoveTarget>(null);
   const showAccessible = accessibleView || !webglAvailable;
@@ -1764,16 +1825,7 @@ export default function ClayCampus() {
         return;
       }
 
-      point.x = THREE.MathUtils.clamp(
-        point.x,
-        -WORLD_LIMIT,
-        WORLD_LIMIT,
-      );
-      point.z = THREE.MathUtils.clamp(
-        point.z,
-        -WORLD_LIMIT,
-        WORLD_LIMIT,
-      );
+      clampToCampus(point);
       moveTarget.current = { point };
       setNearby(null);
     },
@@ -1811,7 +1863,7 @@ export default function ClayCampus() {
             <p>ANAS AHMED’S INTERACTIVE PORTFOLIO</p>
             <h1 id="welcome-title">Walk through the work, or get the facts.</h1>
             <span>
-              The clay campus turns five projects, my repair-shop origin, and
+              The clay campus turns six projects, my repair-shop origin, and
               my maker hobbies into places you can visit.
             </span>
             <div className="welcome-actions">
@@ -1836,7 +1888,7 @@ export default function ClayCampus() {
           </div>
 
           <div className="welcome-preview" aria-label="Preview of the clay campus">
-            <div className="welcome-preview-image" role="img" aria-label="Colorful clay campus with seven project and personal landmarks" />
+            <div className="welcome-preview-image" role="img" aria-label="Handcrafted clay campus illustration with colorful project buildings and cream walking paths" />
             <div className="welcome-player-card">
               <span className="welcome-player-avatar" aria-hidden="true">
                 <i />
@@ -1914,9 +1966,9 @@ export default function ClayCampus() {
         </div>
 
         <div className="control-card" aria-label="Movement instructions">
-          <span className="desktop-controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> to move</span>
-          <span className="desktop-controls"><kbd>Space</kbd> interact</span>
-          <span className="mobile-controls"><MouseSimple size={17} /> Tap anywhere to move</span>
+          <span className="campus-desktop-controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> to move</span>
+          <span className="campus-desktop-controls"><kbd>Space</kbd> interact</span>
+          <span className="campus-mobile-controls"><MouseSimple size={17} /> Tap anywhere to move</span>
           <button onClick={reset}><ArrowCounterClockwise size={16} /> Reset</button>
           <button onClick={() => setAccessibleView(true)}><Monitor size={16} /> 2D view</button>
         </div>
@@ -1949,7 +2001,7 @@ export default function ClayCampus() {
       </section>
 
       {activeZone && (
-        <OverlayShell titleId="zone-title" onClose={() => setActiveZone(null)}>
+        <OverlayShell titleId="zone-title" onClose={closeZone}>
           <div className="overlay-accent" style={{ background: activeZone.color }} />
           <p className="overlay-kicker">{activeZone.kicker}</p>
           <h2 id="zone-title">{activeZone.title}</h2>
@@ -1975,7 +2027,7 @@ export default function ClayCampus() {
       )}
 
       {recruiterOpen && (
-        <OverlayShell titleId="recruiter-title" onClose={() => setRecruiterOpen(false)}>
+        <OverlayShell titleId="recruiter-title" onClose={closeRecruiter}>
           <div className="overlay-accent recruiter-accent" />
           <p className="overlay-kicker">RECRUITER QUICK VIEW</p>
           <h2 id="recruiter-title">I build Android software around real devices.</h2>
@@ -2019,9 +2071,8 @@ export default function ClayCampus() {
                 <strong>{zone.impact}</strong>
                 <p>{zone.summary}</p>
                 <button onClick={() => {
-                  setAccessibleView(false);
                   setActiveZone(zone);
-                }}>Read details <ArrowRight /></button>
+                }} aria-label={`Read about ${zone.sceneLabel}`}>Read details <ArrowRight /></button>
               </article>
             ))}
           </div>

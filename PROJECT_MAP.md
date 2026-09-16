@@ -27,6 +27,8 @@ The primary deployment uses Vinext and Vite. `vite.config.ts` composes Vinext, t
 | `app/components/PublicHeader.tsx` | Shared header and footer for conventional pages |
 | `app/data/portfolio.ts` | Canonical campus destinations and featured-project facts |
 | `app/data/products.ts` | Canonical product-directory data |
+| `app/data/campus-navigation.ts` | Shared collision dimensions, footprint checks, and proximity checks |
+| `app/data/campus-plaque-font.ts` | Locally bundled, licensed font subset for raised Highlight Corner lettering |
 | `app/globals.css` | Reset, global tokens, and foundational styles |
 | `app/public-site.css` | Recruiter and product page styling |
 | `app/clay-campus.css` | Campus canvas, overlays, dialogs, controls, fallbacks, and responsive rules |
@@ -46,6 +48,6 @@ The primary deployment uses Vinext and Vite. `vite.config.ts` composes Vinext, t
 
 ## Content ownership
 
-Campus dialogs and the recruiter view both derive project information from `app/data/portfolio.ts`; edit shared facts there first. The product directory derives its cards from `app/data/products.ts`. The detailed SplitDish page contains additional route-specific narrative and support/privacy links.
+Campus dialogs and the recruiter view derive project information from `app/data/portfolio.ts`. Highlight Corner's campus entry derives its approved product facts from `app/data/products.ts`, which also supplies the product directory. The detailed SplitDish page contains additional route-specific narrative and support/privacy links.
 
 When adding a campus destination, update the destination ID/type and data, provide its scene representation, account for collision and approach coordinates, and verify every navigation surface and fallback. When adding a conventional route, include route metadata, use the shared public chrome where appropriate, and confirm it is emitted by the GitHub Pages static build.

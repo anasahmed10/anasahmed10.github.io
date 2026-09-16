@@ -11,7 +11,7 @@ import { PRODUCTS } from "../data/products";
 export const metadata: Metadata = {
   title: "Products",
   description:
-    "Explore products designed and engineered by Anas Ahmed, including the Kotlin Multiplatform app SplitDish and the SmartShopper AI research assistant.",
+    "Explore products designed and engineered by Anas Ahmed, including SplitDish, SmartShopper, and the NFL highlights product Highlight Corner.",
 };
 
 export default function ProductsPage() {
@@ -69,6 +69,23 @@ export default function ProductsPage() {
             >
               {product.artwork ? (
                 <img src={product.artwork} alt={`${product.name}: ${product.tagline}`} />
+              ) : product.artworkVariant === "highlight-corner" ? (
+                <div className="highlight-corner-art" aria-hidden="true">
+                  <div className="highlight-corner-art-head">
+                    <span>HIGHLIGHT CORNER</span>
+                    <i>WEEK 01</i>
+                  </div>
+                  <div className="highlight-corner-matchup">
+                    <span><b>NE</b> New England</span>
+                    <em>VS</em>
+                    <span><b>SEA</b> Seattle</span>
+                  </div>
+                  <div className="highlight-corner-controls">
+                    <strong>Score hidden</strong>
+                    <span>Verified clips</span>
+                  </div>
+                  <small>Highlights · Recap · Player stats</small>
+                </div>
               ) : (
                 <div className="smartshopper-art" aria-hidden="true">
                   <div className="smartshopper-art-head">
@@ -89,7 +106,7 @@ export default function ProductsPage() {
                 {product.id === "splitdish" ? (
                   <img src="/products/splitdish/app-icon-v2.png" alt="" />
                 ) : (
-                  <b className="product-art-monogram" aria-hidden="true">SS</b>
+                  <b className="product-art-monogram" aria-hidden="true">{product.monogram}</b>
                 )}
                 <span>{product.artworkLabel}</span>
                 <strong>{product.artworkDetail}</strong>
@@ -101,11 +118,12 @@ export default function ProductsPage() {
 
       <section className="future-products">
         <span>PRODUCT SYSTEM · EXPANDABLE</span>
-        <h2>Two products, one standard for useful software.</h2>
+        <h2>Three products, one standard for useful software.</h2>
         <p>
           SplitDish demonstrates cross-platform product engineering. SmartShopper
-          demonstrates structured AI research and recommendation design. Future
-          products will receive the same concise story and engineering detail.
+          demonstrates structured AI research and recommendation design. Highlight
+          Corner brings evidence-backed content and careful interaction design to a
+          live sports product.
         </p>
       </section>
 
