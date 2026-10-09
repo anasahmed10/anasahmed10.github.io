@@ -725,12 +725,23 @@ function HighlightCornerBooth({ color }: { color: string }) {
       <meshStandardMaterial color="#25334a" roughness={0.5} />
     </RoundedBox>
     <RoundedBox args={[2.95, 1.43, 0.06]} radius={0.15} smoothness={4} position={[0, 1.85, 2.17]} raycast={ignoreRaycast}>
-      <meshStandardMaterial color="#577a60" roughness={0.48} />
+      <meshStandardMaterial color="#354963" roughness={0.48} />
     </RoundedBox>
-    {/* A static play symbol conveys video without displaying scores or real teams. */}
-    <mesh position={[-0.16, 1.84, 2.23]} raycast={ignoreRaycast}>
-      <circleGeometry args={[0.4, 3]} />
-      <meshStandardMaterial color="#fff0d2" roughness={0.7} />
+    {/* Two scoreless matchup rows and a play control represent the live scoreboard and outbound highlights. */}
+    {[2.13, 1.67].map((y) => <group key={y}>
+      <ClayRoundedBox seed={`highlight-matchup-${y}`} args={[2.54, 0.34, 0.08]} radius={0.11} smoothness={4} position={[-0.05, y, 2.23]} raycast={ignoreRaycast} castShadow>
+        <ClayMaterial color="#fff0d2" roughness={0.94} normalStrength={0.12} />
+      </ClayRoundedBox>
+      <ClayRoundedBox seed={`highlight-team-${y}`} args={[0.44, 0.18, 0.06]} radius={0.07} smoothness={4} position={[-0.93, y, 2.31]} raycast={ignoreRaycast}>
+        <ClayMaterial color="#4878b8" roughness={0.95} normalStrength={0.12} />
+      </ClayRoundedBox>
+      <ClayRoundedBox seed={`highlight-hidden-score-${y}`} args={[0.42, 0.18, 0.06]} radius={0.07} smoothness={4} position={[0.49, y, 2.31]} raycast={ignoreRaycast}>
+        <ClayMaterial color="#c99446" roughness={0.95} normalStrength={0.12} />
+      </ClayRoundedBox>
+    </group>)}
+    <mesh position={[1.02, 1.91, 2.33]} raycast={ignoreRaycast}>
+      <circleGeometry args={[0.2, 3]} />
+      <meshStandardMaterial color="#25334a" roughness={0.7} />
     </mesh>
     <ClayRoundedBox seed="highlight-score-cover" args={[2.96, 0.43, 0.18]} radius={0.13} smoothness={4} position={[0, 0.92, 2.18]} rotation={[0.045, 0, -0.016]} raycast={ignoreRaycast} castShadow>
       <ClayMaterial color="#c99446" roughness={0.96} normalStrength={0.23} />

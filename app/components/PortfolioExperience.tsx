@@ -234,7 +234,7 @@ export default function PortfolioExperience() {
                   <small>LIVE SPORTS WEB PRODUCT</small>
                   <h3>{highlightCornerProduct?.name ?? "Highlight Corner"}</h3>
                   <p>{highlightCornerProduct?.consumerSummary}</p>
-                  <span>React 19 · TypeScript · Cloudflare Workers</span>
+                  <span>{highlightCornerProduct?.technologies.join(" · ")}</span>
                   {highlightCornerProduct && (
                     <a href={highlightCornerProduct.href} target="_blank" rel="noreferrer">Open Highlight Corner ↗</a>
                   )}

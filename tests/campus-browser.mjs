@@ -33,7 +33,7 @@ try {
     const target = map.getByRole("button", { name: "Go to Highlight Corner", exact: true });
     if (width === 390) await target.tap();
     else await target.click();
-    assert.match(await page.getByRole("dialog").innerText(), /fan passion project[\s\S]*272-game/);
+    assert.match(await page.getByRole("dialog").innerText(), /weekly scores[\s\S]*official game highlight links/i);
     await verifyLink(page);
     await page.keyboard.press("Escape");
     await page.getByRole("dialog").waitFor({ state: "hidden" });

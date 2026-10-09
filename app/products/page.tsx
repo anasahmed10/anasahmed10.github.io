@@ -11,7 +11,7 @@ import { PRODUCTS } from "../data/products";
 export const metadata: Metadata = {
   title: "Products",
   description:
-    "Explore products designed and engineered by Anas Ahmed, including SplitDish, SmartShopper, and the NFL highlights product Highlight Corner.",
+    "Explore products designed and engineered by Anas Ahmed, including SplitDish, SmartShopper, and Highlight Corner, an NFL scores, highlights, fantasy, and recaps hub.",
 };
 
 export default function ProductsPage() {
@@ -73,18 +73,18 @@ export default function ProductsPage() {
                 <div className="highlight-corner-art" aria-hidden="true">
                   <div className="highlight-corner-art-head">
                     <span>HIGHLIGHT CORNER</span>
-                    <i>WEEK 01</i>
+                    <i>WEEKLY SCORES</i>
                   </div>
                   <div className="highlight-corner-matchup">
-                    <span><b>NE</b> New England</span>
+                    <span><b>AWAY</b> Score hidden</span>
                     <em>VS</em>
-                    <span><b>SEA</b> Seattle</span>
+                    <span><b>HOME</b> Score hidden</span>
                   </div>
                   <div className="highlight-corner-controls">
-                    <strong>Score hidden</strong>
-                    <span>Verified clips</span>
+                    <strong>Spoilers hidden</strong>
+                    <span>Official highlights ↗</span>
                   </div>
-                  <small>Highlights · Recap · Player stats</small>
+                  <small>Fantasy leaders · Original recaps · Game centers</small>
                 </div>
               ) : (
                 <div className="smartshopper-art" aria-hidden="true">
@@ -122,8 +122,8 @@ export default function ProductsPage() {
         <p>
           SplitDish demonstrates cross-platform product engineering. SmartShopper
           demonstrates structured AI research and recommendation design. Highlight
-          Corner brings evidence-backed content and careful interaction design to a
-          live sports product.
+          Corner brings scores, official highlight links, fantasy views, and original
+          game stories together in a live sports product.
         </p>
       </section>
 

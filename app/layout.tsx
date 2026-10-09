@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     template: "%s · Anas Ahmed",
   },
   description:
-    "Explore Anas Ahmed’s clay campus for enterprise Android, connected vehicles, scanner automation, SplitDish, SmartShopper, and Highlight Corner, a live NFL highlights product.",
+    "Explore Anas Ahmed’s clay campus for enterprise Android, connected vehicles, scanner automation, SplitDish, SmartShopper, and Highlight Corner, a live NFL scores and highlights hub.",
   openGraph: {
     title: "Anas Ahmed — Android Engineering for Real Devices",
     description: "An eight-landmark clay project campus for enterprise Android, connected vehicles, automation, SplitDish, SmartShopper, and Highlight Corner.",
