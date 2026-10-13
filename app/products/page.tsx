@@ -11,7 +11,7 @@ import { PRODUCTS } from "../data/products";
 export const metadata: Metadata = {
   title: "Products",
   description:
-    "Explore products designed and engineered by Anas Ahmed, including SplitDish, SmartShopper, and Highlight Corner, an NFL web app for scores, game labels, highlights, fantasy, and recaps.",
+    "Explore products designed and engineered by Anas Ahmed, including SplitDish, SmartShopper, and Highlight Corner, a cross-platform NFL web app for mobile home screens and desktop browsers.",
 };
 
 export default function ProductsPage() {

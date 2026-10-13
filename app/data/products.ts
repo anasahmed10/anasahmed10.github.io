@@ -84,17 +84,17 @@ export const PRODUCTS: Product[] = [
   {
     id: "highlight-corner",
     name: "Highlight Corner",
-    status: "Live NFL web product",
+    status: "Live cross-platform NFL web app",
     availability: {
-      apple: "Live at highlightcorner.com",
-      googlePlay: "Responsive web experience",
+      apple: "Add to iPhone home screen from highlightcorner.com",
+      googlePlay: "Add to Android home screen from highlightcorner.com",
     },
     tagline: "See the score. Know how the game went.",
     consumerSummary:
-      "A mobile-first NFL web app that labels games Nail Biter, Comfortable, Garbage Time, or Blowout alongside scores, official highlights, sortable game and fantasy stats, and humorous recaps.",
+      "A mobile-first NFL web app that labels games Nail Biter, Comfortable, Garbage Time, or Blowout alongside scores, official highlights, sortable game and fantasy stats, and humorous recaps. It works across iOS, Android, and desktop browsers and can be added to a phone's home screen.",
     engineeringSummary:
-      "A TypeScript web experience that reads ESPN and Sleeper data, refreshes live scores during games, and pauses polling on off days. Supabase and scheduled GitHub Actions publish verified highlight links and fact-checked recaps to static site snapshots.",
-    platforms: ["Responsive web"],
+      "A mobile-first, installable TypeScript web app for iOS, Android, and desktop. It reads ESPN and Sleeper data, refreshes live scores during games, and pauses polling on off days. Supabase and scheduled GitHub Actions publish verified highlight links and fact-checked recaps to static site snapshots.",
+    platforms: ["iOS + Android home screen", "Desktop web"],
     technologies: [
       "TypeScript",
       "ESPN + Sleeper data",
