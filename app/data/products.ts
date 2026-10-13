@@ -12,7 +12,9 @@ export type Product = {
   platforms: string[];
   technologies: string[];
   artwork?: string;
-  artworkVariant?: "smartshopper" | "highlight-corner";
+  artworkAlt?: string;
+  artworkVariant?: "smartshopper";
+  icon?: string;
   monogram?: string;
   artworkLabel: string;
   artworkDetail: string;
@@ -45,6 +47,7 @@ export const PRODUCTS: Product[] = [
       "SQLDelight",
     ],
     artwork: "/products/splitdish/feature-graphic.png",
+    icon: "/products/splitdish/app-icon-v2.png",
     artworkLabel: "Android + iOS",
     artworkDetail: "One shared product system",
     href: "/products/splitdish/",
@@ -86,21 +89,23 @@ export const PRODUCTS: Product[] = [
       apple: "Live at highlightcorner.com",
       googlePlay: "Responsive web experience",
     },
-    tagline: "Your week in football, with spoilers on your terms.",
+    tagline: "See the score. Know how the game went.",
     consumerSummary:
-      "A mobile-first NFL hub for weekly scores, official game highlight links, fantasy leaders, and original recaps, with controls to hide results until fans are ready.",
+      "A mobile-first NFL web app that labels games Nail Biter, Comfortable, Garbage Time, or Blowout alongside scores, official highlights, sortable game and fantasy stats, and humorous recaps.",
     engineeringSummary:
-      "A responsive TypeScript web experience that brings together weekly scoreboards, game centers, outbound official highlights, fantasy scoring views, and spoiler-aware recaps.",
+      "A TypeScript web experience that reads ESPN and Sleeper data, refreshes live scores during games, and pauses polling on off days. Supabase and scheduled GitHub Actions publish verified highlight links and fact-checked recaps to static site snapshots.",
     platforms: ["Responsive web"],
     technologies: [
       "TypeScript",
-      "HTML + CSS",
       "ESPN + Sleeper data",
+      "Supabase",
+      "GitHub Actions",
     ],
-    artworkVariant: "highlight-corner",
-    monogram: "HC",
-    artworkLabel: "Weekly NFL coverage",
-    artworkDetail: "Scores · highlights · fantasy · recaps",
+    artwork: "/products/highlight-corner/scoreboard-preview.jpg",
+    artworkAlt: "Highlight Corner scoreboard showing team scores, a game list, and a highlights link",
+    icon: "/products/highlight-corner/brand-mark.svg",
+    artworkLabel: "Scoreboard interface preview",
+    artworkDetail: "Game labels · highlights · recaps",
     href: "https://highlightcorner.com/",
     external: true,
   },

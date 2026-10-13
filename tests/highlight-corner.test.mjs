@@ -12,7 +12,8 @@ test("the conventional product catalog publishes Highlight Corner", () => {
   assert.equal(highlightCorner.href, "https://highlightcorner.com/");
   assert.equal(highlightCorner.external, true);
   assert.deepEqual(highlightCorner.platforms, ["Responsive web"]);
-  assert.match(highlightCorner.consumerSummary, /weekly scores.*fantasy leaders.*original recaps/i);
+  assert.match(highlightCorner.consumerSummary, /Nail Biter.*Garbage Time.*sortable game and fantasy stats.*recaps/i);
+  assert.match(highlightCorner.engineeringSummary, /Supabase.*GitHub Actions.*recaps/i);
   assert.doesNotMatch(highlightCorner.engineeringSummary, /272-game|React|Vinext|Cloudflare Workers/i);
 });
 

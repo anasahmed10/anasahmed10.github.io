@@ -11,7 +11,7 @@ import { PRODUCTS } from "../data/products";
 export const metadata: Metadata = {
   title: "Products",
   description:
-    "Explore products designed and engineered by Anas Ahmed, including SplitDish, SmartShopper, and Highlight Corner, an NFL scores, highlights, fantasy, and recaps hub.",
+    "Explore products designed and engineered by Anas Ahmed, including SplitDish, SmartShopper, and Highlight Corner, an NFL web app for scores, game labels, highlights, fantasy, and recaps.",
 };
 
 export default function ProductsPage() {
@@ -68,24 +68,7 @@ export default function ProductsPage() {
               rel={product.external ? "noreferrer" : undefined}
             >
               {product.artwork ? (
-                <img src={product.artwork} alt={`${product.name}: ${product.tagline}`} />
-              ) : product.artworkVariant === "highlight-corner" ? (
-                <div className="highlight-corner-art" aria-hidden="true">
-                  <div className="highlight-corner-art-head">
-                    <span>HIGHLIGHT CORNER</span>
-                    <i>WEEKLY SCORES</i>
-                  </div>
-                  <div className="highlight-corner-matchup">
-                    <span><b>AWAY</b> Score hidden</span>
-                    <em>VS</em>
-                    <span><b>HOME</b> Score hidden</span>
-                  </div>
-                  <div className="highlight-corner-controls">
-                    <strong>Spoilers hidden</strong>
-                    <span>Official highlights ↗</span>
-                  </div>
-                  <small>Fantasy leaders · Original recaps · Game centers</small>
-                </div>
+                <img src={product.artwork} alt={product.artworkAlt ?? `${product.name}: ${product.tagline}`} />
               ) : (
                 <div className="smartshopper-art" aria-hidden="true">
                   <div className="smartshopper-art-head">
@@ -103,8 +86,8 @@ export default function ProductsPage() {
                 </div>
               )}
               <div>
-                {product.id === "splitdish" ? (
-                  <img src="/products/splitdish/app-icon-v2.png" alt="" />
+                {product.icon ? (
+                  <img src={product.icon} alt="" />
                 ) : (
                   <b className="product-art-monogram" aria-hidden="true">{product.monogram}</b>
                 )}
