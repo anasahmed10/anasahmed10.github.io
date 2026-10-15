@@ -13,11 +13,13 @@ Anas Ahmed’s public home for enterprise engineering work, recruiter informatio
 - Touch controls for mobile and tablet
 - Eight accessible campus landmarks and case-study dialogs, including Highlight Corner
 - Campus map, reset controls, reduced-motion support, and WebGL fallback
-- Conventional Recruiter Mode with impact, experience, projects, skills, contact status, and print-to-PDF résumé
+- Conventional Recruiter Mode with impact, experience, projects, skills, contact links, and a downloadable résumé
 - A no-JavaScript résumé fallback
 - Responsive layouts and reduced-motion support
 
 The product pages use sanitized application visuals and avoid unverified store, release, adoption, and privacy claims. SplitDish Support and Privacy remain independently published public pages.
+
+The downloadable résumé is generated from `scripts/generate_resumes.py`. Run it with a Python environment that has `reportlab` installed before changing the résumé PDF.
 
 ## Local development
 

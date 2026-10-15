@@ -20,6 +20,7 @@ export type Product = {
   artworkDetail: string;
   href: string;
   external?: boolean;
+  appStoreHref?: string;
   supportHref?: string;
   privacyHref?: string;
 };
@@ -28,9 +29,9 @@ export const PRODUCTS: Product[] = [
   {
     id: "splitdish",
     name: "SplitDish",
-    status: "App review + external testing",
+    status: "App Store release · Google Play testing",
     availability: {
-      apple: "Submitted for Apple App Store review",
+      apple: "Available on the Apple App Store",
       googlePlay: "Google Play external testing",
     },
     tagline: "Scan receipts. Split fairly. Share totals.",
@@ -51,6 +52,7 @@ export const PRODUCTS: Product[] = [
     artworkLabel: "Android + iOS",
     artworkDetail: "One shared product system",
     href: "/products/splitdish/",
+    appStoreHref: "https://apps.apple.com/us/app/splitdish/id6789408948",
     supportHref: "https://anasahmed10.github.io/splitdish-support/",
     privacyHref: "https://anasahmed10.github.io/splitdish-support/privacy/",
   },
@@ -91,21 +93,21 @@ export const PRODUCTS: Product[] = [
     },
     tagline: "See the score. Know how the game went.",
     consumerSummary:
-      "A mobile-first NFL web app that labels games Nail Biter, Comfortable, Garbage Time, or Blowout alongside scores, official highlights, sortable game and fantasy stats, and humorous recaps. It works across iOS, Android, and desktop browsers and can be added to a phone's home screen.",
+      "A mobile-first NFL website with weekly scores, favorites, spoiler controls, outbound YouTube highlight links, fantasy leaders, original recaps, and game centers. It works across iOS, Android, and desktop browsers and can be added to a phone's home screen.",
     engineeringSummary:
-      "A mobile-first, installable TypeScript web app for iOS, Android, and desktop. It reads ESPN and Sleeper data, refreshes live scores during games, and pauses polling on off days. Supabase and scheduled GitHub Actions publish verified highlight links and fact-checked recaps to static site snapshots.",
+      "A responsive JavaScript web app that reads ESPN and Sleeper data, coordinates season and week across views, and refreshes live scores while visible. A service worker supports an installable offline shell; GitHub Actions tests and deploys the static site.",
     platforms: ["iOS + Android home screen", "Desktop web"],
     technologies: [
-      "TypeScript",
+      "JavaScript",
       "ESPN + Sleeper data",
-      "Supabase",
+      "Service Worker",
       "GitHub Actions",
     ],
     artwork: "/products/highlight-corner/scoreboard-preview.jpg",
     artworkAlt: "Highlight Corner scoreboard showing team scores, a game list, and a highlights link",
     icon: "/products/highlight-corner/brand-mark.svg",
     artworkLabel: "Scoreboard interface preview",
-    artworkDetail: "Game labels · highlights · recaps",
+    artworkDetail: "Scores · highlights · recaps",
     href: "https://highlightcorner.com/",
     external: true,
   },

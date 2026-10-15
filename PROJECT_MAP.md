@@ -33,7 +33,7 @@ The primary deployment uses Vinext and Vite. `vite.config.ts` composes Vinext, t
 | `app/public-site.css` | Recruiter and product page styling |
 | `app/clay-campus.css` | Campus canvas, overlays, dialogs, controls, fallbacks, and responsive rules |
 | `public/` | Images, clay textures, and downloadable resume PDFs |
-| `scripts/generate_resumes.py` | Generates four local-only recruiter-lens resume drafts under `outputs/resume-drafts/` |
+| `scripts/generate_resumes.py` | Generates the canonical ATS-readable résumé at `public/resumes/Anas_Ahmed_Resume.pdf` |
 
 ## Supporting infrastructure
 
@@ -48,6 +48,6 @@ The primary deployment uses Vinext and Vite. `vite.config.ts` composes Vinext, t
 
 ## Content ownership
 
-Campus dialogs and the recruiter view derive project information from `app/data/portfolio.ts`. Highlight Corner's campus entry derives its approved product facts from `app/data/products.ts`, which also supplies the product directory. The detailed SplitDish page contains additional route-specific narrative and support/privacy links.
+Campus dialogs and the recruiter view draw career and system facts from `app/data/portfolio.ts`. Shared product facts live in `app/data/products.ts`; the recruiter view adds route-specific YardScape detail. The detailed SplitDish page contains additional narrative and support/privacy links.
 
 When adding a campus destination, update the destination ID/type and data, provide its scene representation, account for collision and approach coordinates, and verify every navigation surface and fallback. When adding a conventional route, include route metadata, use the shared public chrome where appropriate, and confirm it is emitted by the GitHub Pages static build.

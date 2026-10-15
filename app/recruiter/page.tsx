@@ -5,29 +5,32 @@ import { PublicFooter, PublicHeader } from "../components/PublicHeader";
 const RECRUITER_URL = "https://anasahmed10.github.io/recruiter/";
 
 export const metadata: Metadata = {
-  title: "Enterprise Mobile Engineer | Android, Kotlin & Hardware Systems",
+  title: "Software Engineer | Android, Cross-Platform & Connected Systems",
   description:
-    "Anas Ahmed is an enterprise mobile engineer with 5+ years building Kotlin and Android systems for printers, scanners, payment terminals, POS automation, and connected-device workflows.",
+    "Anas Ahmed is a software engineer with 5+ years building production Android systems, cross-platform mobile products, connected-device workflows, and web experiences.",
   keywords: [
-    "Enterprise Mobile Engineer",
+    "Software Engineer",
     "Android Engineer",
     "Kotlin Engineer",
+    "Kotlin Multiplatform",
+    "Cross-Platform Software Engineer",
     "Hardware Integration",
-    "Android Platform Engineer",
+    "Connected Devices",
     "POS Integration",
     "Payment Terminal Integration",
     "Jetpack Compose",
-    "Kotlin Multiplatform",
+    "Java",
+    "JavaScript",
     "Boston Android Engineer",
   ],
   alternates: { canonical: RECRUITER_URL },
   openGraph: {
-    title: "Anas Ahmed | Enterprise Mobile Engineer",
+    title: "Anas Ahmed | Software Engineer",
     description:
-      "5+ years building Android and cross-platform software around printers, scanners, payments, POS automation, and connected devices.",
+      "Production Android systems, cross-platform mobile products, connected devices, and shipped web experiences.",
     url: RECRUITER_URL,
     type: "profile",
-    images: [{ url: "/og.png", width: 1672, height: 941, alt: "Anas Ahmed enterprise mobile engineering portfolio" }],
+    images: [{ url: "/og.png", width: 1672, height: 941, alt: "Anas Ahmed software engineering portfolio" }],
   },
 };
 
@@ -52,6 +55,8 @@ const PERSON_STRUCTURED_DATA = {
     "Point-of-sale automation",
     "Jetpack Compose",
     "Kotlin Multiplatform",
+    "Cross-platform product engineering",
+    "Web applications",
   ],
 };
 

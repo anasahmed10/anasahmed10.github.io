@@ -61,8 +61,8 @@ export const CAREER_ROLES: CareerRole[] = [
     dates: "Oct. 2022 - Present",
     location: "Framingham, MA",
     bullets: [
-      "Own Android architecture and primary implementation for modernizing a high-traffic self-service print application from Java on Android 7 to Kotlin on Android 13, including multilingual, Google Drive, and Dropbox workflows.",
-      "Build production Android workflows across Xerox AltaLink C8145/C8245 printers, scanners, Ingenico Lane 3000 and Verifone payment terminals, PIN pads, and store networks, including Apple Pay and Google Pay support.",
+      "Own Android architecture across 3,000+ devices in 827 retail locations and lead modernization of a self-service print application from Java on Android 7 to Kotlin on Android 13, including multilingual, Google Drive, and Dropbox workflows.",
+      "Build production Android workflows across Xerox AltaLink C8145/C8245 printers, scanners, Ingenico Lane 3000 and Verifone payment terminals, Bluetooth and NFC peripherals, PIN pads, and store networks, including Apple Pay and Google Pay support.",
       "Helped design a four-stage local payment-terminal update that reached 800+ locations with zero production failures and eliminated onsite vendor-technician cost for the rollout.",
       "Built real-time printer status-light monitoring and Splunk dashboards for issue duration, frequency, and production diagnosis.",
     ],
@@ -140,12 +140,13 @@ export const SKILL_GROUPS: SkillGroup[] = [
       "Jenkins",
       "Azure DevOps",
       "Firebase",
+      "GitHub Actions",
       "Git",
     ],
   },
   {
     label: "Languages",
-    skills: ["Java", "JavaScript", "Swift", "Python", "C#", "C++", "C", "SQL", "HTML / CSS"],
+    skills: ["Java", "TypeScript", "JavaScript", "Swift", "Python", "C#", "C++", "C", "SQL", "HTML / CSS"],
   },
 ];
 
@@ -287,7 +288,7 @@ export const CAMPUS_DESTINATIONS: CampusDestination[] = [
       "Shared geometry reconstruction repairs weak rows before strict-schema extraction through Groq.",
       "People review names, prices, assignments, tip, and totals before deterministic shared logic calculates the split.",
       "Compose Multiplatform, Ktor, Koin, and SQLDelight support one product across both platforms.",
-      "SplitDish has been submitted for Apple App Store review and is in Google Play external testing.",
+      "SplitDish is available on the Apple App Store and is in Google Play external testing.",
     ],
     tech: ["Kotlin Multiplatform", "Compose", "ML Kit", "Vision", "Groq", "SQLDelight"],
     link: { label: "Explore SplitDish", href: "/products/splitdish/" },

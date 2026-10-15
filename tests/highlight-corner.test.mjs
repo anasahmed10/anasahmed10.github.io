@@ -12,10 +12,20 @@ test("the conventional product catalog publishes Highlight Corner", () => {
   assert.equal(highlightCorner.href, "https://highlightcorner.com/");
   assert.equal(highlightCorner.external, true);
   assert.deepEqual(highlightCorner.platforms, ["iOS + Android home screen", "Desktop web"]);
-  assert.match(highlightCorner.consumerSummary, /Nail Biter.*Garbage Time.*sortable game and fantasy stats.*recaps/i);
+  assert.match(highlightCorner.consumerSummary, /weekly scores.*spoiler controls.*highlight links.*fantasy leaders.*recaps/i);
   assert.match(highlightCorner.consumerSummary, /iOS, Android, and desktop browsers.*home screen/i);
-  assert.match(highlightCorner.engineeringSummary, /Supabase.*GitHub Actions.*recaps/i);
-  assert.doesNotMatch(highlightCorner.engineeringSummary, /272-game|React|Vinext|Cloudflare Workers/i);
+  assert.match(highlightCorner.engineeringSummary, /JavaScript.*ESPN and Sleeper.*service worker.*GitHub Actions/i);
+  assert.doesNotMatch(highlightCorner.engineeringSummary, /Supabase|scheduled.*recaps|272-game|React|Vinext|Cloudflare Workers/i);
+});
+
+test("SplitDish release facts are shared with the campus", () => {
+  const product = PRODUCTS.find((item) => item.id === "splitdish");
+  const destination = CAMPUS_DESTINATIONS.find((item) => item.id === "splitdish");
+
+  assert.equal(product.appStoreHref, "https://apps.apple.com/us/app/splitdish/id6789408948");
+  assert.equal(product.availability.apple, "Available on the Apple App Store");
+  assert.equal(product.availability.googlePlay, "Google Play external testing");
+  assert.ok(destination.details.some((detail) => /available on the Apple App Store/i.test(detail)));
 });
 
 test("Highlight Corner has a reachable approach and a walkable perimeter", () => {

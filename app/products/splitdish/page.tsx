@@ -258,15 +258,17 @@ export default function SplitDishPage() {
       <section className="splitdish-availability">
         <img src="/products/splitdish/app-icon-v2.png" alt="" />
         <div>
-          <p>APPLE REVIEW · GOOGLE PLAY EXTERNAL TESTING</p>
-          <h2>Built carefully enough to review. Simple enough to use at dinner.</h2>
+          <p>APPLE APP STORE · GOOGLE PLAY EXTERNAL TESTING</p>
+          <h2>Built for the table. Available on the App Store.</h2>
           <span>
-            {SPLITDISH.availability.apple}. {SPLITDISH.availability.googlePlay}.
-            Store links will appear here when public availability is verified.
+            {`${SPLITDISH.availability.apple}. ${SPLITDISH.availability.googlePlay}.`}
           </span>
         </div>
         <div>
-          <a className="splitdish-primary" href={SUPPORT_URL}>SplitDish Support</a>
+          {SPLITDISH.appStoreHref && (
+            <a className="splitdish-primary" href={SPLITDISH.appStoreHref} target="_blank" rel="noreferrer">View on the App Store</a>
+          )}
+          <a className="splitdish-secondary" href={SUPPORT_URL}>SplitDish Support</a>
           <a className="splitdish-secondary" href={PRIVACY_URL}>Privacy Policy</a>
         </div>
       </section>

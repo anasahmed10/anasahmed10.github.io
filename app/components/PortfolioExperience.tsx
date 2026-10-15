@@ -16,57 +16,57 @@ const RESUME_HREF = "/resumes/Anas_Ahmed_Resume.pdf";
 
 const ROLE_LENSES: RoleLens[] = [
   {
-    id: "enterprise-mobile",
-    label: "Enterprise mobile",
-    title: "Enterprise Mobile Engineer",
+    id: "software-engineering",
+    label: "Software engineering",
+    title: "Software Engineer · Mobile, Systems & Products",
     summary:
-      "Android and cross-platform engineering for production workflows that connect software, devices, and the people operating them.",
-    focus: ["Kotlin", "Android architecture", "Production reliability"],
+      "Production Android systems, cross-platform applications, and independently shipped products built around reliable workflows and real users.",
+    focus: ["Kotlin and Java", "System integration", "Product delivery"],
   },
   {
     id: "android-platform",
     label: "Android platform",
-    title: "Senior Android Engineer · Kotlin, Architecture & Mobile Platform",
+    title: "Android Engineer · Kotlin, Architecture & Mobile Platform",
     summary:
       "Android ownership spanning Java-to-Kotlin modernization, maintainable architecture, delivery tooling, observability, and long-lived applications.",
     focus: ["Android 7 to 13", "Architecture", "CI/CD"],
   },
   {
-    id: "payments-pos",
-    label: "Payments & POS",
-    title: "Android Payments & POS Integration Engineer",
+    id: "cross-platform",
+    label: "Cross-platform products",
+    title: "Cross-Platform Software Engineer",
     summary:
-      "Production Android experience across contactless payments, PIN pads, POS automation, printers, scanners, and distributed retail devices.",
-    focus: ["Apple Pay", "Google Pay", "Payment terminals"],
+      "Shared Android and iOS product engineering alongside a published, installable web experience with live data integrations.",
+    focus: ["Kotlin Multiplatform", "iOS and Android", "Web delivery"],
   },
   {
-    id: "mobile-hardware",
-    label: "Mobile + hardware",
-    title: "Mobile + Hardware Systems Engineer · Device Integration",
+    id: "connected-systems",
+    label: "Connected systems",
+    title: "Software Engineer · Connected Devices & Payments",
     summary:
-      "Application-layer mobile engineering around printers, scanners, payment terminals, local networks, sensors, and physical operations.",
+      "Application-layer engineering around printers, scanners, payment terminals, local networks, POS automation, and production diagnostics.",
     focus: ["Hardware SDKs", "Device communication", "Observability"],
   },
 ];
 
 const IMPACT = [
   {
+    value: "3,000+",
+    label: "devices",
+    detail: "Android architecture across 827 locations",
+  },
+  {
     value: "800+",
     label: "locations",
-    detail: "Staged payment-terminal update",
+    detail: "Payment update · zero production failures",
   },
   {
-    value: "0 / $0",
-    label: "failures / onsite cost",
-    detail: "Production rollout result",
-  },
-  {
-    value: "65 / +55%",
+    value: "65 / 55%",
     label: "tests / automation",
     detail: "POS scanner automation",
   },
   {
-    value: "7 to 13",
+    value: "7 → 13",
     label: "Android versions",
     detail: "Java-to-Kotlin modernization",
   },
@@ -91,12 +91,12 @@ export default function PortfolioExperience() {
       <div className="recruiter-view">
         <section className="recruiter-hero" aria-labelledby="recruiter-title">
           <div className="recruiter-hero-copy">
-            <p className="recruiter-eyebrow">ANAS AHMED · ENTERPRISE MOBILE ENGINEER</p>
-            <h1 id="recruiter-title">Android systems built around real devices.</h1>
+            <p className="recruiter-eyebrow">ANAS AHMED · SOFTWARE ENGINEER</p>
+            <h1 id="recruiter-title">Software for products and real-world systems.</h1>
             <p className="recruiter-lede">
-              5+ years building Kotlin, Android, and cross-platform software for
-              printers, scanners, payment terminals, POS automation, and
-              connected-device workflows at Staples and General Motors.
+              5+ years in production mobile engineering at Staples and General Motors.
+              I lead Kotlin and Java systems for connected retail devices and
+              build cross-platform mobile and web products around reliable workflows.
             </p>
             <div className="recruiter-actions">
               <a className="recruiter-primary" href={RESUME_HREF} download>Download résumé</a>
@@ -112,7 +112,6 @@ export default function PortfolioExperience() {
               <div><dt>Current role</dt><dd>Software Engineer II, Mobile</dd></div>
               <div><dt>Current company</dt><dd>Staples</dd></div>
               <div><dt>Location</dt><dd>Greater Boston</dd></div>
-              <div><dt>Availability</dt><dd>Remote · Boston-area hybrid</dd></div>
               <div><dt>Education</dt><dd>B.S. Computer Science</dd></div>
             </dl>
           </aside>
@@ -130,8 +129,8 @@ export default function PortfolioExperience() {
         <section className="recruiter-lenses" aria-labelledby="role-lens-title">
           <div className="recruiter-section-intro">
             <p>ROLE EMPHASIS</p>
-            <h2 id="role-lens-title">One background, four relevant hiring paths.</h2>
-            <span>Choose the closest target role. Employment titles and dates remain unchanged.</span>
+            <h2 id="role-lens-title">One background, four engineering angles.</h2>
+            <span>Choose a focus to scan the experience. Every option downloads the same résumé.</span>
           </div>
           <div className="recruiter-lens-controls" aria-label="Choose a target role emphasis">
             {ROLE_LENSES.map((lens) => (
@@ -154,7 +153,7 @@ export default function PortfolioExperience() {
                 {activeLens.focus.map((item) => <li key={item}>{item}</li>)}
               </ul>
             </div>
-            <a href={RESUME_HREF} download>Download canonical résumé</a>
+            <a href={RESUME_HREF} download>Download résumé</a>
           </div>
         </section>
 
@@ -163,7 +162,7 @@ export default function PortfolioExperience() {
             <section id="experience" className="recruiter-section" aria-labelledby="experience-title">
               <div className="recruiter-section-heading">
                 <span>01</span>
-                <div><p>EXPERIENCE</p><h2 id="experience-title">Production ownership, clearly stated.</h2></div>
+                <div><p>EXPERIENCE</p><h2 id="experience-title">Professional experience</h2></div>
               </div>
               <div className="recruiter-timeline">
                 {CAREER_ROLES.map((role) => (
@@ -184,10 +183,10 @@ export default function PortfolioExperience() {
               </div>
             </section>
 
-            <section className="recruiter-section" aria-labelledby="systems-title">
+            <section id="featured-systems" className="recruiter-section" aria-labelledby="systems-title">
               <div className="recruiter-section-heading">
                 <span>02</span>
-                <div><p>FEATURED SYSTEMS</p><h2 id="systems-title">Evidence at the device boundary.</h2></div>
+                <div><p>FEATURED SYSTEMS</p><h2 id="systems-title">Selected engineering systems</h2></div>
               </div>
               <div className="recruiter-system-list">
                 {employerProjects.map((project) => (
@@ -207,12 +206,12 @@ export default function PortfolioExperience() {
             <section className="recruiter-section" aria-labelledby="products-title">
               <div className="recruiter-section-heading">
                 <span>03</span>
-                <div><p>PRODUCT WORK</p><h2 id="products-title">Products that extend the same engineering habits.</h2></div>
+                <div><p>PRODUCT WORK</p><h2 id="products-title">Shipped products and independent builds</h2></div>
               </div>
               <div className="recruiter-project-grid">
                 <article className="recruiter-project-feature">
-                  <small>ACTIVE PERSONAL PRODUCT · ANDROID + iOS</small>
-                  <h3>{splitDish?.sceneLabel ?? "SplitDish"}</h3>
+                  <small>APP STORE PRODUCT · ANDROID + iOS</small>
+                  <h3>{splitDishProduct?.name ?? "SplitDish"}</h3>
                   <p>{splitDish?.summary}</p>
                   <ul>
                     <li>ML Kit on Android · Apple Vision on iOS</li>
@@ -221,35 +220,32 @@ export default function PortfolioExperience() {
                     <li>{splitDishProduct?.availability.googlePlay}</li>
                   </ul>
                   <a href="/products/splitdish/">View the product and engineering story →</a>
-                </article>
-                <article>
-                  <small>AI SHOPPING ASSISTANT</small>
-                  <h3>{smartShopper?.sceneLabel ?? "SmartShopper"}</h3>
-                  <p>{smartShopper?.summary}</p>
-                  {smartShopper?.link && (
-                    <a href={smartShopper.link.href} target="_blank" rel="noreferrer">Open SmartShopper ↗</a>
+                  {splitDishProduct?.appStoreHref && (
+                    <a href={splitDishProduct.appStoreHref} target="_blank" rel="noreferrer">View on the Apple App Store ↗</a>
                   )}
                 </article>
                 <article>
-                  <small>LIVE SPORTS WEB PRODUCT</small>
+                  <small>LIVE WEB PRODUCT · INSTALLABLE</small>
                   <h3>{highlightCornerProduct?.name ?? "Highlight Corner"}</h3>
-                  <p>{highlightCornerProduct?.consumerSummary}</p>
+                  <p>{highlightCornerProduct?.engineeringSummary}</p>
                   <span>{highlightCornerProduct?.technologies.join(" · ")}</span>
                   {highlightCornerProduct && (
                     <a href={highlightCornerProduct.href} target="_blank" rel="noreferrer">Open Highlight Corner ↗</a>
                   )}
                 </article>
                 <article>
-                  <small>ANDROID MARKETPLACE</small>
-                  <h3>Yardscape</h3>
-                  <p>Android yard-sale marketplace with authentication, cloud listing storage, and API-backed browsing and publishing workflows.</p>
-                  <span>Kotlin · Java · MVVM · Coroutines · Volley · Firebase</span>
+                  <small>CROSS-PLATFORM MARKETPLACE MVP</small>
+                  <h3>YardScape</h3>
+                  <p>Kotlin Multiplatform yard-sale marketplace with shared Compose UI, Android, iOS, and web targets, plus a Ktor API that separates public event previews from RSVP-gated location access. The current MVP uses seeded app data.</p>
+                  <span>Kotlin Multiplatform · Compose Multiplatform · Ktor · Android · iOS · Web</span>
                 </article>
                 <article>
-                  <small>TARGET WORK</small>
-                  <h3>Mobile software for physical systems</h3>
-                  <p>I am interested in application-layer Android and Linux work around device communication, networking, automation, sensors, and operator-facing HMI software.</p>
-                  <span>Application software · interfaces · production reliability</span>
+                  <small>AI SHOPPING ASSISTANT</small>
+                  <h3>{smartShopper?.navLabel ?? "SmartShopper"}</h3>
+                  <p>{smartShopper?.summary}</p>
+                  {smartShopper?.link && (
+                    <a href={smartShopper.link.href} target="_blank" rel="noreferrer">Open SmartShopper ↗</a>
+                  )}
                 </article>
               </div>
             </section>
@@ -259,7 +255,7 @@ export default function PortfolioExperience() {
             <section className="recruiter-section" aria-labelledby="skills-title">
               <div className="recruiter-section-heading compact">
                 <span>04</span>
-                <div><p>TECHNICAL SKILLS</p><h2 id="skills-title">Searchable and grouped.</h2></div>
+                <div><p>TECHNICAL SKILLS</p><h2 id="skills-title">Technical skills</h2></div>
               </div>
               <div className="recruiter-skill-groups">
                 {SKILL_GROUPS.map((group) => (
@@ -292,8 +288,8 @@ export default function PortfolioExperience() {
         <section className="recruiter-contact" aria-labelledby="contact-title">
           <div>
             <p>CONTACT</p>
-            <h2 id="contact-title">Let&apos;s build dependable software around real devices.</h2>
-            <span>Enterprise mobile · Android · Device integration · Greater Boston</span>
+            <h2 id="contact-title">Let&apos;s build dependable software for real-world use.</h2>
+            <span>Software engineering · Android · Cross-platform products · Connected systems</span>
           </div>
           <div>
             <a href="mailto:anas.ahmed10@outlook.com"><span>Email</span><strong>anas.ahmed10@outlook.com</strong></a>

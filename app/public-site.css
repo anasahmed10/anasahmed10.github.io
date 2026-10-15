@@ -2291,6 +2291,23 @@
 }
 
 @media (max-width: 720px) {
+  .recruiter-shell .public-header {
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: .65rem;
+  }
+
+  .recruiter-shell .public-header nav {
+    width: 100%;
+    max-width: none;
+    justify-content: space-between;
+    gap: .2rem;
+  }
+
+  .recruiter-shell .public-header nav a:last-child {
+    display: inline-flex;
+  }
+
   .recruiter-view {
     padding-inline: .9rem;
   }
@@ -2353,7 +2370,9 @@
   }
 
   .recruiter-lens-readout {
+    flex-direction: column;
     align-items: stretch;
+    gap: 1.25rem;
   }
 
   .recruiter-lens-controls {
@@ -2396,6 +2415,18 @@
   .recruiter-contact a > strong {
     max-width: 65%;
     overflow-wrap: anywhere;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recruiter-actions a,
+  .recruiter-lens-readout > a {
+    transition: none;
+  }
+
+  .recruiter-actions a:hover,
+  .recruiter-lens-readout > a:hover {
+    transform: none;
   }
 }
 
